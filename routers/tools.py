@@ -24,7 +24,7 @@ async def api_redirect():
 async def login():
     redirect = request.args.get("redirect")
     if not redirect:
-        redirect = "/index/"
+        redirect = "/"
     else:
         redirect = urllib.parse.unquote(redirect)
     return await current_app.discord.create_session(
@@ -39,7 +39,7 @@ async def callback():
     except:
         current_app.discord.revoke()
         raise Unauthorized(origin=urllib.parse.quote(request.url))
-    redirect_to = data.get("redirect", "/index/")
+    redirect_to = data.get("redirect", "/")
     session.permanent = True
     return quart.redirect(redirect_to)
 
@@ -48,11 +48,6 @@ async def callback():
 async def logout():
     current_app.discord.revoke()
     return quart.redirect(quart.url_for("general.home_"))
-
-
-@blueprint.route("/index/")
-async def index():
-    return await render_template("index.html")
 
 
 @blueprint.route("/reset-token/")

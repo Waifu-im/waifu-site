@@ -37,6 +37,7 @@ from routers.tools import blueprint as tools_blueprint
 
 app = Quart(__name__, template_folder="static/html/")
 app.asgi_app = ProxyHeadersMiddleware(app.asgi_app, trusted_hosts=["127.0.0.1"])
+app.config["bot_invite"] = "https://ayane.live/invite/"
 app.config["nsfw_cookie"] = "ageverif"
 app.config["s3bucket"] = S3_BUCKET
 app.config["s3endpoint"] = S3_ENDPOINTS
