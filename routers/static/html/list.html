@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+    {{format_metadatas()|safe}}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+
+<body>
+    {%for im in files %}
+    <a href="{{site_url}}manage/?image={{im.file}}">{{im.id}}</a>
+    {% endfor %}
+</body>

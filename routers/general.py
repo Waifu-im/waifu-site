@@ -1,0 +1,256 @@
+import os
+import waifuim
+
+import quart
+from quart import Blueprint, render_template, request, current_app, session
+
+from routers.utils import (
+    requires_authorization,
+    has_permissions,
+    create_token,
+    permissions_check,
+    fetch_user_safe,
+)
+from secrets import token_urlsafe
+
+blueprint = Blueprint("general", __name__, template_folder="static/html")
+
+
+@blueprint.route("/")
+async def home_():
+    apioffline = False
+    try:
+        im = await current_app.waifuclient.sfw("waifu", gif=False)
+        randomfile = (await current_app.waifuclient.sfw("waifu", top=True)).split("/")[
+            -1
+        ]
+    except waifuim.exceptions.APIException as e:
+        im = "https://cdn.waifu.im/aa48cd9dc6b64367.jpg"
+        randomfile = "aa48cd9dc6b64367.jpg"
+        apioffline = True if e.status == 503 else None
+    async with current_app.pool.acquire() as conn:
+        nb_images = (
+            await conn.fetchrow(
+                "SELECT COUNT(*) FROM Images WHERE not Images.under_review"
+            )
+        )[0]
+        nb_request = (await conn.fetchrow("SELECT COUNT(*) FROM api_logs"))[0]
+        nb_tags = (await conn.fetchrow("SELECT COUNT(*) FROM Tags"))[0]
+    return await render_template(
+        "home.html",
+        image=im,
+        nb_tags=nb_tags,
+        nb_request=nb_request,
+        nb_images=nb_images,
+        randomfile=randomfile,
+        apioffline=apioffline,
+    )
+
+
+@blueprint.route("/tags/")
+async def tags_():
+    rt = await current_app.waifuclient.endpoints(full=True)
+    tags_sfw = rt["sfw"]
+    tags_nsfw = rt["nsfw"]
+    tags = tags_sfw + tags_nsfw
+    types = ["sfw", "nsfw"]
+    return await render_template(
+        "tags.html",
+        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
+        types=types,
+    )
+
+
+@blueprint.route("/upload/")
+async def upload_():
+    rt = await current_app.waifuclient.endpoints(full=True)
+    tags_sfw = rt["sfw"]
+    tags_nsfw = rt["nsfw"]
+    tags = tags_sfw + tags_nsfw
+    return await render_template(
+        "upload.html",
+        form_upload=quart.url_for("forms.form_upload"),
+        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
+    )
+
+
+@blueprint.route("/docs/")
+async def docs_():
+    rt = await current_app.waifuclient.endpoints()
+    tags_sfw = rt["sfw"]
+    tags_nsfw = rt["nsfw"]
+    tags = tags_sfw + tags_nsfw
+    types = ["sfw", "nsfw"]
+    return await render_template(
+        "documentation.html",
+        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
+        types=types,
+    )
+
+
+@blueprint.route("/dashboard/")
+@requires_authorization
+async def dashboard_():
+    su = request.args.get("user_id")
+    user = await fetch_user_safe()
+    full_username = str(user)
+    username = user.name
+    user_id = user.id
+    if su and su != str(user_id):
+        if not await has_permissions(user.id, "admin"):
+            quart.abort(403)
+        resp = await current_app.session.get(
+            f"http://127.0.0.1:8033/userinfos/?id={su}"
+        )
+        if resp.status == 404:
+            raise quart.abort(400, description="Please provide a valid user_id")
+
+        if resp.status != 200:
+            quart.abort(
+                500, description="Sorry, something went wrong with the ipc request."
+            )
+
+        t = await resp.json()
+        user_id = t.get("id")
+        full_username = t.get("full_name")
+        username = t.get("name")
+
+    user_secret = token_urlsafe(10)
+    async with current_app.pool.acquire() as conn:
+        await conn.execute(
+            'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
+            user_id,
+            full_username,
+            user_secret,
+        )
+        user_secret = await conn.fetchrow(
+            "SELECT secret FROM registered_user WHERE id=$1", user_id
+        )
+        user_secret = user_secret[0]
+        count_images = (
+            await conn.fetchrow(
+                "SELECT COUNT(*) FROM FavImages WHERE user_id=$1", user_id
+            )
+        )[0]
+    token, user_secret = create_token(user_id, user_secret=user_secret)
+    return await render_template(
+        "dashboard.html",
+        token=token,
+        username=username,
+        count_images=count_images,
+        user_id=str(user_id),
+    )
+
+
+@blueprint.route("/preview/")
+async def preview_():
+    is_nsfw = False
+    in_fav = False
+    inprocess = False
+    source = None
+    tag_names = []
+    existed = session.get("upload_existed")
+    auth = await current_app.discord.authorized
+    image = request.args.get("image")
+    if not image:
+        quart.abort(400)
+    image = image.lower()
+    image_name = os.path.splitext(image)[0]
+    if auth:
+        try:
+            user = await current_app.discord.fetch_user()
+            args = (image_name, user.id)
+        except:
+            auth = False
+            args = (image_name,)
+    else:
+        args = (image_name,)
+    async with current_app.pool.acquire() as conn:
+        rt = await conn.fetch(
+            f"""SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Tags.is_nsfw,Tags.name, FavImages.user_id FROM Images
+                        JOIN LinkedTags ON LinkedTags.image = Images.file
+                        JOIN Tags ON Tags.id = LinkedTags.tag_id
+                        LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}
+                        WHERE Images.file = $1""",
+            *args,
+        )
+        if not rt:
+            quart.abort(404)
+        else:
+            imf = rt[0].get("file") + rt[0].get("extension")
+            dominant_color = rt[0].get("dominant_color")
+            if imf != image:
+                return quart.redirect(quart.url_for("general.preview_") + f"?image={imf}")
+            if auth:
+                in_fav = True if rt[0]["user_id"] else False
+            for tag in rt:
+                if tag["name"] not in tag_names:
+                    tag_names.append(tag["name"])
+                if tag["is_nsfw"]:
+                    is_nsfw = True
+            if existed == image_name:
+                del session["upload_existed"]
+                existed = True
+            else:
+                existed = False
+            fav_button_description = (
+                "Remove the image from your Favorites"
+                if in_fav
+                else "Add the image to your Favorites"
+            )
+            if source := rt[0].get("source"):
+                description = (
+                    f"Source : {source}\n\n" + "Tags : " + ", ".join(tag_names)
+                )
+            else:
+                description = ", ".join(tag_names)
+    return await render_template(
+        "preview.html",
+        source=source,
+        image_name=image_name,
+        image=image,
+        dominant_color=dominant_color,
+        in_fav=in_fav,
+        inprocess=inprocess,
+        is_nsfw=is_nsfw,
+        description=description,
+        existed=existed,
+        fav_button_description=fav_button_description
+        if auth
+        else "Login to add the image in your Favorite",
+        method="toggle" if in_fav else "insert",
+    )
+
+
+@blueprint.route("/manage/")
+@requires_authorization
+@permissions_check("manage_images")
+async def manage_():
+    image = request.args.get("image")
+    if not image:
+        return quart.abort(404)
+    async with current_app.pool.acquire() as conn:
+        image_info = await conn.fetch(
+            "SELECT Tags.id,Images.source,Images.file,Images.extension FROM LinkedTags JOIN Tags ON Tags.id=LinkedTags.tag_id JOIN Images ON Images.file=LinkedTags.image WHERE LinkedTags.image=$1",
+            os.path.splitext(image)[0],
+        )
+        if not image_info:
+            return quart.abort(404)
+        filename_db = image_info[0].get("file") + image_info[0].get("extension")
+        if filename_db != image:
+            return quart.redirect(quart.url_for("general.preview_") + f"?image={filename_db}")
+
+        t = await current_app.waifuclient.endpoints(full=True)
+    existed = [int(tag["id"]) for tag in image_info]
+    if image_info:
+        source = image_info[0]["source"]
+    else:
+        source = None
+    return await render_template(
+        "manage.html",
+        tags=t,
+        existtags=existed,
+        link="https://cdn.waifu.im/" + image,
+        image=image,
+        source=source,
+    )

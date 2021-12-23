@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>API Documentation</title>
+    {{format_metadatas()|safe}}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link href="/static/css/prism-atom-dark.css" rel="stylesheet" />
+    <link rel="stylesheet" href="/static/css/custom.css">
+</head>
+
+<body>
+    {{sidebar|safe}}
+    <div class="fixed-top">
+        <nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="">
+                    {{sitename}}
+                </a>
+                <img src="/favicon.ico" width="35" height="35" class="d-inline-block align-top" alt="">
+            </div>
+        </nav>
+    </div>
+    <div class="container" style="padding-top: 64px;">
+        <div class="row justify-content-center">
+            <div class="col-sm-12 col-md-6">
+                <div class="container-fluid borderthin ">
+                    <h1 class="display-5" id="presentation">API Documentation</h1>
+                    <p class="fs-5">{{sitename}} is {{site_description.lower()}}</p>
+                    <div class="card bgblack mb-3" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">API Base URL</h5>
+                            <p class="card-text fs-6">https://api.waifu.im/</p>
+                        </div>
+                    </div>
+                    <div class="card bgblack mb-3" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">Rate Limit</h5>
+                            <p class="card-text fs-6"><i> Note: this rate limit only apply for <kbd>api.waifu.im</kbd> domain.</i></p>
+                            <p class="card-text fs-6">The rate limit is <strong>1</strong> request every <strong>200</strong> milliseconds. If you go up to this value the request will be put in a queue (the size is 10) if the queue is full, the server will answer with a 429 status code.</p>
+                        </div>
+                    </div>
+                    <div class="card bgblack mb-3" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">Endpoints</h5>
+                            <p class="card-text fs-6"><i> Note: http traffic is automatically redirected to https.</i></p>
+                            <p class="card-text fs-6">https://api.waifu.im/endpoints/<br>https://api.waifu.im/endpoints/?full=true</p>
+                        </div>
+                    </div>
+                    <div class="card bgblack mb-3" id="github" style="width: 100%;">
+                        <div class="card-body">
+                            <h5 class="card-title">Github & Python Wrapper</h5>
+                            <p class="card-text fs-6">I really recommand the Python users to use the wrapper, it fully support the API and is updated when needed.</p>
+                            <p class="card-text fs-6"><a class="link-success" href="https://github.com/Waifu-im/waifu.im" target="_blank">Github</a><br><a class="link-success" href="https://github.com/Waifu-im/waifuim.py" target="_blank">Python wrapper</a></p>
+                        </div>
+                    </div>
+                </div>
+                <div class="container-fluid borderthin">
+                    <h3 id="tags">Tags</h3>
+                    <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags !</p>
+                    <p class="fs-6">Here is the avaliable tags, if you click on them you'll see the get request to do for it.</p>
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        {% for typ in types %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {{'active' if loop.index <2 else '' }} blckbg" id="pills-{{typ}}-tab" data-bs-toggle="pill" data-bs-target="#pills-{{typ}}" type="button" role="tab" aria-selected="{{'true' if loop.index <2 else 'false' }}" aria-controls="pills-{{typ}}">{{typ.upper()}}</button>
+                        </li>
+                        {% endfor %}
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="pills-tabContent">
+                        {% for typ in types %}
+                        <div class="tab-pane fade {{'show active' if loop.index <2 else ''}} " id="pills-{{typ}}" role="tabpanel" aria-labelledby="pills-home-tab">
+                            <div class="list-group">
+                                {% for tag in tags[typ] %}
+                                <a href="https://api.waifu.im/{{typ}}/{{tag}}/" target="_blank" class="list-group-item list-group-item-action blckbg lstnohover">{{tag}}</a>
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+                <div class="container-fluid borderthin">
+                    <h3 id="errors">Errors</h3>
+                    <p class="fs-5">Here is the json structure for the api errors.</p>
+                    <pre><code class="language-json">
+
+All errors apart of 422 status code
+Its recommanded to handle them.
+
+{
+  "code": Status code,
+  "message": "Description"
+}
+
+This json structure is the one for a 422 status code.
+It means you provided an invalid argument or that you forgot to provide an argument that the server needed.
+It doesnt really need to be handled, since if you correctly requested the route with the good type of parameters, or just use the wrapper, you will never face it.
+
+{
+  "detail": [
+    {
+      "loc": [
+        "location of the argument (query, path etc...)",
+        "name of argument"
+      ],
+      "msg": "description of the issue",
+      "type": "type of the argument"
+    }
+  ]
+}
+      </code></pre>
+                </div>
+                <div class="container-fluid borderthin">
+                    <h3 id="randomimage">Get Random Images</h3>
+                    <p class="fs-5">You can either get completly random images or by tag.</p>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">PATH</span></th>
+                                <th scope="col"><span class="text-success">Request type</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/<span class="text-danger">type</span>/<a class="link-danger" href="#tags">tag</a>/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/random/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">The avaliables <span class="text-danger">type</span>s are <strong><i>sfw</i></strong> and <strong><i>nsfw</i></strong>. if you request /random/ nothing else is required since the image is randomly chosen.</p>
+                    <h4 id="randomimage-response">Response</h4>
+                    <p class="fs-5">Here is an example response that you could get.</p>
+                    <pre><code class="language-json">
+{
+  "code": 200,
+  "images": [
+    {
+      "file": "5f7e656343cb7be1",
+      "extension": ".jpg",
+      "image_id": 3284,
+      "dominant_color": "#cac2c6",
+      "source": "https://www.pixiv.net/en/artworks/88563141",
+      "like": 7,
+      "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
+      "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
+      "tags": [
+        {
+          "tag_id": 12,
+          "name": "waifu",
+          "is_nsfw": false,
+          "description": "Any kind of sfw content. A female anime/manga character."
+        }
+      ]
+    }
+  ]
+}
+				</code></pre>
+                    <h4 id="randomimage-querystrings">Query strings</h4>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">Name</span></th>
+                                <th scope="col"><span class="text-success">Required</span></th>
+                                <th scope="col"><span class="text-success">Type</span></th>
+                                <th scope="col"><span class="text-success">Behaviour</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">gif</th>
+                                <th scope="row">No</th>
+                                <th scope="row">boolean</th>
+                                <th scope="row">Force or prevent the API to return .gif files.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">many</th>
+                                <th scope="row">No</th>
+                                <th scope="row">boolean</th>
+                                <th scope="row">Return an array of 30 files if True.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">top</th>
+                                <th scope="row">No</th>
+                                <th scope="row">boolean</th>
+                                <th scope="row">Return the most liked image(s), it can be used with many to get the 30 images instead of 1.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">exclude</th>
+                                <th scope="row">No</th>
+                                <th scope="row">string</th>
+                                <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
+                    <h4 id="randomimage-example">Example</h4>
+                    <p class="fs-5">Here is an python example with some <a class="link-light" href="https://en.wikipedia.org/wiki/Query_string">query strings.</a></p>
+                    <pre><code class="language-python">
+import aiohttp
+
+#please do change the User-Agent, it's useful for identification purpose.
+
+#In this endpoint you do not need a token.
+
+headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName'}
+
+# Here we request /sfw/waifu/ but we could  choose to only request /random/ to get an image from a random tag.
+url="https://api.waifu.im/sfw/waifu/?exclude=3867126be8e260b5.jpeg,ca52928d43b30d6a&gif=false"
+
+
+async with aiohttp.ClientSession() as cs:
+	async with cs.get(url,headers=headers) as rep:
+		api= await rep.json()
+		if rep.status == 200:
+			url=api['images'][0]['url']
+			#Do whatever you want with the image url.
+		else:
+			error=api['message']
+			#Do whatever you want with the error description.
+      </code></pre>
+                </div>
+                <div class="container-fluid borderthin">
+                    <h3 id="galleries">Galleries</h3>
+                    <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want trough the website or the <a class="link-light" href="https://hori.ovh/invite/">bot</a>, but you can also use the api to retrieve your gallery, here is how to do it.</p>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">PATH</span></th>
+                                <th scope="col"><span class="text-success">Request type</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/fav/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">You will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>, see the <a class="link-light" href="#galleries-example">example</a>.</p>
+                    <h4 id="galleries-response">Response</h4>
+                    <p class="fs-5">The structure is the same as for the previous route except for some new keys.
+                    <pre><code class="language-json">
+{
+  "code": 200,
+  "images": [
+    {
+      "file": "5f7e656343cb7be1",
+      "extension": ".jpg",
+      "image_id": 3284,
+      "dominant_color": "#cac2c6",
+      "source": "https://www.pixiv.net/en/artworks/88563141",
+      "like": 7,
+      "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
+      "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
+      "tags": [
+        {
+          "tag_id": 12,
+          "name": "waifu",
+          "is_nsfw": false,
+          "description": "Any kind of sfw content. A female anime/manga character."
+        }
+      ]
+    },
+    etc...
+  ]
+  "inserted":["list of strings passed as insert parameter (or toggle, depending if it has been added or removed)."],
+  "deleted":["same, please not that if you provided toggle query string, it will be verified and only the filename without the extension will be displayed."]
+}
+                </code></pre>
+                    <p class="fs-6">little tips, the default tags for an image is <strong><i>waifu</i></strong> for sfw and <strong><i>ero</i></strong> for nsfw.</p>
+                    <h4 id="galleries-queryparameters">Query strings</h4>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">Name</span></th>
+                                <th scope="col"><span class="text-success">Required</span></th>
+                                <th scope="col"><span class="text-success">Type</span></th>
+                                <th scope="col"><span class="text-success">Behaviour</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">toggle</th>
+                                <th scope="row">No</th>
+                                <th scope="row">string</th>
+                                <th scope="row">Add images if not in the gallery else remove.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">insert</th>
+                                <th scope="row">No</th>
+                                <th scope="row">string</th>
+                                <th scope="row">add images to your gallery</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">delete</th>
+                                <th scope="row">No</th>
+                                <th scope="row">string</th>
+                                <th scope="row">remove images from your gallery</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">user_id</th>
+                                <th scope="row">No</th>
+                                <th scope="row">integer</th>
+                                <th scope="row">The user id from wich you want to edit the gallery (only for trusted apps)</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
+                    <h4 id="galleries-example">Example</h4>
+                    <p class="fs-5">Here is a little example. Here let's say we want to get all the images with the <kbd>waifu</kbd> tag. and we also want to edit the gallery.</p>
+                    <pre><code class="language-python">
+import aiohttp
+
+token="eyJpZCI6NTA4MzQ2OTc4Mjg4MjcxMzYwLCJzZWNyZXQiOiJyb3AtekZIeE12bll4ZyJ9.89aLylZeRcIcYDjfg6E01iPRCqI"
+
+#please do change the user agent, it's useful for identification purpose.
+headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName','Authorization':f"Bearer {token}"}
+
+def has_waifu_tag(image):
+	for t in image["tags"]:
+		if t["name"]=="waifu":
+			return True
+
+
+async with aiohttp.ClientSession() as cs:
+	async with cs.get(f"https://api.waifu.im/fav/?delete=7acebd66b6670ba3.jpg&insert=55b1a881726f783b.png,c1384aaf68b8cbf5",headers=headers) as rep:
+		api = await rep.json()
+		if rep.status == 200:
+			#The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
+			waifu=list(filter(has_waifu_tag,rep["images"]))
+			#do whatever you want with the waifu tag pictures.
+	
+		else:
+			error=api["message"]
+			#do whatever you want with the error message.
+			</code></pre>
+                </div>
+                <div class="container-fluid borderthin">
+                    <h3 id="info">Get Images Information</h3>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">PATH</span></th>
+                                <th scope="col"><span class="text-success">Request type</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/info/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <h4 id="info-response">Response</h4>
+                    <p class="fs-5">The Json structure has been thought so that it will often be the same, therefore the structure is the same as the random images one.</p>
+                    <h4 id="galleries-queryparameters">Query strings</h4>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">Name</span></th>
+                                <th scope="col"><span class="text-success">Required</span></th>
+                                <th scope="col"><span class="text-success">Type</span></th>
+                                <th scope="col"><span class="text-success">Behaviour</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">images</th>
+                                <th scope="row">Yes</th>
+                                <th scope="row">string</th>
+                                <th scope="row">The image(s) that you want informations from.</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.24.1/components/prism-core.min.js"></script>
+<script src="https://unpkg.com/prismjs@1.24.1/plugins/autoloader/prism-autoloader.min.js"></script>

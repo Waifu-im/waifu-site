@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{title if title else 'Favorite'}}</title>
+    {{format_metadatas(nsfw=is_nsfw)|safe}}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{site_url}}static/css/custom.css">
+    <script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+    <script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script>
+        var cookiestring={{NSFW_COOKIE|tojson}}+'=True;path=/'
+	var all={{files |tojson}}
+	var tags={{tags |tojson}}
+	var current_images={{start if start else files |tojson}}
+	const items_per_page=30
+	var pages = Math.ceil(current_images.length / items_per_page)
+	var current_page=0
+
+	function sort_tags(tag_id)
+	{
+		let nextpics=[];
+		if (tag_id)
+		{
+			for (const image of all)
+			{
+				for (const tag of image["tags"])
+				{
+					if (tag["tag_id"]==parseInt(tag_id))
+					{
+						nextpics.push(image)
+						break
+					}
+				}
+			}
+		}
+		else
+		{
+			nextpics=all;
+		}
+		console.log(nextpics.length)
+		return nextpics;
+	}
+
+	function new_images(tag_id)
+	{
+		current_images=sort_tags(tag_id)
+		go_to_check_page(0)
+		$("[data-bs-toggle='popover']").popover('hide')
+	}
+
+	function change_page(page)
+	{
+		current_page=page
+		pages = Math.ceil(current_images.length / items_per_page)
+		var start = (current_page) * items_per_page
+		var end=start+items_per_page
+		change(current_images.slice(start,end))
+
+	}
+
+	function change(chs)
+	{
+		masonry.remove( masonry.getItemElements())
+		for (const image of chs){add_image(image)}
+	}
+
+
+	function add_image(image)
+	{
+
+		item=document.createElement('div');
+		item.className="col-md-2 grid-item";
+		item.innerHTML = `<a href="{{site_url}}preview/?image=${image['file']+image['extension']}"><img class="img-fluid"  alt="..." src=${image['url']}></a>`;
+		elem.appendChild(item);
+		masonry.addItems(item);
+		masonry.layout();
+		imagesLoaded( elem ).on( 'progress', function() {masonry.layout();})
+	}
+
+	function go_to_check_page(page)
+	{
+		if (page> pages-1)
+		{
+			page=pages-1
+		}
+		else if (page-1 < 0)
+		{
+			page=0
+		}
+		change_page(page)
+		if (page +1 > pages-1)
+		{
+			last.className="page-item disabled"
+			next.className="page-item disabled"
+		}
+		else
+		{
+			last.className="page-item"
+			next.className="page-item"
+		}
+
+		if (page-1 < 0)
+		{
+			first.className="page-item disabled"
+			previous.className="page-item disabled"
+		}
+		else
+		{
+			first.className="page-item"
+			previous.className="page-item"
+		}
+		var nb=page+1
+		var p=nb+"/"+pages
+		nbpagedisplay.innerText=p
+		skiptopage.innerText="You are on page "+p
+		if (current_images.length==1)
+		{
+			var plural="image"
+		}
+		else
+		{
+			var plural="images"
+		}
+		numberpic.innerText=`There is ${current_images.length} ${plural} in this category and a maximum of ${items_per_page} images per page.`
+		return false
+	}
+	</script>
+</head>
+
+<body>
+    {{sidebar|safe}}
+    <div class="fixed-top">
+        <nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="">{{sitename}}</a>
+                <div class="btn-group">
+                    <div class="btn-group dropstart">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Filters
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" style="background-color:#272727 !important;">
+                            {% for type,tags in tags.items() %}
+                            <li>
+                                <h6 class="dropdown-header">{{type.upper()}}</h6>
+                            </li>
+                            {% for taginfo in tags %}
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="left" data-bs-content="{{taginfo['description']}}" onclick="new_images({{taginfo['tag_id']}}) ">{{taginfo['name']}}</button></li>
+                            {% endfor %}
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            {% endfor %}
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" onclick="new_images(null)">ALL</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="modal fade" style="z-index:  49;" id="showpagemodal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center" style="background-color:#272727 !important;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="margin: 0 auto;" id="skiptopage">You are on page 1/<script>document.write(pages)</script>
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-6" id="numberpic">There is ? images in this category and a maximum of <script>document.write(items_per_page)</script> images per page.</p>
+                    <form onsubmit="return go_to_check_page(document.querySelector('#pagetogo').value-1)">
+                        <div class="input-group input-group mb-3">
+                            <span class="input-group-text" id="numberinput">Page number to go</span>
+                            <input required type="number" class="form-control" id="pagetogo" placeholder="5" aria-describedby="numberinput">
+                        </div>
+                        <input type="submit" value="Skip to page" class="btn btn-success" />
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="approval" style="visibility: hidden;">
+        <div class="row-g-0" id="ctm">
+        </div>
+        {% if not files %}
+        <div class="position-absolute top-50 start-50 translate-middle" id="nopic">
+            <strong class="text-center" style="color:#fff;">Sorry your favorite gallery is empty. Don't hesitate to add some by clicking on the image you like.</strong>
+        </div>
+        {% else %}
+        <div class="fixed-bottom justify-content-center">
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" id="first">
+                        <button class="page-link" onclick="go_to_first_page()" tabindex="-1">First</button>
+                    </li>
+                    <li class="page-item" id="previous">
+                        <button class="page-link" onclick="go_to_previous_page()" tabindex="-1">Previous</button>
+                    </li>
+                    <li class="page-item active">
+                        <button class="page-link" type="button" data-bs-toggle="modal" data-bs-target="#showpagemodal" tabindex="-1" id="nbpagedisplay">1/<script>document.write(pages)</script></button>
+                    </li>
+                    <li class="page-item" id="next">
+                        <button class="page-link" onclick="go_to_next_page()" tabindex="-1">Next</button>
+                    </li>
+                    </li>
+                    <li class="page-item" id="last">
+                        <button class="page-link" onclick="go_to_last_page()" tabindex="-1">Last</button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+    <div class="modal centered" style="width: 98vw;max-width: 500px;" id="Ageverif" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AgeverifLabel">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content text-center" style="background-color:#272727 !important;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="font-size: 2rem;margin: 0 auto;" id="AgeverifLabel">{{sitename}}<br>
+                        <div class="text fs-3">Age Verification</div>
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="text fs-5">This page may contain age-restricted content.<br>You must be 18 years old or older to enter.</div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" id="over18button" class="btn btn-warning btn-lg" onClick="$('.approval').css('visibility', 'visible');document.cookie=cookiestring" style="margin: 0 auto;" data-bs-dismiss="modal">I am 18 years old or older</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</body>
+<script>
+var is_nsfw = {{ is_nsfw | tojson }}
+var has_cookie = {{ has_cookie | tojson }}
+if (has_cookie || !is_nsfw) {
+    $('.approval').css('visibility', 'visible')
+} else {
+    var ageverif = new bootstrap.Modal(document.getElementById('Ageverif'))
+    ageverif.show();
+    console.log(has_cookie)
+    $('#over18button').focus()
+}
+var elem = document.querySelector('#ctm');
+var masonry = new Masonry(elem, { "itemSelector": ".grid-item", "percentPosition": true, "gutter": 0, "transitionDuration": 0 });
+var first = document.querySelector('#first')
+var previous = document.querySelector('#previous')
+var current = document.querySelector('#current')
+var next = document.querySelector('#next')
+var last = document.querySelector('#last')
+var skiptopage = document.querySelector('#skiptopage')
+var nbpagedisplay = document.querySelector('#nbpagedisplay')
+var numberpic = document.querySelector("#numberpic")
+
+function go_to_first_page() {
+    go_to_check_page(0)
+}
+
+function go_to_previous_page() {
+    go_to_check_page(current_page - 1)
+}
+
+function go_to_next_page() {
+    go_to_check_page(current_page + 1)
+}
+
+function go_to_last_page() {
+    go_to_check_page(pages - 1)
+}
+go_to_first_page()
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+})
+</script>

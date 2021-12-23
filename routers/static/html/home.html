@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{{sitename.lower()}}</title>
+    {{format_metadatas()|safe}}
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+	<link href="/static/css/prism-atom-dark.css" rel="stylesheet" />
+	<link rel="stylesheet" href="/static/css/custom.css">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+	<script src="https://kit.fontawesome.com/ebb4d373ab.js" crossorigin="anonymous"></script>
+
+</head>
+<body>
+
+{{sidebar|safe}}
+
+<div class="fixed-top">
+	<nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif">
+		<div class="container-fluid" >
+			<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+		    	<span class="navbar-toggler-icon"></span>
+		  	</button>
+		<a class="navbar-brand" href="">
+		  {{sitename}}
+		</a>
+		<img src="/favicon.ico" width="35" height="35" class="d-inline-block align-top" alt="">
+		</div>
+	</nav>
+</div>
+<div class="container" style="padding-top: 64px;">
+	<div class="row" style="margin-bottom: 2.5rem;">
+	    <div class="col-sm-12 col-md-8" style="margin-bottom: 2.5rem;">
+	    	<h1 style="font-size: 4.5rem">The <span class="text-info">API</span> for your <span class="static-rainbow">Waifu</span> images</h1>
+			<p class="fs-5">{{sitename}} was originally created to be an alternative to waifu.pics, because it didn't match some of my requirements. Bit by bit waifu.im has been improved to an extent that makes me proud to say that it is one of the best Waifu APIs. You can compose a gallery of your favorite pictures, and even upload new ones. It is easy to use and well-thought-out so that most of the endpoints have the same json structure. Finally, I would like to thank JSH32 for his precious advice regarding the infrastructure when he did not even know me.</p>
+			<p class="fs-6"><i>{{sitename.lower()}} DOES NOT own any picture, therefore, we return a source link to credit the artist.</i>
+	    	<h1 id="get-started">Get Started</h1>
+	    	<a href="/tags/" type="button" class="btn btn-lg btn-info zoom rainbow-1 shadow-none" style="margin: 5px;">See Images</a>
+	    	<a href="/docs/"type="button" class="btn btn-lg btn-info zoom rainbow-1 shadow-none" style="margin: 5px"><span class="bi-book-half"></span> Documentation</a>
+		</div>
+		<div class="col-sm-12 col-md-4 zoom">
+			<a href="{{site_url}}preview/?image={{image.split('/')[-1]}}"><img class="img-fluid" style="border-radius: 5px;margin-bottom: 0.5rem" src="{{image}}"></a>
+			{% if apioffline%}
+			<div class="text-center fs-6"><i class="bi bi-dash-circle text-danger"></i> The API is currently offline</div>
+			{% elif apioffline is none %}
+			<div class="text-center fs-6"><i class="bi bi-dash-circle text-warning"></i> The API is currently not functioning properly</div>
+			{% else %}
+			<div class="text-center fs-6"><i class="bi bi-dash-circle text-success"></i> The API is currently online</div>
+			{% endif %}
+		</div>
+	</div>
+	<div class="row text-center mx-auto">
+		<div class="col justify-content-center">
+			<h1>Statistics</h1>
+			<hr>
+		</div>
+	</div>
+	<div class="row" style="margin: 2.5rem;">
+        <div class="col-md-4 text-center"><a href="/tags/" class="link-light"><span class="fa-stack fa-4x zoom" style=";margin-bottom: 0.5rem;" ><i class="fa fa-circle fa-stack-2x text-info"></i><i class="fas fa-stack-1x fa-tags"></i></span></a>
+            <h4 class="text-break text-white section-heading count" data-target="{{nb_tags}}">0</h4>
+            <p class="text-break text-muted">Tags</p>
+        </div>
+        <div class="col-md-4 text-center"><span class="fa-stack fa-4x zoom" style=";margin-bottom: 0.5rem;" ><i class="fa fa-circle fa-stack-2x text-info"></i><i class="fas fa-stack-1x fa-server"></i></span>
+            <h4 class="text-break text-white section-heading count" data-target="{{nb_request}}">0</h4>
+            <p class="text-break text-muted">Requests</p>
+        </div>
+        <div class="col-md-4 text-center"><a href="{{site_url}}preview/?image={{randomfile}}" class="link-light"><span class="fa-stack fa-4x zoom" style=";margin-bottom: 0.5rem;" ><i class="fa fa-circle fa-stack-2x text-info"></i><i class="far fa-stack-1x fa-images"></i></span></a>
+            <h4 class="text-break text-white section-heading count" data-target="{{nb_images}}">0</h4>
+            <p class="text-break text-muted">Images</p>
+        </div>
+    </div>
+	<div class="row text-center mx-auto">
+		<div class="col justify-content-center">
+			<h1>Why should I use {{sitename}} ?</h1>
+			<hr>
+		</div>
+	</div>
+    <div class="row" style="margin-top: 2.5rem;margin-bottom: 2.5rem;">
+	    <div class="col-sm-12 col-md-6" style="margin-bottom: 2.5rem;">
+	    	<h3>Regulary sorted and updated image database</h3>
+	    	<p class="fs-6">The images are sorted between a variety of different tags that will allow you to narrow your research. Furthermore, they are sorted everyday to guarantee the best experience for the users. Finally, new images are regulary added to stay up to date on the latest trends.</p>
+	    </div>
+	    <div class="col-sm-12 col-md-6" style="margin-bottom: 2.5rem;">
+	    	<img src="/static/images/undraw_upload_re_pasx.svg" style="max-width: 300px;" class="img-fluid">
+	    </div>
+	</div>
+    <div class="row" style="margin-bottom: 2.5rem;">
+	    <div class="col-sm-12 col-md-6 order-md-last order-sm-first" style="margin-bottom: 2.5rem;">
+	    	<h3>Keep a track of your favorite pictures </h3>
+	    	<p class="fs-6">You can add your favorite images in a Gallery and access it anytime. This great feature also makes possible for us to deliver you the most liked images of the API, for more information see the <a class="link-light" href="/docs/">documentation</a>.</p>
+	    </div>
+	    <div class="col-sm-12 col-md-6 order-md-first order-sm-last" style="margin-bottom: 2.5rem;">
+	    	<img src="/static/images/undraw_loving_it_re_jfh4.svg" style="max-width: 300px;" class="img-fluid">
+	    </div>
+	</div>
+    <div class="row" style="margin-bottom: 2.5rem;">
+	    <div class="col-sm-12 col-md-6" style="margin-bottom: 2.5rem;">
+	    	<h3>A lot more !</h3>
+	    	<p class="fs-6">There are many more reasons for why you should use the API, for example its fast speed. (tested in different regions of the globe the average response time was 200ms). However, this wouldn't describe its uniqueness, therefore start this journey and discover them yourself. Welcome  to {{sitename}}!</p>
+	    </div>
+	    <div class="col-sm-12 col-md-6" style="margin-bottom: 2.5rem;">
+	    	<img src="/static/images/undraw_speed_test_wxl0.svg" style="max-width: 300px;" class="img-fluid">
+	    </div>
+	</div>
+</div>
+
+
+</div>
+</body>
+<script>
+const counters = document.querySelectorAll(".count");
+const speed = 350;
+
+counters.forEach((counter)=>
+{
+  	const updateCount = ()=>
+  	{
+	    const target = parseInt(+counter.getAttribute("data-target"));
+	    const count = parseInt(+counter.innerText);
+	    const increment = Math.trunc(target / speed);
+	    if (count < target && increment > 0)
+	    {
+	      	counter.innerText = count + increment;
+	      	setTimeout(updateCount, 1);
+	    } 
+	    else 
+	    {
+	      counter.innerText = target;
+	    }
+  	};
+  	updateCount();
+});
+
+</script>

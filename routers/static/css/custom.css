@@ -1,0 +1,157 @@
+.cardupload{
+  color: #fff;
+  background-color:#272727;
+  border: none;
+}
+
+#ct1{background-color:#272727;
+}
+
+.accordion-item{
+  color:#fff;
+  background-color: #272727; 
+  }
+
+.accordion-header {background-color:#272727;
+    color: #fff;}
+.accordion-button {background-color:inherit;
+    color: inherit;}
+.accordion-button:focus {
+  outline: none;
+  box-shadow: none;}
+.accordion-button::after{
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3e%3c/svg%3e");
+}
+.accordion-button[aria-expanded='true'] {background-color:inherit;
+    color: inherit;}
+
+.tagsbtn{
+  margin: 2px;
+  margin-bottom: 8px;}
+
+#over18button{
+      box-shadow: none;}
+
+
+body {
+  font-family: 'Roboto',sans-serif !important;
+  padding-top: 64px;
+  margin:0px;
+  height:100%;
+  background-color:#2c2e32 !important;
+  color: #fff ;
+  overflow-y: scroll;}
+
+.centered {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);;
+}
+
+.current{background-color: #666666;}
+.heffect:hover{background-color: #464646;
+  box-shadow: none;}
+
+
+.modal-backdrop {
+  z-index: -1;
+}
+
+#Ageverif.modal-backdrop {
+  z-index: -1;
+  background-color: #272727;
+  
+}
+#favbutton{
+  box-shadow: none;
+}
+.noshadow,
+.noshadow:focus,.noshadow:active
+{box-shadow: none;}
+
+.blckbg{background-color: #272727;
+        color: #fff;
+        border: none}
+.lstnohover:hover {background-color: #272727;
+        color: #fff;
+        border: none}
+.bgblack{background-color: #272727;
+        border: none}
+
+.borderless tr, .borderless td, .borderless th {
+    border: none !important;
+   }
+.borderthin{border-bottom:1px solid rgba(118, 118, 118, .5);padding-bottom: 1.2rem;margin-bottom: 1.2rem;}
+
+.pagination > li > span,
+.pagination > li > span:focus,
+.pagination > li > button:focus,
+.pagination > li > button
+{
+    background-color: #272727;
+    color: #fff;
+    border: none;
+    box-shadow: none;
+}
+
+
+.pagination > li > button:hover,
+.pagination > li > span:hover
+{
+    color: #fff;
+    background-color: #464646 !Important;
+    border:none;
+    box-shadow: none;
+}
+
+.page-item.active .page-link,
+.page-item.active .page-link:hover,
+.page-item.active .page-link:focus
+{
+    color: #fff;
+    background-color: #666666 !Important;
+    border:none;
+    box-shadow: none;
+}
+
+.page-item.disabled .page-link:hover,
+.page-item.disabled .page-link
+{
+    color: #999999;
+    background-color: #272727 !Important;
+    border:none;
+    box-shadow: none;
+}
+.rainbow-1:hover,
+.rainbow-1:focus,
+.rainbow-1:active{
+    border: none;
+    color: #fff;
+    background: linear-gradient(-45deg, #0dcaf0 0%, #ab88fd 80%);
+    animation: gradient linear 1s;
+    background-size: 200%
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 50%;
+    }
+    50% {
+        background-position: 50% 100%;
+    }
+    100% {
+        background-position: 0% 50%;
+    }
+}
+.static-rainbow{
+    background :linear-gradient(to right, #0dcaf0 0%, #ab88fd 80%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+
+.zoom{transition: transform .2s ease-out;}
+
+.zoom:hover{
+    transform: scale(1.05);}

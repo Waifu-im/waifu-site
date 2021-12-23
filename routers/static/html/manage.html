@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>Manage</title>
+    {{format_metadatas()|safe}}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{site_url}}static/css/custom.css">
+</head>
+
+<body>
+    {{sidebar|safe}}
+    <div class="fixed-top">
+        <nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand mx-auto" href="">{{sitename}}</a>
+                <div class="btn-group">
+                    <div class="btn-group dropstart">
+                        <button type="button" class="btn btn-info dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                            Manage
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-dark" style="background-color:#272727 !important;">
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#verifmodal">Delete</button></li>
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#edittagsmodal">Edit Tags</button></li>
+                            <li><a href="\list\" type="button" style="margin-right: 8px;" class="dropdown-item">Hentai List</a></li>
+                            <li><a role="button" class="dropdown-item" tabindex="0" data-bs-toggle="popover" data-bs-content="Remove the hentai tag and add the ecchi one to {{image}}" data-bs-trigger="hover" data-bs-placement="left" href="/rmv/?image={{image}}" id="removebutton">Remove Hentai Tag</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    <div class="container-fluid" id="containerimage">
+        <img src="{{link}}" style="max-height: 100vh;max-width: 100vw;" class="img-fluid mx-auto d-block">
+    </div>
+    <div class="modal fade" style="z-index:  50;" id="verifmodal" tabindex="-1" aria-labelledby="verifmodalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center" style="background-color:#272727 !important;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="margin: 0 auto;" id="verifmodalLabel">Are you sure of your choice ?</h5>
+                </div>
+                <div class="modal-body text-center">
+                    You are about to delete the file {{image}}, are you sure of your decision?
+                </div>
+                <div class="modal-footer border-0 text-center" style="margin: 0 auto;">
+                    <a href="\delete_image\?image={{image}}" type="button" style="margin: 0 auto;" class="btn btn-danger">Yes</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" style="z-index:  49;" id="edittagsmodal" tabindex="-1" aria-labelledby="edittagsmodalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center" style="background-color:#272727 !important;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="margin: 0 auto;" id="edittagsmodalLabel">Please select the new tags.</h5>
+                </div>
+                <div class="modal-body text-center">
+                    <form action="/forms/manage/?image={{image}}" method="post" enctype="multipart/form-data">
+                        <form action="{{form_upload}}" method="post" enctype="multipart/form-data">
+                            <div class="row" style="margin-bottom: 1rem;">
+                                <div class="col-9 mr-2 justify-content-start">
+                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags">
+                                    </select>
+                                </div>
+                                <div class="col-3 mr-2 justify-content-start">
+                                    <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
+                                    <label class="form-check-label" style=" color:#fff;" for="is_nsfw" id="label_is_nsfw">
+                                        NSFW
+                                    </label>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="input-group input-group-sm mb-3">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">Optional Source</span>
+                                <input type="text" class="form-control" value="{{source if source else ''}}" id="source_id" minlength="4" maxlength="100" placeholder="https://www.pixiv.net/en/artworks/90302611" name="source" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                            </div>
+                            <input class="form-control form-control-sm" type="file" id="formFile" name="file" accept="image/png, image/gif, image/jpeg, image/jpg, image/webp">
+                            <br>
+                            <input type="submit" class="btn btn-light btn-sm" name="Submit" value="Submit" />
+                        </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/js/bootstrap-select.min.js"></script>
+<script>
+var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
+    return new bootstrap.Popover(popoverTriggerEl)
+})
+
+var listnsfw = {{ tags.nsfw | tojson }}
+var listsfw = {{ tags.sfw | tojson }}
+var selectedtags = {{ existtags | tojson }}
+
+function removeselect(selectBox) {
+    selectBox.find('option')
+        .remove()
+        .end()
+}
+
+function check_change() {
+    const select_upload = $('#sele')
+    const checkbox = document.getElementById("is_nsfw")
+    if (checkbox.checked) {
+        removeselect(select_upload)
+        for (const tag of listnsfw) {
+            value = tag['id'];
+            text = tag['name'];
+            attr = ''
+            if (selectedtags.includes(tag['id'])) {
+                attr = 'selected=""'
+            }
+            var newopt = '<option ' + attr + ' value="' + value + '">' + text + '</option>'
+            select_upload.append(newopt)
+        }
+
+    } else {
+        removeselect(select_upload)
+        for (const tag of listsfw) {
+            value = tag['id'];
+            text = tag['name'];
+            attr = ''
+            if (selectedtags.includes(tag['id'])) {
+                attr = 'selected=""'
+            }
+            var newopt = '<option ' + attr + ' value="' + value + '">' + text + '</option>'
+            select_upload.append(newopt)
+        }
+    }
+    select_upload.selectpicker("refresh");
+    console.log('test')
+}
+
+$('#document').ready(check_change())
+</script>

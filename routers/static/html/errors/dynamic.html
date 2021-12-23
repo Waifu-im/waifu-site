@@ -1,0 +1,48 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{{title}}</title>
+	{{format_metadatas()|safe}}
+    
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+	<link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+
+{{sidebar|safe}}
+
+<div class="fixed-top">
+<nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif">
+	<div class="container-fluid" >
+		<button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+		    <span class="navbar-toggler-icon"></span>
+		</button>
+	<a class="navbar-brand mx-auto" href="">
+	  {{sitename}}
+	</a>
+	<img src="/favicon.ico" width="35" height="35" class="d-inline-block align-top" alt="">
+	</div>
+</nav>
+</div>
+</div>
+<div class="row justify-content-center mx-auto" style="padding-top: 64px;">
+	<div class="col-sm-10 col-md-6">
+		<div class="text-center">
+			<img class="img-fluid" src="{{errorimage}}" style="max-width:17rem;">
+			<h1 class="text fs-2"><strong>{{customname}}</strong></h1>
+			<p class="text fs-4">{{description}}</p>
+			{% if code==404 %}
+			<a href="/" class="btn btn-lg btn-outline-light">Go Home</a>
+			{% endif %}
+		</div>
+	</div>
+</div>
+</body>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

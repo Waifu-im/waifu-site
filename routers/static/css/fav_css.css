@@ -1,0 +1,17 @@
+.list-group-item{
+  color:#fff;
+  background-color: #272727; 
+  }
+
+#favbutton{
+  box-shadow: none;
+}
+
+body {
+  font-family: Roboto,sans-serif;
+  padding-top: 64px;
+  margin:0px;
+  height:100%;
+  background-color:#121212 !important;
+  color: #fff !important;
+  overflow-y: scroll;}

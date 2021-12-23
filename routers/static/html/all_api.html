@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{category.capitalize() if not title else title}}</title>
+    {{format_metadatas(nsfw=is_nsfw)|safe}}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <script>
+        var cookiestring={{NSFW_COOKIE|tojson}}+'=True;path=/'
+	</script>
+</head>
+
+<body>
+    {% if is_nsfw and not has_cookie%}
+    <div class="modal centered" style="width: 98vw;max-width: 500px;" id="Ageverif" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AgeverifLabel">
+        <div class="modal-dialog modal-dialog-centered ">
+            <div class="modal-content text-center" style="background-color:#272727 !important;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="font-size: 2rem;margin: 0 auto;" id="AgeverifLabel">{{sitename}}<br>
+                        <div class="text fs-3">Age Verification</div>
+                    </h5>
+                </div>
+                <div class="modal-body">
+                    <div class="text fs-5">This page may contain age-restricted content.<br>You must be 18 years old or older to enter.</div>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" id="over18button" class="btn btn-warning btn-lg" onClick="$('.approval').css('visibility', 'visible');document.cookie=cookiestring" style="margin: 0 auto;" data-bs-dismiss="modal">I am 18 years old or older</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <div class="fixed-top">
+        <nav class="navbar navbar-dark" style="background-color:   #272727;height: 64px;font-family: Roboto,sans-serif;z-index: 10;">
+            <div class="container-fluid">
+                <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#main-sidebar" aria-controls="main-sidebarlabel">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <a class="navbar-brand" href="">
+                    {{sitename}}
+                </a>
+                <img src="/favicon.ico" width="35" height="35" class="d-inline-block align-top" alt="">
+            </div>
+        </nav>
+    </div>
+    <div class="approval" style="visibility: hidden;">
+        {{sidebar|safe}}
+        <button class="btn" id="reloadbutton" onClick="window.location.reload()" style="background-color:#272727 ;width: 4rem;border: none;border-radius: 50%; height: 4rem;position:fixed; bottom:2rem; z-index: 1;right:2rem;"><span style="font-size:2rem; color :#fff;" class="bi bi-arrow-repeat"></span></button>
+        <div class="row-g-0" id="ctm">
+        </div>
+</body>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@4/imagesloaded.pkgd.min.js"></script>
+<script>
+var is_nsfw = {{is_nsfw | tojson}}
+var has_cookie = {{ has_cookie | tojson }}
+var files = {{ files | tojson }}
+if (has_cookie || !is_nsfw) {
+    $('.approval').css('visibility', 'visible')
+} else {
+    var ageverif = new bootstrap.Modal(document.getElementById('Ageverif'))
+    ageverif.show()
+    $('#over18button').focus()
+}
+var elem = document.querySelector('#ctm');
+var masonry = new Masonry(elem, { "itemSelector": ".grid-item", "percentPosition": true, "gutter": 0, "transitionDuration": 0 });
+
+for (const i of files) {
+    item = document.createElement('div');
+    item.className = "col-md-2 grid-item";
+    item.innerHTML = `<a href="{{site_url}}preview/?image=${i.split('/').pop()}"><img class="img-fluid"  alt="..." src=${i}></a>`;
+    elem.appendChild(item);
+    masonry.addItems(item);
+    masonry.layout();
+    imagesLoaded(elem).on('progress', function() { masonry.layout(); })
+}
+</script>
