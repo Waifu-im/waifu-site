@@ -100,7 +100,7 @@ async def inject_global_infos():
     loged = await app.discord.authorized
     sitename = "WAIFU.IM"
     site_description = (
-        "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images"
+        "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
         "and multiple tags!"
     )
     if loged:
