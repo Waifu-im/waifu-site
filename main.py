@@ -37,6 +37,12 @@ from routers.tools import blueprint as tools_blueprint
 
 app = Quart(__name__, template_folder="static/html/")
 app.asgi_app = ProxyHeadersMiddleware(app.asgi_app, trusted_hosts=["127.0.0.1"])
+app.config['site_description'] = (
+        "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
+        "and multiple tags!"
+    )
+app.config['site_url'] = "https://waifu.im/"
+app.config["sitename"] = "WAIFU.IM"
 app.config["bot_invite"] = "https://ayane.live/invite/"
 app.config["nsfw_cookie"] = "ageverif"
 app.config["s3bucket"] = S3_BUCKET
@@ -96,13 +102,7 @@ async def inject_global_infos():
     user = None
     current_url = str(request.url)
     current_path = str(request.path)
-    site_url = "https://waifu.im/"
     loged = await app.discord.authorized
-    sitename = "WAIFU.IM"
-    site_description = (
-        "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
-        "and multiple tags!"
-    )
     if loged:
         try:
             user = await app.discord.fetch_user()
@@ -172,16 +172,16 @@ async def inject_global_infos():
         nsfw=False,
         preview=False,
         color="#fec8fa",
-        description=site_description,
-        title=sitename.capitalize(),
+        description=app.config['site_description'],
+        title=app.config['sitename'].capitalize(),
     ):
-        image = site_url + "favicon.ico"
+        image = app.config['site_url'] + "favicon.ico"
         metadatas = f"""
-<meta name="description" content="{site_description}"/>
-<meta property="og:site_name" content="{sitename.lower()}"/>
+<meta name="description" content="{app.config['site_description']}"/>
+<meta property="og:site_name" content="{app.config['sitename'].lower()}"/>
 <meta property="og:title" content="{title}"/>
 <meta property="og:description" content="{description}"/>
-<meta property="og:url" content="{current_url if not error else site_url}"/>
+<meta property="og:url" content="{current_url if not error else app.config['site_url']}"/>
 <meta property="og:image" content="{image if not preview or nsfw else preview}"/>
 <meta content="{color}" data-react-helmet="true" name="theme-color"/>"""
         if nsfw:
@@ -193,11 +193,11 @@ async def inject_global_infos():
     return dict(
         has_cookie=request.cookies.get(app.config["nsfw_cookie"]),
         NSFW_COOKIE=app.config["nsfw_cookie"],
-        site_description=site_description,
+        site_description=app.config['site_description'],
         format_metadatas=format_metadatas,
-        sitename=sitename,
+        sitename=app.config['sitename'],
         sidebar=format_sidebar(loged, user),
-        site_url=site_url,
+        site_url=app.config['site_url'],
         loged=loged,
         current_url=current_url,
         current_path=current_path,
