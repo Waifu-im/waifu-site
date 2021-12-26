@@ -267,8 +267,8 @@ async with aiohttp.ClientSession() as cs:
     },
     etc...
   ]
-  "inserted":["list of strings passed as insert parameter (or toggle, depending if it has been added or removed)."],
-  "deleted":["same, please not that if you provided toggle query string, it will be verified and only the filename without the extension will be displayed."]
+  "inserted":["list of valid images passed as insert parameter (or toggle, depending if it has been added or removed)."],
+  "deleted":["same, please not that if you provided wrong images or an image that already was in the user gallery (for insert) you will get a 400 status code."]
 }
                 </code></pre>
                     <p class="fs-6">little tips, the default tags for an image is <strong><i>waifu</i></strong> for sfw and <strong><i>ero</i></strong> for nsfw.</p>
