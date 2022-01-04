@@ -268,8 +268,8 @@ async with aiohttp.ClientSession() as cs:
     etc...
   ]
   "inserted":["list of valid images passed as insert parameter (or toggle, depending if it has been added or removed)."],
-  "deleted":["same, please not that if you provided wrong images or an image that already was in the user gallery (for insert) you will get a 400 status code."]
-}
+  "deleted":["same, please not that if you provided an image that do not exist, you will get a 400 status code and all the operations will be cancelled."]
+} 
                 </code></pre>
                     <p class="fs-6">little tips, the default tags for an image is <strong><i>waifu</i></strong> for sfw and <strong><i>ero</i></strong> for nsfw.</p>
                     <h4 id="galleries-queryparameters">Query strings</h4>
