@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>{{user.name}}</title>
+    <title>{{username}}</title>
     {{format_metadatas()|safe}}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -39,26 +39,50 @@
                                 <div class="col-4 mr-2 justify-content-start">
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Token</span></div>
                                 </div>
-                                <div class="col auto mr-2 justify-content-end text-end"><button id="copytoken" class="btn btn-sm btn-success btn-clipboard" data-clipboard-text="{{token}}" onclick="this.innerHTML='Copied!';" style="margin-right:4px;">Copy</button><button class="btn btn-sm btn-outline-danger" onclick="RegenFunction()">Regen</button></div>
+                                <div class="col auto mr-2 justify-content-end text-end">
+                                    <button id="copytoken" class="btn btn-sm btn-success btn-clipboard" data-clipboard-text="{{token}}" onclick="this.innerHTML='Copied!';" style="margin-right:4px;">Copy</button>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="RegenFunction()">Regen</button>
+                                </div>
                             </div>
                             <div class="fs-5">
                                 <span id="token" class="text-white" onclick="TokenToggle()">Click To Display Your Token.</span>
                             </div>
                         </div>
                     </div>
-                    <div class="card cardupload border-0" style="width: 100%;max-width: 750px;">
+                    <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
                         <div class="card-body text-dark">
                             <div class="row">
                                 <div class="col-4 mr-2 justify-content-start">
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Gallery</span></div>
                                 </div>
-                                <div class="col auto mr-2 justify-content-end text-end"><button class="btn btn-sm btn-outline-danger" onclick="PurgeGalleryFunction()">Purge Gallery</button></div>
+                                <div class="col auto mr-2 justify-content-end text-end">
+                                    <a type="button" class="btn btn-sm btn-success" href="https://waifu.im/fav/?user_id={{user_id}}" style="margin-right:4px;">See it</a>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="PurgeGalleryFunction()">Purge Gallery</button>
+                                </div>
                             </div>
                             <div class="fs-5">
                                 <span id="token" class="text-white">{{count_images}} images.</span>
                             </div>
                         </div>
                     </div>
+                    {% if is_admin %}
+                   <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
+                        <div class="card-body text-dark">
+                            <div class="row">
+                                <div class="col-4 mr-2 justify-content-start">
+                                    <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Admin</span></div>
+                                </div>
+                                <div class="col auto mr-2 justify-content-end text-end">
+                                    <a type="button" href="/report/" class="btn btn-sm btn-outline-warning">Report</a>
+                                    <a type="button" href="/review/" class="btn btn-sm btn-outline-warning">Review</a>
+                                </div>
+                            </div>
+                            <div class="fs-5">
+                                <span class="text-white">{{last_24h_rq}} requests in the last 24h.</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>

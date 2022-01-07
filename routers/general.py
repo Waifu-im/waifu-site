@@ -97,8 +97,12 @@ async def dashboard_():
     full_username = str(user)
     username = user.name
     user_id = user.id
+    is_admin = await has_permissions(user.id, "admin")
+    last_24h_rq=None
+    
+
     if su and su != str(user_id):
-        if not await has_permissions(user.id, "admin"):
+        if not is_admin:
             quart.abort(403)
         t = await get_user_info(su)
         user_id = t.get("id")
@@ -107,6 +111,8 @@ async def dashboard_():
 
     user_secret = token_urlsafe(10)
     async with current_app.pool.acquire() as conn:
+        if is_admin:
+            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date >= NOW() - INTERVAL '24 hour' and not user_agent=$1",current_app.config["waifu_client_user_agent"])
         await conn.execute(
             'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
             user_id,
@@ -129,6 +135,8 @@ async def dashboard_():
         username=username,
         count_images=count_images,
         user_id=str(user_id),
+        is_admin=is_admin,
+        last_24h_rq=last_24h_rq,
     )
 
 

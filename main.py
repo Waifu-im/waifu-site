@@ -37,17 +37,19 @@ from routers.tools import blueprint as tools_blueprint
 
 app = Quart(__name__, template_folder="static/html/")
 app.asgi_app = ProxyHeadersMiddleware(app.asgi_app, trusted_hosts=["127.0.0.1"])
-app.config['site_description'] = (
-        "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
-        "and multiple tags!"
-    )
-app.config['site_url'] = "https://waifu.im/"
+app.config["site_description"] = (
+    "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
+    "and multiple tags!"
+)
+app.config["site_url"] = "https://waifu.im/"
 app.config["sitename"] = "WAIFU.IM"
 app.config["bot_invite"] = "https://ayane.live/invite/"
 app.config["nsfw_cookie"] = "ageverif"
 app.config["s3bucket"] = S3_BUCKET
 app.config["s3endpoint"] = S3_ENDPOINTS
 app.config["s3zone"] = S3_ZONE
+app.config["API_token"] = API_TOKEN
+app.config["waifu_client_user_agent"] = "APISite"
 os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 app.config["DISCORD_CLIENT_ID"] = DISCORD_CLIENT_ID
 app.config["DISCORD_CLIENT_SECRET"] = DISCORD_CLIENT_SECRET
@@ -87,8 +89,8 @@ async def create_session():
     )
     app.waifuclient = current_app.waifuclient = waifuim.WaifuAioClient(
         session=app.session,
-        appname="APISite",
-        token=API_TOKEN,
+        appname=app.config["waifu_client_user_agent"],
+        token=app.config["API_token"],
     )
     yield
     await app.waifuclient.close()
@@ -172,10 +174,10 @@ async def inject_global_infos():
         nsfw=False,
         preview=False,
         color="#fec8fa",
-        description=app.config['site_description'],
-        title=app.config['sitename'].capitalize(),
+        description=app.config["site_description"],
+        title=app.config["sitename"].capitalize(),
     ):
-        image = app.config['site_url'] + "favicon.ico"
+        image = app.config["site_url"] + "favicon.ico"
         metadatas = f"""
 <meta name="description" content="{app.config['site_description']}"/>
 <meta property="og:site_name" content="{app.config['sitename'].lower()}"/>
@@ -193,11 +195,11 @@ async def inject_global_infos():
     return dict(
         has_cookie=request.cookies.get(app.config["nsfw_cookie"]),
         NSFW_COOKIE=app.config["nsfw_cookie"],
-        site_description=app.config['site_description'],
+        site_description=app.config["site_description"],
         format_metadatas=format_metadatas,
-        sitename=app.config['sitename'],
+        sitename=app.config["sitename"],
         sidebar=format_sidebar(loged, user),
-        site_url=app.config['site_url'],
+        site_url=app.config["site_url"],
         loged=loged,
         current_url=current_url,
         current_path=current_path,
