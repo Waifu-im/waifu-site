@@ -29,6 +29,7 @@
     formdata.append("image", image);
     formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
     formdata.append("report_user_id",document.getElementById("report_user_id").value)
+    formdata.append("report_description",document.getElementById("report_description").value)
     for (const tag of selectedValues){formdata.append("tags[]", tag);}
     formdata.append("source",sourceval)
     ajax.upload.addEventListener("progress", progressHandler, false);
@@ -144,6 +145,10 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
                                 <span class="input-group-text">Reported by</span>
                                 <input type="text" class="form-control" id="report_user_id" placeholder="359371922203535258" name="report_user_id" value="{{report_user_id if report_user_id else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                            </div>
+                            <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
+                                <span class="input-group-text">Report Description</span>
+                                <input type="text" class="form-control" id="report_description" placeholder="Contain inaproprate content" maxlength="200" name="report_description" value="{{report_description if report_description else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                             </div>
                             <div class="col-9 sm-12 justify-content-start">
                                 <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags"></select>

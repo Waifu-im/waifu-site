@@ -12,6 +12,7 @@ from routers.utils import (
     fetch_user_safe,
 )
 from secrets import token_urlsafe
+from routers.utils import get_user_info
 
 blueprint = Blueprint("general", __name__, template_folder="static/html")
 
@@ -228,12 +229,16 @@ async def manage_():
         )
         if not image_info:
             return quart.abort(404)
-        report_user_id = await conn.fetchval(
-            "SELECT author_id from Reported_images WHERE image=$1", image_name
+        res = await conn.fetchrow(
+            "SELECT author_id,description from Reported_images WHERE image=$1",
+            image_name,
         )
-        if report_user_id:
+        if res:
+            report_user_id, report_description = res
             report_user_id = int(report_user_id)
-        print(report_user_id)
+        else:
+            report_user_id = None
+            report_description = None
         filename_db = image_info[0].get("file") + image_info[0].get("extension")
         if filename_db != image:
             return quart.redirect(
@@ -258,4 +263,5 @@ async def manage_():
         source=source,
         form_manage=quart.url_for("forms.forms_manage"),
         report_user_id=report_user_id,
+        report_description=report_description,
     )

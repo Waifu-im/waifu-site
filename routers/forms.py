@@ -189,6 +189,7 @@ async def forms_manage():
     image_no_ext = os.path.splitext(image)[0]
     is_reported = True if forms.get("is_reported") == "true" else False
     report_user_id = forms.get("report_user_id", type=int)
+    report_description = forms.get("report_description")
     tags = forms.getlist("tags[]")
     source = forms.get("source")
     loop = asyncio.get_event_loop()
@@ -246,9 +247,10 @@ async def forms_manage():
                     full_username,
                 )
                 await conn.execute(
-                    "INSERT INTO Reported_images (image,author_id) VALUES($1,$2) ON CONFLICT(image) DO UPDATE SET author_id=$2",
+                    "INSERT INTO Reported_images (image,author_id,description) VALUES($1,$2,$3) ON CONFLICT(image) DO UPDATE SET author_id=$2,description=$3",
                     temp_filename,
                     report_user_id,
+                    report_description,
                 )
             else:
                 await conn.execute(
