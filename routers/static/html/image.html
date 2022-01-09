@@ -76,7 +76,7 @@
 
 		item=document.createElement('div');
 		item.className="col-md-2 grid-item";
-		item.innerHTML = `<a href="{{site_url}}preview/?image=${image['file']+image['extension']}"><img class="img-fluid"  alt="..." src=${image['url']}></a>`;
+		item.innerHTML = `<a href="{{href_url}}?image=${image['file']+image['extension']}"><img class="img-fluid"  alt="..." src=${image['url']}></a>`;
 		elem.appendChild(item);
 		masonry.addItems(item);
 		masonry.layout();
@@ -148,7 +148,7 @@
                             Filters
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark" style="background-color:#272727 !important;">
-                            {% for type,tags in tags.items() %}
+                            {% for type,tags in tags.items() if tags %}
                             <li>
                                 <h6 class="dropdown-header">{{type.upper()}}</h6>
                             </li>

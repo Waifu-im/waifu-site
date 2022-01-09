@@ -61,18 +61,8 @@ async def reset_():
     if su and su != str(user_id):
         if not await has_permissions(user.id, "admin"):
             quart.abort(403)
-        resp = await current_app.session.get(
-            f"http://127.0.0.1:8033/userinfos/?id={su}"
-        )
-        if resp.status == 404:
-            raise quart.abort(400, description="Please provide a valid user_id")
 
-        if resp.status != 200:
-            quart.abort(
-                500, description="Sorry, something went wrong with the ipc request."
-            )
-
-        t = await resp.json()
+        t = await get_user_info(su)
         user_id = t.get("id")
         full_username = t.get("full_name")
         username = t.get("name")
@@ -96,18 +86,7 @@ async def purge_gallery_():
     if su and su != str(user_id):
         if not await has_permissions(user.id, "admin"):
             quart.abort(403)
-        resp = await current_app.session.get(
-            f"http://127.0.0.1:8033/userinfos/?id={su}"
-        )
-        if resp.status == 404:
-            raise quart.abort(400, description="Please provide a valid user_id")
-
-        if resp.status != 200:
-            quart.abort(
-                500, description="Sorry, something went wrong with the ipc request."
-            )
-
-        t = await resp.json()
+        t = await get_user_info(su)
         user_id = t.get("id")
 
     await current_app.pool.execute(

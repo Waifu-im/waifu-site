@@ -106,8 +106,10 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                                     <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags"></select>
                                 </div>
                                 <div class="col-3 sm-12 justify-content-start">
-                                    <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
-                                    <label class="form-check-label" for="is_nsfw" id="label_is_nsfw">NSFW</label>
+                                    <div class="form-check">
+                                        <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
+                                        <label class="form-check-label" for="is_nsfw" id="label_is_nsfw">NSFW</label>
+                                    </div>
                                 </div>
                             </div>
                             <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
@@ -127,6 +129,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                         <div class="card-footer border-0">
                             <input type="submit" class="btn btn-success btn-sm" name="Submit" value="Submit" id="submitbutton" />
                         </div>
+                    </div>
                 </form>
             </div>
         </div>

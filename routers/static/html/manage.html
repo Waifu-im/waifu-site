@@ -10,6 +10,77 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.14.0-beta2/dist/css/bootstrap-select.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{site_url}}static/css/custom.css">
+    <script>
+        var formurl={{form_manage |tojson}}
+        var image={{image |tojson}}
+    var ajax=null
+    function resetall(){document.getElementById('errort').style.display = 'none';document.getElementById('loading').style.display = 'none';document.getElementById('uploadprogressbar').style.display = 'none';}
+    function uploadFile() {
+    if (ajax){ajax.abort();ajax=null;document.getElementById("submitbutton").className="btn btn-success btn-sm";document.getElementById("submitbutton").value="Submit";return}
+    ajax = new XMLHttpRequest();
+    ajax.open("POST", formurl);
+    document.getElementById("submitbutton").className="btn btn-danger btn-sm";document.getElementById("submitbutton").value="Abort"
+    let file =  document.getElementById("file").files[0];
+    let selecttag =  document.getElementById("sele")
+    let selectedValues = Array.from(selecttag.selectedOptions).map(option => option.value)
+    let sourceval=document.getElementById('source_id').value
+    var formdata = new FormData();
+    formdata.append("file", file);
+    formdata.append("image", image);
+    formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
+    formdata.append("report_user_id",document.getElementById("report_user_id").value)
+    formdata.append("report_description",document.getElementById("report_description").value)
+    for (const tag of selectedValues){formdata.append("tags[]", tag);}
+    formdata.append("source",sourceval)
+    ajax.upload.addEventListener("progress", progressHandler, false);
+    ajax.addEventListener("load", completeHandler, false);
+    ajax.addEventListener("error", errorHandler, false);
+    ajax.addEventListener("abort", abortHandler, false);
+    ajax.send(formdata);
+}
+
+function progressHandler(event)
+{   
+
+    if(event.total - event.loaded == 0){resetall();document.getElementById("submitbutton").blur();document.getElementById("submitbutton").className="btn btn-danger btn-sm disabled";document.getElementById("submitbutton").value="Please wait...";document.getElementById('loading').style.display = 'inline-block';}
+    else
+    {
+        let upbar=document.getElementById("uploadprogressbarval")
+        let percent = Math.round((event.loaded / event.total) * 100);
+        upbar.style.width=percent+"%"
+        upbar.setAttribute("aria-valuenow",percent)
+        upbar.innerText="Uploading"+percent+"%"
+    }
+}
+
+function completeHandler(event)
+{
+    resetall()
+    ajax=null;
+    document.getElementById("submitbutton").className="btn btn-success btn-sm";
+    document.getElementById("submitbutton").value="Submit";
+    if (event.target.status==200){
+        let jrs=JSON.parse(event.target.responseText);
+        window.location.href=jrs["message"];
+    }
+    else if (event.target.status==400 || event.target.status==409)
+    {
+        let jrs=JSON.parse(event.target.responseText);
+        document.getElementById("errort").style.display='unset'
+        document.getElementById("errort").innerHTML = jrs["message"];
+    }
+    else
+    {
+        document.getElementById("errort").style.display='unset'
+        document.getElementById("errort").innerText = "Sorry an unexcpected error occured, status code: "+event.target.status
+    }
+  
+}
+
+function errorHandler(event) {resetall();document.getElementById("errort").style.display='unset';document.getElementById("errort").innerText = "A network error occured, Upload failed !";}
+
+function abortHandler(event) {resetall();document.getElementById("errort").style.display='unset';document.getElementById("errort").innerText = "Upload aborted.";}
+    </script>
 </head>
 
 <body>
@@ -28,7 +99,7 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark" style="background-color:#272727 !important;">
                             <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#verifmodal">Delete</button></li>
-                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#edittagsmodal">Edit Tags</button></li>
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#edittagsmodal">Edit Information</button></li>
                             <li><a href="\list\" type="button" style="margin-right: 8px;" class="dropdown-item">Hentai List</a></li>
                             <li><a role="button" class="dropdown-item" tabindex="0" data-bs-toggle="popover" data-bs-content="Remove the hentai tag and add the ecchi one to {{image}}" data-bs-trigger="hover" data-bs-placement="left" href="/rmv/?image={{image}}" id="removebutton">Remove Hentai Tag</a></li>
                         </ul>
@@ -59,34 +130,52 @@
     <div class="modal fade" style="z-index:  49;" id="edittagsmodal" tabindex="-1" aria-labelledby="edittagsmodalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content text-center" style="background-color:#272727 !important;">
-                <div class="modal-header border-0">
-                    <h5 class="modal-title" style="margin: 0 auto;" id="edittagsmodalLabel">Please select the new tags.</h5>
-                </div>
-                <div class="modal-body text-center">
-                    <form action="/forms/manage/?image={{image}}" method="post" enctype="multipart/form-data">
-                        <form action="{{form_upload}}" method="post" enctype="multipart/form-data">
-                            <div class="row" style="margin-bottom: 1rem;">
-                                <div class="col-9 mr-2 justify-content-start">
-                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags">
-                                    </select>
-                                </div>
-                                <div class="col-3 mr-2 justify-content-start">
-                                    <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
-                                    <label class="form-check-label" style=" color:#fff;" for="is_nsfw" id="label_is_nsfw">
-                                        NSFW
-                                    </label>
-                                    </label>
-                                </div>
+                <form onsubmit="resetall();document.getElementById('uploadprogressbar').style.display='flex';uploadFile();return false;" method="post" enctype="multipart/form-data">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" style="margin: 0 auto;" id="edittagsmodalLabel">Information</h5>
+                    </div>
+                    <div class="modal-body text-center">
+
+                       <div class="row" style="margin-bottom: 1rem;">
+                            <div class="form-switch">
+                                
+                                <input style="margin-bottom: 1rem;"id="checkbox_is_reported" class="form-check-input" type="checkbox" {% if report_user_id %} checked{% endif %}>
+                                <label class="form-check-label" for="checkbox_is_reported" id="label_report">Is Reported</label>
                             </div>
-                            <div class="input-group input-group-sm mb-3">
-                                <span class="input-group-text" id="inputGroup-sizing-sm">Optional Source</span>
-                                <input type="text" class="form-control" value="{{source if source else ''}}" id="source_id" minlength="4" maxlength="100" placeholder="https://www.pixiv.net/en/artworks/90302611" name="source" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                            <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
+                                <span class="input-group-text">Reported by</span>
+                                <input type="text" class="form-control" id="report_user_id" placeholder="359371922203535258" name="report_user_id" value="{{report_user_id if report_user_id else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                             </div>
-                            <input class="form-control form-control-sm" type="file" id="formFile" name="file" accept="image/png, image/gif, image/jpeg, image/jpg, image/webp">
-                            <br>
-                            <input type="submit" class="btn btn-light btn-sm" name="Submit" value="Submit" />
-                        </form>
-                </div>
+                            <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
+                                <span class="input-group-text">Report Description</span>
+                                <input type="text" class="form-control" id="report_description" placeholder="Contain inaproprate content" maxlength="200" name="report_description" value="{{report_description if report_description else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                            </div>
+                            <div class="col-9 sm-12 justify-content-start">
+                                <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags"></select>
+                            </div>
+                            <div class="col-3 sm-12 justify-content-start">
+                                <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
+                                <label class="form-check-label" for="is_nsfw" id="label_is_nsfw">NSFW</label>
+                            </div>
+                        </div>
+                        <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
+                            <span class="input-group-text">Optional Source</span>
+                            <input type="text" class="form-control" id="source_id" minlength="4" maxlength="100" placeholder="https://www.pixiv.net/en/artworks/90302611" name="source" aria-label="Small" value="{{source if source else ''}}" aria-describedby="inputGroup-sizing-sm">
+                        </div>
+                        <input style="margin-bottom: 1rem;" class="form-control form-control-sm" type="file" id="file" name="file" accept="image/png, image/gif, image/jpeg, image/jpg, image/webp">
+                        <div class="progress" style="margin-bottom: 0.5rem;display: none;" id="uploadprogressbar">
+                            <div id="uploadprogressbarval" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">Uploading 0%</div>
+                        </div>
+                        <div id="loading" class="align-items-center" style="display: none;">
+                            <div class="spinner-border text-success" style="width: 0.25rem; height: 0.25rem;margin: 0.5rem;" role="status"></div>
+                            Waiting for the server to treat your image...
+                        </div>
+                        <p class="fs-6 text-danger" id="errort" style="display: none;"></p>
+                    </div>
+                    <div class="border-0 text-center mb-1">
+                        <input type="submit" class="btn btn-success btn-sm" name="Submit" value="Submit" id="submitbutton" />
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -142,7 +231,6 @@ function check_change() {
         }
     }
     select_upload.selectpicker("refresh");
-    console.log('test')
 }
 
 $('#document').ready(check_change())

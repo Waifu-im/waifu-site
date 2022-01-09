@@ -12,6 +12,7 @@ from routers.utils import (
     fetch_user_safe,
 )
 from secrets import token_urlsafe
+from routers.utils import get_user_info
 
 blueprint = Blueprint("general", __name__, template_folder="static/html")
 
@@ -96,27 +97,22 @@ async def dashboard_():
     full_username = str(user)
     username = user.name
     user_id = user.id
+    is_admin = await has_permissions(user.id, "admin")
+    last_24h_rq=None
+    
+
     if su and su != str(user_id):
-        if not await has_permissions(user.id, "admin"):
+        if not is_admin:
             quart.abort(403)
-        resp = await current_app.session.get(
-            f"http://127.0.0.1:8033/userinfos/?id={su}"
-        )
-        if resp.status == 404:
-            raise quart.abort(400, description="Please provide a valid user_id")
-
-        if resp.status != 200:
-            quart.abort(
-                500, description="Sorry, something went wrong with the ipc request."
-            )
-
-        t = await resp.json()
+        t = await get_user_info(su)
         user_id = t.get("id")
         full_username = t.get("full_name")
         username = t.get("name")
 
     user_secret = token_urlsafe(10)
     async with current_app.pool.acquire() as conn:
+        if is_admin:
+            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date >= NOW() - INTERVAL '24 hour' and not user_agent=$1",current_app.config["waifu_client_user_agent"])
         await conn.execute(
             'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
             user_id,
@@ -139,6 +135,8 @@ async def dashboard_():
         username=username,
         count_images=count_images,
         user_id=str(user_id),
+        is_admin=is_admin,
+        last_24h_rq=last_24h_rq,
     )
 
 
@@ -168,7 +166,7 @@ async def preview_():
     async with current_app.pool.acquire() as conn:
         rt = await conn.fetch(
             f"""SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Tags.is_nsfw,Tags.name, FavImages.user_id FROM Images
-                        JOIN LinkedTags ON LinkedTags.image = Images.file
+                        LEFT JOIN LinkedTags ON LinkedTags.image = Images.file
                         JOIN Tags ON Tags.id = LinkedTags.tag_id
                         LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}
                         WHERE Images.file = $1""",
@@ -180,7 +178,9 @@ async def preview_():
             imf = rt[0].get("file") + rt[0].get("extension")
             dominant_color = rt[0].get("dominant_color")
             if imf != image:
-                return quart.redirect(quart.url_for("general.preview_") + f"?image={imf}")
+                return quart.redirect(
+                    quart.url_for("general.preview_") + f"?image={imf}"
+                )
             if auth:
                 in_fav = True if rt[0]["user_id"] else False
             for tag in rt:
@@ -227,21 +227,37 @@ async def preview_():
 @permissions_check("manage_images")
 async def manage_():
     image = request.args.get("image")
+    image_name = os.path.splitext(image)[0]
     if not image:
         return quart.abort(404)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
-            "SELECT Tags.id,Images.source,Images.file,Images.extension FROM LinkedTags JOIN Tags ON Tags.id=LinkedTags.tag_id JOIN Images ON Images.file=LinkedTags.image WHERE LinkedTags.image=$1",
-            os.path.splitext(image)[0],
+            "SELECT Tags.id,Images.source,Images.file,Images.extension FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
+            image_name,
         )
         if not image_info:
             return quart.abort(404)
+        res = await conn.fetchrow(
+            "SELECT author_id,description from Reported_images WHERE image=$1",
+            image_name,
+        )
+        if res:
+            report_user_id, report_description = res
+            report_user_id = int(report_user_id)
+        else:
+            report_user_id = None
+            report_description = None
         filename_db = image_info[0].get("file") + image_info[0].get("extension")
         if filename_db != image:
-            return quart.redirect(quart.url_for("general.preview_") + f"?image={filename_db}")
+            return quart.redirect(
+                quart.url_for("general.preview_") + f"?image={filename_db}"
+            )
 
         t = await current_app.waifuclient.endpoints(full=True)
-    existed = [int(tag["id"]) for tag in image_info]
+    try:
+        existed = [int(tag["id"]) for tag in image_info]
+    except TypeError:
+        existed = []
     if image_info:
         source = image_info[0]["source"]
     else:
@@ -253,4 +269,7 @@ async def manage_():
         link="https://cdn.waifu.im/" + image,
         image=image,
         source=source,
+        form_manage=quart.url_for("forms.forms_manage"),
+        report_user_id=report_user_id,
+        report_description=report_description,
     )
