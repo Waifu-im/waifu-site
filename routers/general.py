@@ -112,7 +112,7 @@ async def dashboard_():
     user_secret = token_urlsafe(10)
     async with current_app.pool.acquire() as conn:
         if is_admin:
-            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date >= NOW() - INTERVAL '24 hour' and not user_agent=$1",current_app.config["waifu_client_user_agent"])
+            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date_trunc('day',date)=date_trunc('day',NOW()) and not user_agent=$1",current_app.config["waifu_client_user_agent"])
         await conn.execute(
             'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
             user_id,
