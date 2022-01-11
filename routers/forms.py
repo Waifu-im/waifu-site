@@ -179,6 +179,7 @@ async def form_upload():
 @requires_authorization
 @permissions_check("manage_images")
 async def forms_manage():
+    user = await fetch_user_safe()
     filename_no_ext = None
     dominant_color = None
     extension = None
@@ -187,8 +188,12 @@ async def forms_manage():
     file = files.get("file")
     image = forms.get("image")
     image_no_ext = os.path.splitext(image)[0]
+    is_under_review = True if forms.get("is_under_review") == "true" else False
+    is_hidden = True if forms.get("is_hidden") == "true" else False
     is_reported = True if forms.get("is_reported") == "true" else False
-    report_user_id = forms.get("report_user_id", type=int)
+    report_user_id = forms.get("report_user_id", type=int) or user.id
+    print(report_user_id)
+    print(is_reported)
     report_description = forms.get("report_description")
     tags = forms.getlist("tags[]")
     source = forms.get("source")
@@ -224,11 +229,13 @@ async def forms_manage():
         async with conn.transaction():
             temp_filename = filename_no_ext if file else image_no_ext
             await conn.execute(
-                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),dominant_color=COALESCE($4,dominant_color) WHERE file=$5",
+                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6 WHERE file=$7",
                 source if source else None,
                 filename_no_ext,
                 extension,
                 dominant_color,
+                is_under_review,
+                is_hidden,
                 image_no_ext,
             )
             await conn.execute("DELETE FROM LinkedTags WHERE image=$1", temp_filename)
@@ -238,9 +245,12 @@ async def forms_manage():
                     temp_filename,
                     int(d),
                 )
-            if is_reported and report_user_id:
-                t = await get_user_info(report_user_id, jsondata=True)
-                full_username = t.get("full_name")
+            if is_reported:
+                if report_user_id != user.id:
+                    t = await get_user_info(report_user_id, jsondata=True)
+                    full_username = t.get("full_name")
+                else :
+                    full_username=str(user)
                 await conn.execute(
                     "INSERT INTO Registered_user(id,name) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET name=$2",
                     report_user_id,

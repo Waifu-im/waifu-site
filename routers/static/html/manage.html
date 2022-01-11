@@ -27,6 +27,8 @@
     var formdata = new FormData();
     formdata.append("file", file);
     formdata.append("image", image);
+    formdata.append("is_hidden",document.getElementById("is_hidden").checked)
+    formdata.append("is_under_review",document.getElementById("is_under_review").checked)
     formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
     formdata.append("report_user_id",document.getElementById("report_user_id").value)
     formdata.append("report_description",document.getElementById("report_description").value)
@@ -138,8 +140,15 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
 
                        <div class="row" style="margin-bottom: 1rem;">
                             <div class="form-switch">
-                                
-                                <input style="margin-bottom: 1rem;"id="checkbox_is_reported" class="form-check-input" type="checkbox" {% if report_user_id %} checked{% endif %}>
+                                <input id="is_hidden" class="form-check-input" type="checkbox" {% if is_hidden %} checked{% endif %}>
+                                <label class="form-check-label" for="is_hidden" id="label_hidden">Is Hidden</label>
+                            </div>
+                            <div class="form-switch">
+                                <input id="is_under_review" class="form-check-input" type="checkbox" {% if is_under_review %} checked{% endif %}>
+                                <label class="form-check-label" for="is_under_review" id="label_review">Is Under Review</label>
+                            </div>
+                            <div class="form-switch">
+                                <input id="checkbox_is_reported" class="form-check-input" type="checkbox" {% if report_user_id %} checked{% endif %}>
                                 <label class="form-check-label" for="checkbox_is_reported" id="label_report">Is Reported</label>
                             </div>
                             <div class="input-group input-group-sm" style="margin-bottom: 1rem;">

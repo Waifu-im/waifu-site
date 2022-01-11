@@ -149,17 +149,12 @@ async def report_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Tags.name,Tags.id,Tags.is_nsfw,Tags.description
-FROM (SELECT file,extension,id as image_id,uploaded_at
-    FROM Images
-    JOIN Reported_images ON Reported_images.image=Images.file
-    WHERE not Images.under_review
-    GROUP BY Images.file
-    ORDER BY uploaded_at DESC
-    ) AS Q
-JOIN LinkedTags ON LinkedTags.image=Q.file
+SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Tags.name,Tags.id,Tags.is_nsfw,Tags.description
+FROM Images
+JOIN Reported_images ON Reported_images.image=Images.file
+JOIN LinkedTags ON LinkedTags.image=Images.file
 JOIN Tags ON Tags.id=LinkedTags.tag_id
-ORDER BY Q.uploaded_at DESC"""
+ORDER BY uploaded_at DESC"""
         )
     )
     listesfw = []
@@ -193,17 +188,12 @@ async def review_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Tags.name,Tags.id,Tags.is_nsfw,Tags.description
-FROM (SELECT file,extension,id as image_id,uploaded_at
-    FROM Images
-    JOIN Reported_images ON Reported_images.image=Images.file
-    WHERE Images.under_review
-    GROUP BY Images.file
-    ORDER BY uploaded_at DESC
-    ) AS Q
-JOIN LinkedTags ON LinkedTags.image=Q.file
+SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Tags.name,Tags.id,Tags.is_nsfw,Tags.description
+FROM Images
+JOIN LinkedTags ON LinkedTags.image=Images.file
 JOIN Tags ON Tags.id=LinkedTags.tag_id
-ORDER BY Q.uploaded_at DESC"""
+WHERE Images.under_review
+ORDER BY uploaded_at DESC"""
         )
     )
     listesfw = []
@@ -225,6 +215,6 @@ ORDER BY Q.uploaded_at DESC"""
         start=None,
         is_nsfw=bool(listensfw),
         tags=tags,
-        title="Report",
+        title="Review",
         href_url=quart.url_for("general.manage_"),
     )

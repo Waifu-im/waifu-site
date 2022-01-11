@@ -32,7 +32,7 @@ async def home_():
     async with current_app.pool.acquire() as conn:
         nb_images = (
             await conn.fetchrow(
-                "SELECT COUNT(*) FROM Images WHERE not Images.under_review"
+                "SELECT COUNT(*) FROM Images WHERE not Images.under_review and not Images.hidden"
             )
         )[0]
         nb_request = (await conn.fetchrow("SELECT COUNT(*) FROM api_logs"))[0]
@@ -112,7 +112,7 @@ async def dashboard_():
     user_secret = token_urlsafe(10)
     async with current_app.pool.acquire() as conn:
         if is_admin:
-            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date_trunc('day',date)=date_trunc('day',NOW()) and not user_agent=$1",current_app.config["waifu_client_user_agent"])
+            last_24h_rq=await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date >= NOW() - INTERVAL '24 hour' and not user_agent=$1",current_app.config["waifu_client_user_agent"])
         await conn.execute(
             'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
             user_id,
@@ -232,7 +232,7 @@ async def manage_():
         return quart.abort(404)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
-            "SELECT Tags.id,Images.source,Images.file,Images.extension FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
+            "SELECT Tags.id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
             image_name,
         )
         if not image_info:
@@ -272,4 +272,6 @@ async def manage_():
         form_manage=quart.url_for("forms.forms_manage"),
         report_user_id=report_user_id,
         report_description=report_description,
+        is_under_review=image_info[0]["under_review"],
+        is_hidden=image_info[0]["hidden"],
     )
