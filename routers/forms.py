@@ -249,7 +249,7 @@ async def forms_manage():
                 if report_user_id != user.id:
                     t = await get_user_info(report_user_id, jsondata=True)
                     full_username = t.get("full_name")
-                else :
+                else:
                     full_username=str(user)
                 await conn.execute(
                     "INSERT INTO Registered_user(id,name) VALUES($1,$2) ON CONFLICT(id) DO UPDATE SET name=$2",
