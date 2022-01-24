@@ -151,7 +151,7 @@ async def preview_():
     auth = await current_app.discord.authorized
     image = request.args.get("image")
     if not image:
-        quart.abort(400)
+        quart.abort(404)
     image = image.lower()
     image_name = os.path.splitext(image)[0]
     if auth:
