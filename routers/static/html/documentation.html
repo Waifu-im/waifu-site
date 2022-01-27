@@ -63,7 +63,7 @@
                 </div>
                 <div class="container-fluid borderthin">
                     <h3 id="tags">Tags</h3>
-                    <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags !</p>
+                    <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags! Little tips, the default tag for sfw images is <strong><i>waifu</i></strong> while <strong><i>ero</i></strong> is the one for nsfw images.</p>
                     <p class="fs-6">Here is the avaliable tags, if you click on them you'll see the get request to do for it.</p>
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                         {% for typ in types %}
@@ -271,7 +271,6 @@ async with aiohttp.ClientSession() as cs:
   "deleted":["same, please not that if you provided an image that do not exist, you will get a 400 status code and all the operations will be cancelled."]
 } 
                 </code></pre>
-                    <p class="fs-6">little tips, the default tags for an image is <strong><i>waifu</i></strong> for sfw and <strong><i>ero</i></strong> for nsfw.</p>
                     <h4 id="galleries-queryparameters">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
