@@ -193,6 +193,7 @@ async def inject_global_infos():
         return metadatas
 
     return dict(
+        bot_invite=app.config["bot_invite"],
         has_cookie=request.cookies.get(app.config["nsfw_cookie"]),
         NSFW_COOKIE=app.config["nsfw_cookie"],
         site_description=app.config["site_description"],
