@@ -91,7 +91,7 @@
                     <pre><code class="language-json">
 
 All errors apart of 422 status code
-Its recommanded to handle them.
+Its recommended to handle them.
 
 {
   "code": Status code,
@@ -204,20 +204,21 @@ It doesnt really need to be handled, since if you correctly requested the route 
                     <pre><code class="language-python">
 import aiohttp
 
-#please do change the User-Agent, it's useful for identification purpose.
+# Please do change the User-Agent, it's useful for identification purpose.
 
-#In this endpoint you do not need a token.
+# In this endpoint you do not need a token.
 
 headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName'}
 
 # Here we request /sfw/waifu/ but we could  choose to only request /random/ to get an image from a random tag.
+# Here let's say you want to exclude some images and you want to disabled gifs
 url="https://api.waifu.im/sfw/waifu/?exclude=3867126be8e260b5.jpeg,ca52928d43b30d6a&gif=false"
 
-
+# Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
 	async with cs.get(url,headers=headers) as rep:
 		api= await rep.json()
-		if rep.status == 200:
+		if rep.status in {200, 201}:
 			url=api['images'][0]['url']
 			#Do whatever you want with the image url.
 		else:
@@ -302,7 +303,7 @@ async with aiohttp.ClientSession() as cs:
                                 <th scope="row">user_id</th>
                                 <th scope="row">No</th>
                                 <th scope="row">integer</th>
-                                <th scope="row">The user id from wich you want to edit the gallery (only for trusted apps)</th>
+                                <th scope="row">The user id from which you want to edit the gallery (only for trusted apps)</th>
                             </tr>
                         </thead>
                     </table>
@@ -314,25 +315,25 @@ import aiohttp
 
 token="eyJpZCI6NTA4MzQ2OTc4Mjg4MjcxMzYwLCJzZWNyZXQiOiJyb3AtekZIeE12bll4ZyJ9.89aLylZeRcIcYDjfg6E01iPRCqI"
 
-#please do change the user agent, it's useful for identification purpose.
+# Please do change the user agent, it's useful for identification purpose.
 headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName','Authorization':f"Bearer {token}"}
 
 def has_waifu_tag(image):
 	for t in image["tags"]:
-		if t["name"]=="waifu":
-			return True
+		return t["name"] == "waifu" and not t["is_nsfw"]
 
-
+# Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
+    # In this example we insert and remove some images for more information look at the query strings description
 	async with cs.get(f"https://api.waifu.im/fav/?delete=7acebd66b6670ba3.jpg&insert=55b1a881726f783b.png,c1384aaf68b8cbf5",headers=headers) as rep:
 		api = await rep.json()
-		if rep.status == 200:
-			#The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
-			waifu=list(filter(has_waifu_tag,rep["images"]))
-			#do whatever you want with the waifu tag pictures.
+		if rep.status in {200, 201}:
+			# The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
+			waifu = list(filter(has_waifu_tag,rep["images"]))
+			# Do whatever you want with the waifu tag pictures.
 	
 		else:
-			error=api["message"]
+			error = api["message"]
 			#do whatever you want with the error message.
 			</code></pre>
                 </div>
