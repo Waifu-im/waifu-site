@@ -211,7 +211,7 @@ import aiohttp
 headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName'}
 
 # Here we request /sfw/waifu/ but we could  choose to only request /random/ to get an image from a random tag.
-# Here let's say you want to exclude some images and you want to disabled gifs
+# Here let's say you want to exclude some images and you want to disable gifs
 url="https://api.waifu.im/sfw/waifu/?exclude=3867126be8e260b5.jpeg,ca52928d43b30d6a&gif=false"
 
 # Do not open a new session everytime like here, save it
