@@ -25,15 +25,15 @@ async def all_api_(title=None):
         except:
             full = None
     try:
-        files = await current_app.waifuclient.random(
+        files = (await current_app.waifuclient.random(
             is_nsfw=is_nsfw,
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
             full=full,
             order_by=order_by,
             many=None if full else True,
-
-        )
+            raw=True,
+        ))['images']
     except waifuim.APIException as e:
         if e.status == 404 or e.status == 422:
             quart.abort(404)
@@ -62,8 +62,7 @@ async def all_api_(title=None):
     return await render_template(
         "all_api.html",
         is_nsfw=is_nsfw,
-        files=list(files),
-        type=typ,
+        files=[im['url'] for im in files],
         category=category_name,
         title=title,
         href_url=quart.url_for("general.preview_"),
