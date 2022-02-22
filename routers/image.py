@@ -13,7 +13,7 @@ blueprint = Blueprint("image", __name__, template_folder="static/html")
 
 
 @blueprint.route("/random/")
-async def all_api_(typ, title=None):
+async def all_api_(title=None):
     full = request.args.get('full', None)
     is_nsfw = request.args.get('is_nsfw', type=bool)
     selected_tags = request.args.getlist('selected_tags')
