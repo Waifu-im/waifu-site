@@ -17,6 +17,8 @@ async def all_api_(typ, title=None):
     full = request.args.get('full', None)
     is_nsfw = request.args.get('is_nsfw', type=bool)
     selected_tags = request.args.getlist('selected_tags')
+    order_by = request.args('FAVOURITES', None)
+    if order_by =
     if full:
         try:
             user = await current_app.discord.fetch_user()
@@ -29,7 +31,7 @@ async def all_api_(typ, title=None):
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
             full=full,
-            order_by=request.args('FAVOURITES', None),
+            order_by=order_by,
             many=None if full else True,
 
         )
@@ -39,9 +41,9 @@ async def all_api_(typ, title=None):
         raise e
     except AttributeError:
         return quart.abort(404)
-    category_name = selected_tags[0] if len(selected_tags) == 1 else 'Random'
+    category_name = selected_tags[0] if len(selected_tags) == 1 else 'Top' if order_by == 'FAVOURITES' else 'NSFW' if is_nsfw else 'Random'
 
-    if category_name == 'Random':
+    if category_name == 'Random' or category_name == 'Top':
         tags = []
         for im in files:
             tags.extend(
@@ -61,7 +63,7 @@ async def all_api_(typ, title=None):
         is_nsfw=is_nsfw,
         files=list(files),
         type=typ,
-        category=,
+        category=category_name,
         title=title,
         href_url=quart.url_for("general.preview_"),
     )
