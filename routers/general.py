@@ -62,11 +62,10 @@ async def tags_():
 @blueprint.route("/upload/")
 async def upload_():
     rt = await current_app.waifuclient.endpoints(full=True)
-    tags = rt["public"] + rt["private"]
     return await render_template(
         "upload.html",
         form_upload=quart.url_for("forms.form_upload"),
-        tags=tags,
+        tags=rt["tags"],
     )
 
 
@@ -255,7 +254,7 @@ async def manage_():
         source = None
     return await render_template(
         "manage.html",
-        tags=t["public"]+t["private"],
+        tags=t["public"] + t["private"],
         existed=existed,
         link="https://cdn.waifu.im/" + image,
         image=image,
