@@ -14,7 +14,7 @@ def db_to_json(images, tag_mod=False):
                     Tags(
                         im.pop("id"),
                         im.pop("name"),
-                        im.pop("is_nsfw"),
+                        im.pop("is_public"),
                         im.pop("description"),
                     ),
                     im,
@@ -37,7 +37,7 @@ def db_to_json(images, tag_mod=False):
             tag = Tags(
                 image.pop("id"),
                 image.pop("name"),
-                image.pop("is_nsfw"),
+                image.pop("is_public"),
                 image.pop("description"),
             )
             imagemapping.append((Image(**image), tag))

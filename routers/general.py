@@ -21,10 +21,12 @@ blueprint = Blueprint("general", __name__, template_folder="static/html")
 async def home_():
     apioffline = False
     try:
-        im = await current_app.waifuclient.sfw("waifu", gif=False)
-        randomfile = (await current_app.waifuclient.sfw("waifu", top=True)).split("/")[
-            -1
-        ]
+        im = await current_app.waifuclient.sfw(selected_tags=["waifu"], gif=False, is_nsfw=False)
+        randomfile = (await current_app.waifuclient.sfw(
+            selected_tags=["waifu"],
+            is_nsfw=False,
+            order_by="FAVOURITE",
+        )).split("/")[-1]
     except waifuim.exceptions.APIException as e:
         im = "https://cdn.waifu.im/aa48cd9dc6b64367.jpg"
         randomfile = "aa48cd9dc6b64367.jpg"
@@ -51,41 +53,35 @@ async def home_():
 @blueprint.route("/tags/")
 async def tags_():
     rt = await current_app.waifuclient.endpoints(full=True)
-    tags_sfw = rt["sfw"]
-    tags_nsfw = rt["nsfw"]
-    tags = tags_sfw + tags_nsfw
-    types = ["sfw", "nsfw"]
+    public = rt["public"]
+    private = rt["private"]
+    tags = public + private
     return await render_template(
         "tags.html",
-        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
-        types=types,
+        tags={"public": public, "private": private, "all": tags}, types=["public", "private"]
     )
 
 
 @blueprint.route("/upload/")
 async def upload_():
     rt = await current_app.waifuclient.endpoints(full=True)
-    tags_sfw = rt["sfw"]
-    tags_nsfw = rt["nsfw"]
-    tags = tags_sfw + tags_nsfw
+    tags = rt["public"] + rt["private"]
     return await render_template(
         "upload.html",
         form_upload=quart.url_for("forms.form_upload"),
-        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
+        tags=tags,
     )
 
 
 @blueprint.route("/docs/")
 async def docs_():
-    rt = await current_app.waifuclient.endpoints()
-    tags_sfw = rt["sfw"]
-    tags_nsfw = rt["nsfw"]
-    tags = tags_sfw + tags_nsfw
-    types = ["sfw", "nsfw"]
+    rt = await current_app.waifuclient.endpoints(full=True)
+    public = rt["public"]
+    private = rt["private"]
+    tags = public + private
     return await render_template(
         "documentation.html",
-        tags={"nsfw": tags_nsfw, "sfw": tags_sfw, "all": tags},
-        types=types,
+        tags={"public": public, "private": private, "all": tags}, types=["public", "private"]
     )
 
 
@@ -98,8 +94,7 @@ async def dashboard_():
     username = user.name
     user_id = user.id
     is_admin = await has_permissions(user.id, "admin")
-    last_24h_rq=None
-    
+    last_24h_rq = None
 
     if su and su != str(user_id):
         if not is_admin:
@@ -112,7 +107,9 @@ async def dashboard_():
     user_secret = token_urlsafe(10)
     async with current_app.pool.acquire() as conn:
         if is_admin:
-            last_24h_rq = await conn.fetchval("SELECT COUNT(*) FROM api_logs WHERE date_trunc('day',date)=date_trunc('day',NOW()) and not user_agent=$1",current_app.config["waifu_client_user_agent"])
+            last_24h_rq = await conn.fetchval(
+                "SELECT COUNT(*) FROM api_logs WHERE date_trunc('day',date)=date_trunc('day',NOW()) and not user_agent=$1",
+                current_app.config["waifu_client_user_agent"])
         await conn.execute(
             'INSERT INTO registered_user("id","name","secret") VALUES($1,$2,$3) ON CONFLICT (id) DO UPDATE SET "name"=$2,"secret"=COALESCE("registered_user"."secret",$3)',
             user_id,
@@ -165,7 +162,7 @@ async def preview_():
         args = (image_name,)
     async with current_app.pool.acquire() as conn:
         rt = await conn.fetch(
-            f"""SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Tags.is_nsfw,Tags.name, FavImages.user_id FROM Images
+            f"""SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Images.is_nsfw,Tags.name, FavImages.user_id FROM Images
                         LEFT JOIN LinkedTags ON LinkedTags.image = Images.file
                         JOIN Tags ON Tags.id = LinkedTags.tag_id
                         LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}
@@ -200,7 +197,7 @@ async def preview_():
             )
             if source := rt[0].get("source"):
                 description = (
-                    f"Source : {source}\n\n" + "Tags : " + ", ".join(tag_names)
+                        f"is_nsfw : {str(is_nsfw).lower()}\n\nSource : {source}\n\n" + "Tags : " + ", ".join(tag_names)
                 )
             else:
                 description = ", ".join(tag_names)
@@ -232,7 +229,7 @@ async def manage_():
         return quart.abort(404)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
-            "SELECT Tags.id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
+            "SELECT Tags.id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
             image_name,
         )
         if not image_info:
@@ -264,8 +261,8 @@ async def manage_():
         source = None
     return await render_template(
         "manage.html",
-        tags=t,
-        existtags=existed,
+        tags=t["public"]+t["private"],
+        existed=existed,
         link="https://cdn.waifu.im/" + image,
         image=image,
         source=source,
@@ -274,4 +271,5 @@ async def manage_():
         report_description=report_description,
         is_under_review=image_info[0]["under_review"],
         is_hidden=image_info[0]["hidden"],
+        is_nsfw=image_info[0]["is_nsfw"],
     )

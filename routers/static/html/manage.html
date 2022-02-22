@@ -30,6 +30,7 @@
     formdata.append("is_hidden",document.getElementById("is_hidden").checked)
     formdata.append("is_under_review",document.getElementById("is_under_review").checked)
     formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
+    formdata.append("is_nsfw",document.getElementById("is_nsfw").checked)
     formdata.append("report_user_id",document.getElementById("report_user_id").value)
     formdata.append("report_description",document.getElementById("report_description").value)
     for (const tag of selectedValues){formdata.append("tags[]", tag);}
@@ -79,7 +80,7 @@ function completeHandler(event)
   
 }
 
-function errorHandler(event) {resetall();document.getElementById("errort").style.display='unset';document.getElementById("errort").innerText = "A network error occured, Upload failed !";}
+function errorHandler(event) {resetall();document.getElementById("errort").style.display='unset';document.getElementById("errort").innerText = "A network error occured, Upload failed !";document.getElementById("submitbutton").blur();document.getElementById("submitbutton").className="btn btn-danger btn-sm disabled";document.getElementById("submitbutton").value="Please wait...";document.getElementById("submitbutton").blur();document.getElementById("submitbutton").className="btn btn-success btn-sm";document.getElementById("submitbutton").value="Submit";}
 
 function abortHandler(event) {resetall();document.getElementById("errort").style.display='unset';document.getElementById("errort").innerText = "Upload aborted.";}
     </script>
@@ -161,9 +162,16 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             </div>
                             <div class="col-9 sm-12 justify-content-start">
                                 <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags"></select>
+                                    {% for tag in tags %}
+                                        {% if tag['id'] in existed%}
+                                            <option value="tag['id']" selected="">tag['name']</option>
+                                        {% else %}
+                                            <option value="tag['id']">tag['name']</option>
+                                        {% endif %}
+                                    {% endfor %}
                             </div>
                             <div class="col-3 sm-12 justify-content-start">
-                                <input class="form-check-input" onchange="check_change()" type="checkbox" value="" id="is_nsfw">
+                                <input class="form-check-input" type="checkbox" value="" id="is_nsfw">
                                 <label class="form-check-label" for="is_nsfw" id="label_is_nsfw">NSFW</label>
                             </div>
                         </div>
@@ -199,48 +207,4 @@ var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggl
 var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
     return new bootstrap.Popover(popoverTriggerEl)
 })
-
-var listnsfw = {{ tags.nsfw | tojson }}
-var listsfw = {{ tags.sfw | tojson }}
-var selectedtags = {{ existtags | tojson }}
-
-function removeselect(selectBox) {
-    selectBox.find('option')
-        .remove()
-        .end()
-}
-
-function check_change() {
-    const select_upload = $('#sele')
-    const checkbox = document.getElementById("is_nsfw")
-    if (checkbox.checked) {
-        removeselect(select_upload)
-        for (const tag of listnsfw) {
-            value = tag['id'];
-            text = tag['name'];
-            attr = ''
-            if (selectedtags.includes(tag['id'])) {
-                attr = 'selected=""'
-            }
-            var newopt = '<option ' + attr + ' value="' + value + '">' + text + '</option>'
-            select_upload.append(newopt)
-        }
-
-    } else {
-        removeselect(select_upload)
-        for (const tag of listsfw) {
-            value = tag['id'];
-            text = tag['name'];
-            attr = ''
-            if (selectedtags.includes(tag['id'])) {
-                attr = 'selected=""'
-            }
-            var newopt = '<option ' + attr + ' value="' + value + '">' + text + '</option>'
-            select_upload.append(newopt)
-        }
-    }
-    select_upload.selectpicker("refresh");
-}
-
-$('#document').ready(check_change())
 </script>

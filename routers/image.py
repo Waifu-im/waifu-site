@@ -9,32 +9,62 @@ from routers.utils import (
 )
 from quart import Blueprint, render_template, request, current_app
 
-
 blueprint = Blueprint("image", __name__, template_folder="static/html")
 
 
-@blueprint.route("/<typ>/<category>/")
-async def all_api_(typ, category, title=None):
-    category = category.lower()
+@blueprint.route("/random/")
+async def all_api_(typ, title=None):
+    full = request.args.get('full', None)
+    is_nsfw = request.args.get('is_nsfw', type=bool)
+    selected_tags = request.args.getlist('selected_tags')
+    if full:
+        try:
+            user = await current_app.discord.fetch_user()
+            full = await has_permissions(user.id, "admin")
+        except:
+            full = None
     try:
-        files = await getattr(current_app.waifuclient, typ)(category, many=True)
+        files = await current_app.waifuclient.random(
+            is_nsfw=is_nsfw,
+            selected_tags=selected_tags,
+            excluded_tags=request.args.getlist('excluded_tags'),
+            full=full,
+            order_by=request.args('FAVOURITES', None),
+            many=None if full else True,
+
+        )
     except waifuim.APIException as e:
         if e.status == 404 or e.status == 422:
             quart.abort(404)
         raise e
     except AttributeError:
-        quart.abort(404)
-    over18 = True if typ == "nsfw" else False
+        return quart.abort(404)
+    category_name = selected_tags[0] if len(selected_tags) == 1 else 'Random'
+
+    if category_name == 'Random':
+        tags = []
+        for im in files:
+            tags.extend(
+                [t for t in im["tags"] if t not in tags]
+            )
+        return await render_template(
+            "image.html",
+            files=files,
+            start=None,
+            is_nsfw=is_nsfw,
+            tags=tags,
+            title=category_name,
+            href_url=quart.url_for("general.preview_"),
+        )
     return await render_template(
         "all_api.html",
-        is_nsfw=over18,
+        is_nsfw=is_nsfw,
         files=list(files),
         type=typ,
-        category=category,
+        category=,
         title=title,
         href_url=quart.url_for("general.preview_"),
     )
-
 
 @blueprint.route("/fav/")
 @requires_authorization
@@ -60,16 +90,11 @@ async def fav_():
                 description="Sorry your gallery is empty, you may want to add some by using the bot or click the red heart on the preview page!",
             )
         raise e
-
-    listesfw = []
-    listensfw = []
-    files = files["images"]
+    tags = []
     for im in files:
-        listesfw.extend(
-            [t for t in im["tags"] if not t in listesfw and not t["is_nsfw"]]
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
         )
-        listensfw.extend([t for t in im["tags"] if not t in listensfw and t["is_nsfw"]])
-    tags = dict(sfw=listesfw, nsfw=listensfw)
     return await render_template(
         "image.html",
         files=files,
@@ -86,14 +111,11 @@ async def top_():
     files = (await current_app.waifuclient.random(top=True, many=True, raw=True))[
         "images"
     ]
-    listesfw = []
-    listensfw = []
+    tags = []
     for im in files:
-        listesfw.extend(
-            [t for t in im["tags"] if not t in listesfw and not t["is_nsfw"]]
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
         )
-        listensfw.extend([t for t in im["tags"] if not t in listensfw and t["is_nsfw"]])
-    tags = dict(sfw=listesfw, nsfw=listensfw)
     return await render_template(
         "image.html",
         files=files,
@@ -123,14 +145,11 @@ JOIN Tags ON Tags.id=LinkedTags.tag_id
 ORDER BY Q.uploaded_at DESC"""
         )
     )
-    listesfw = []
-    listensfw = []
+    tags = []
     for im in files:
-        listesfw.extend(
-            [t for t in im["tags"] if not t in listesfw and not t["is_nsfw"]]
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
         )
-        listensfw.extend([t for t in im["tags"] if not t in listensfw and t["is_nsfw"]])
-    tags = dict(sfw=listesfw, nsfw=listensfw)
     return await render_template(
         "image.html",
         files=files,
@@ -157,19 +176,16 @@ JOIN Tags ON Tags.id=LinkedTags.tag_id
 ORDER BY uploaded_at DESC"""
         )
     )
-    listesfw = []
-    listensfw = []
+    tags = []
     for im in files:
-        listesfw.extend(
-            [t for t in im["tags"] if not t in listesfw and not t["is_nsfw"]]
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
         )
-        listensfw.extend([t for t in im["tags"] if not t in listensfw and t["is_nsfw"]])
-    if not listensfw and not listesfw:
+    if not tags:
         return quart.abort(
             404,
             description="Sorry there is no reported image.",
         )
-    tags = dict(sfw=listesfw, nsfw=listensfw)
     return await render_template(
         "image.html",
         files=files,
@@ -188,7 +204,7 @@ async def review_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Tags.name,Tags.id,Tags.is_nsfw,Tags.description
+SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Images.is_nsfw, Tags.name,Tags.id,Tags.description
 FROM Images
 JOIN LinkedTags ON LinkedTags.image=Images.file
 JOIN Tags ON Tags.id=LinkedTags.tag_id
@@ -196,15 +212,12 @@ WHERE Images.under_review
 ORDER BY uploaded_at DESC"""
         )
     )
-    listesfw = []
-    listensfw = []
+    tags = []
     for im in files:
-        listesfw.extend(
-            [t for t in im["tags"] if not t in listesfw and not t["is_nsfw"]]
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
         )
-        listensfw.extend([t for t in im["tags"] if not t in listensfw and t["is_nsfw"]])
-    tags = dict(sfw=listesfw, nsfw=listensfw)
-    if not listensfw and not listesfw:
+    if not tags:
         return quart.abort(
             404,
             description="Sorry there is no image under review.",
@@ -213,7 +226,7 @@ ORDER BY uploaded_at DESC"""
         "image.html",
         files=files,
         start=None,
-        is_nsfw=bool(listensfw),
+        is_nsfw=files[0]["is_nsfw"],
         tags=tags,
         title="Review",
         href_url=quart.url_for("general.manage_"),

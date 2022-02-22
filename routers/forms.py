@@ -50,7 +50,7 @@ def get_dominant(fileobj):
 
 
 async def insert_db(
-    fileobj, filename_no_ext, filename, extension, source, tags, loop, user=None
+    fileobj, filename_no_ext, filename, extension, source, is_nsfw, tags, loop, user=None
 ):
     dominant_color = await loop.run_in_executor(None, get_dominant, fileobj)
     fileobj.seek(0)
@@ -66,22 +66,24 @@ async def insert_db(
                 )
 
                 await conn.execute(
-                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,uploader) VALUES($1,$2,$3,$4,$5,$6)",
+                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,uploader,is_nsfw) VALUES($1,$2,$3,$4,$5,$6,$7)",
                     filename_no_ext,
                     extension,
                     str(dominant_color),
                     source,
                     ur,
                     user.id,
+                    is_nsfw,
                 )
             else:
                 await conn.execute(
-                    "INSERT INTO Images (file,extension,dominant_color,source,under_review) VALUES($1,$2,$3,$4,$5)",
+                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,is_nsfw) VALUES($1,$2,$3,$4,$5,$6)",
                     filename_no_ext,
                     extension,
                     str(dominant_color),
                     source,
                     True,
+                    is_nsfw,
                 )
             for d in tags:
                 await conn.execute(
@@ -111,6 +113,7 @@ async def form_upload():
     forms = await request.form
     tags = forms.getlist("tags[]")
     source = forms.get("source")
+    is_nsfw = forms.get("is_nsfw") == "true"
     files = await request.files
     file = files.get("file")
     if not (file and tags):
@@ -150,20 +153,24 @@ async def form_upload():
     image_preview = f"{quart.url_for('general.preview_')}?image={filename}"
     try:
         if await current_app.discord.authorized:
-            user = await fetch_user_safe()
+            try:
+                user = await current_app.discord.fetch_user()
+            except:
+                user = None
             await insert_db(
                 file,
                 filename_no_ext,
                 filename,
                 extension,
                 source,
+                is_nsfw,
                 tags,
                 loop,
                 user=user,
             )
         else:
             await insert_db(
-                file, filename_no_ext, filename, extension, source, tags, loop
+                file, filename_no_ext, filename, extension, source, is_nsfw, tags, loop
             )
     except asyncpg.exceptions.UniqueViolationError:
         return (
@@ -188,12 +195,11 @@ async def forms_manage():
     file = files.get("file")
     image = forms.get("image")
     image_no_ext = os.path.splitext(image)[0]
-    is_under_review = True if forms.get("is_under_review") == "true" else False
-    is_hidden = True if forms.get("is_hidden") == "true" else False
-    is_reported = True if forms.get("is_reported") == "true" else False
+    is_under_review = forms.get("is_under_review") == "true"
+    is_nsfw = forms.get("is_nsfw") == "true"
+    is_hidden = forms.get("is_hidden") == "true"
+    is_reported = forms.get("is_reported") == "true"
     report_user_id = forms.get("report_user_id", type=int) or user.id
-    print(report_user_id)
-    print(is_reported)
     report_description = forms.get("report_description")
     tags = forms.getlist("tags[]")
     source = forms.get("source")
@@ -229,13 +235,14 @@ async def forms_manage():
         async with conn.transaction():
             temp_filename = filename_no_ext if file else image_no_ext
             await conn.execute(
-                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6 WHERE file=$7",
+                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6,is_nsfw=$7 WHERE file=$8",
                 source if source else None,
                 filename_no_ext,
                 extension,
                 dominant_color,
                 is_under_review,
                 is_hidden,
+                is_nsfw,
                 image_no_ext,
             )
             await conn.execute("DELETE FROM LinkedTags WHERE image=$1", temp_filename)

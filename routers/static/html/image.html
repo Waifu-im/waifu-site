@@ -46,10 +46,20 @@
 		console.log(nextpics.length)
 		return nextpics;
 	}
-
+    function get_image_by_type(is_nsfw)
+    {
+        return all.filter(im => im["is_nsfw"]==is_nsfw)
+    }
 	function new_images(tag_id)
 	{
-		current_images=sort_tags(tag_id)
+        if (typeof tag_id == "boolean")
+        {
+            current_images = get_image_by_type(tag_id)
+        }
+        else
+        {
+            current_images=sort_tags(tag_id)
+        }
 		go_to_check_page(0)
 		$("[data-bs-toggle='popover']").popover('hide')
 	}
@@ -148,17 +158,17 @@
                             Filters
                         </button>
                         <ul class="dropdown-menu dropdown-menu-dark" style="background-color:#272727 !important;">
-                            {% for type,tags in tags.items() if tags %}
-                            <li>
-                                <h6 class="dropdown-header">{{type.upper()}}</h6>
-                            </li>
                             {% for taginfo in tags %}
                             <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="left" data-bs-content="{{taginfo['description']}}" onclick="new_images({{taginfo['tag_id']}}) ">{{taginfo['name']}}</button></li>
                             {% endfor %}
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            {% endfor %}
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="left" data-bs-content="Click to filter by safe image." onclick="new_images(false)">SFW</button></li>
+                            <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="left" data-bs-content="Click to filter by adult image." onclick="new_images(true)">NSFW</button></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
                             <li><button type="button" class="dropdown-item" style="margin-right: 8px;" onclick="new_images(null)">ALL</button></li>
                         </ul>
                     </div>

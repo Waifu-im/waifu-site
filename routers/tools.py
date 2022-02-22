@@ -2,7 +2,7 @@ import os
 import urllib
 import quart
 
-from routers.utils import Unauthorized
+from routers.utils import Unauthorized, get_user_info
 from routers.utils import (
     requires_authorization,
     has_permissions,
