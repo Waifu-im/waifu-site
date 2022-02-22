@@ -46,17 +46,10 @@
                             <p class="card-text fs-6">The rate limit is <strong>1</strong> request every <strong>200</strong> milliseconds. If you go up to this value the request will be put in a queue (the size is 10) if the queue is full, the server will answer with a 429 status code.</p>
                         </div>
                     </div>
-                    <div class="card bgblack mb-3" style="width: 100%;">
-                        <div class="card-body">
-                            <h5 class="card-title">Endpoints</h5>
-                            <p class="card-text fs-6"><i> Note: http traffic is automatically redirected to https.</i></p>
-                            <p class="card-text fs-6">https://api.waifu.im/endpoints/<br>https://api.waifu.im/endpoints/?full=true</p>
-                        </div>
-                    </div>
                     <div class="card bgblack mb-3" id="github" style="width: 100%;">
                         <div class="card-body">
                             <h5 class="card-title">Github & Python Wrapper</h5>
-                            <p class="card-text fs-6">I really recommand the Python users to use the wrapper, it fully support the API and is updated when needed.</p>
+                            <p class="card-text fs-6">I really recommend the Python users to use the wrapper, it fully supports the API and is updated when needed.</p>
                             <p class="card-text fs-6"><a class="link-success" href="https://github.com/Waifu-im/waifu.im" target="_blank">Github</a><br><a class="link-success" href="https://github.com/Waifu-im/waifuim.py" target="_blank">Python wrapper</a></p>
                         </div>
                     </div>
@@ -64,7 +57,7 @@
                 <div class="container-fluid borderthin">
                     <h3 id="tags">Tags</h3>
                     <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags!</p>
-                    <p class="fs-6">Little tips, the default tag for sfw images is <strong><i>waifu</i></strong> while <strong><i>ero</i></strong> is the one for nsfw images.</p>
+                    <p class="fs-6">Little tips, the default tag for all images is <strong><i>waifu</i></strong>, you can find a list of tags at https://api.waifu.im/tags?full=on (full give more information about each tag).</p>
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                         {% for typ in types %}
                         <li class="nav-item" role="presentation">
@@ -78,7 +71,7 @@
                         <div class="tab-pane fade {{'show active' if loop.index <2 else ''}} " id="pills-{{typ}}" role="tabpanel" aria-labelledby="pills-home-tab">
                             <div class="list-group">
                                 {% for tag in tags[typ] %}
-                                <a href="https://api.waifu.im/{{typ}}/{{tag}}/" target="_blank" class="list-group-item list-group-item-action blckbg lstnohover">{{tag}}</a>
+                                <a href="https://api.waifu.im/random/?selected_tags={{tag}}" target="_blank" class="list-group-item list-group-item-action blckbg lstnohover">{{tag}}</a>
                                 {% endfor %}
                             </div>
                         </div>
@@ -117,8 +110,8 @@ It doesnt really need to be handled, since if you correctly requested the route 
       </code></pre>
                 </div>
                 <div class="container-fluid borderthin">
-                    <h3 id="randomimage">Get Random Images</h3>
-                    <p class="fs-5">You can either get completly random images or by tag.</p>
+                    <h3 id="random-image">Get Random Images</h3>
+                    <p class="fs-5">You can either get completely random images or by tag.</p>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -126,17 +119,13 @@ It doesnt really need to be handled, since if you correctly requested the route 
                                 <th scope="col"><span class="text-success">Request type</span></th>
                             </tr>
                             <tr>
-                                <th scope="row">/<span class="text-danger">type</span>/<a class="link-danger" href="#tags">tag</a>/</th>
-                                <th scope="row">GET</th>
-                            </tr>
-                            <tr>
                                 <th scope="row">/random/</th>
                                 <th scope="row">GET</th>
                             </tr>
                         </thead>
                     </table>
-                    <p class="fs-6">The avaliables <span class="text-danger">type</span>s are <strong><i>sfw</i></strong> and <strong><i>nsfw</i></strong>. if you request /random/ nothing else is required since the image is randomly chosen.</p>
-                    <h4 id="randomimage-response">Response</h4>
+                    <p class="fs-6">To filter by tag or by nsfw images please take a look at the <a href="#random-image-query-strings" class="link-light">query strings</a>.</p>
+                    <h4 id="random-image-response">Response</h4>
                     <p class="fs-5">Here is an example response that you could get.</p>
                     <pre><code class="language-json">
 {
@@ -150,20 +139,21 @@ It doesnt really need to be handled, since if you correctly requested the route 
       "source": "https://www.pixiv.net/en/artworks/88563141",
       "like": 7,
       "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
+      "is_nsfw": false,
       "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
       "tags": [
         {
           "tag_id": 12,
           "name": "waifu",
-          "is_nsfw": false,
-          "description": "Any kind of sfw content. A female anime/manga character."
+          "description": "Any kind of sfw content. A female anime/manga character.",
+          "is_public": true,
         }
       ]
     }
   ]
 }
 				</code></pre>
-                    <h4 id="randomimage-querystrings">Query strings</h4>
+                    <h4 id="random-image-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -173,10 +163,34 @@ It doesnt really need to be handled, since if you correctly requested the route 
                                 <th scope="col"><span class="text-success">Behaviour</span></th>
                             </tr>
                             <tr>
+                                <th scope="row">selected_tags</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">Force the API to return images with, at least all the provided tags</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">excluded_tags</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">Force the API to return images without any of the provided tags</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">is_nsfw</th>
+                                <th scope="row">No</th>
+                                <th scope="row">boolean</th>
+                                <th scope="row">Force or prevent the api to return nsfw files</th>
+                            </tr>
+                            <tr>
                                 <th scope="row">gif</th>
                                 <th scope="row">No</th>
                                 <th scope="row">boolean</th>
                                 <th scope="row">Force or prevent the API to return .gif files.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">order_by</th>
+                                <th scope="row">No</th>
+                                <th scope="row">string</th>
+                                <th scope="row">You can choose to order the image by one of the following : FAVOURITE</th>
                             </tr>
                             <tr>
                                 <th scope="row">many</th>
@@ -185,21 +199,21 @@ It doesnt really need to be handled, since if you correctly requested the route 
                                 <th scope="row">Return an array of 30 files if True.</th>
                             </tr>
                             <tr>
-                                <th scope="row">top</th>
+                                <th scope="row">full</th>
                                 <th scope="row">No</th>
                                 <th scope="row">boolean</th>
-                                <th scope="row">Return the most liked image(s), it can be used with many to get the 30 images instead of 1.</th>
+                                <th scope="row">Returns the full result without any limit (admins only)</th>
                             </tr>
                             <tr>
-                                <th scope="row">exclude</th>
+                                <th scope="row">excluded_files</th>
                                 <th scope="row">No</th>
-                                <th scope="row">string</th>
+                                <th scope="row">Array</th>
                                 <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
                             </tr>
                         </thead>
                     </table>
-                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
-                    <h4 id="randomimage-example">Example</h4>
+                    <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
+                    <h4 id="random-image-example">Example</h4>
                     <p class="fs-5">Here is an python example with some <a class="link-light" href="https://en.wikipedia.org/wiki/Query_string">query strings.</a></p>
                     <pre><code class="language-python">
 import aiohttp
@@ -210,9 +224,8 @@ import aiohttp
 
 headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName'}
 
-# Here we request /sfw/waifu/ but we could  choose to only request /random/ to get an image from a random tag.
-# Here let's say you want to exclude some images and you want to disable gifs
-url="https://api.waifu.im/sfw/waifu/?exclude=3867126be8e260b5.jpeg,ca52928d43b30d6a&gif=false"
+# Here let's say you want to exclude some images, disable gifs and request only safe pictures
+url="https://api.waifu.im/sfw/waifu/?excluded_files=3867126be8e260b5.jpeg&excluded_files=ca52928d43b30d6a&gif=false&excluded_tags=maid&excluded_tags=oppai&is_nsfw=false"
 
 # Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
@@ -228,7 +241,7 @@ async with aiohttp.ClientSession() as cs:
                 </div>
                 <div class="container-fluid borderthin">
                     <h3 id="galleries">Galleries</h3>
-                    <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want trough the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your gallery, here is how to do it.</p>
+                    <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want through the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your gallery, here is how to do it.</p>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -256,13 +269,14 @@ async with aiohttp.ClientSession() as cs:
       "source": "https://www.pixiv.net/en/artworks/88563141",
       "like": 7,
       "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
+      "is_nsfw": false,
       "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
       "tags": [
         {
           "tag_id": 12,
           "name": "waifu",
-          "is_nsfw": false,
-          "description": "Any kind of sfw content. A female anime/manga character."
+          "description": "Any kind of sfw content. A female anime/manga character.",
+          "is_public": true,
         }
       ]
     },
@@ -272,7 +286,7 @@ async with aiohttp.ClientSession() as cs:
   "deleted":["same, please not that if you provided an image that do not exist, you will get a 400 status code and all the operations will be cancelled."]
 } 
                 </code></pre>
-                    <h4 id="galleries-queryparameters">Query strings</h4>
+                    <h4 id="galleries-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -284,19 +298,19 @@ async with aiohttp.ClientSession() as cs:
                             <tr>
                                 <th scope="row">toggle</th>
                                 <th scope="row">No</th>
-                                <th scope="row">string</th>
+                                <th scope="row">Array</th>
                                 <th scope="row">Add images if not in the gallery else remove.</th>
                             </tr>
                             <tr>
                                 <th scope="row">insert</th>
                                 <th scope="row">No</th>
-                                <th scope="row">string</th>
+                                <th scope="row">Array</th>
                                 <th scope="row">add images to your gallery</th>
                             </tr>
                             <tr>
                                 <th scope="row">delete</th>
                                 <th scope="row">No</th>
-                                <th scope="row">string</th>
+                                <th scope="row">Array</th>
                                 <th scope="row">remove images from your gallery</th>
                             </tr>
                             <tr>
@@ -307,9 +321,9 @@ async with aiohttp.ClientSession() as cs:
                             </tr>
                         </thead>
                     </table>
-                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
+                    <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                     <h4 id="galleries-example">Example</h4>
-                    <p class="fs-5">Here is a little example. Here let's say we want to get all the images with the <kbd>waifu</kbd> tag. and we also want to edit the gallery.</p>
+                    <p class="fs-5">Here is a little example. Here let's say we want to get all the safe images with the <kbd>waifu</kbd> tag. and we also want to edit the gallery.</p>
                     <pre><code class="language-python">
 import aiohttp
 
@@ -320,12 +334,12 @@ headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName','Authorizat
 
 def has_waifu_tag(image):
 	for t in image["tags"]:
-		return t["name"] == "waifu" and not t["is_nsfw"]
+		return t["name"] == "waifu" and not image["is_nsfw"]
 
 # Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
     # In this example we insert and remove some images for more information look at the query strings description
-	async with cs.get(f"https://api.waifu.im/fav/?delete=7acebd66b6670ba3.jpg&insert=55b1a881726f783b.png,c1384aaf68b8cbf5",headers=headers) as rep:
+	async with cs.get(f"https://api.waifu.im/fav/?delete=7acebd66b6670ba3.jpg&insert=55b1a881726f783b.png&insert=c1384aaf68b8cbf5",headers=headers) as rep:
 		api = await rep.json()
 		if rep.status in {200, 201}:
 			# The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
@@ -353,7 +367,7 @@ async with aiohttp.ClientSession() as cs:
                     </table>
                     <h4 id="info-response">Response</h4>
                     <p class="fs-5">The Json structure has been thought so that it will often be the same, therefore the structure is the same as the random images one.</p>
-                    <h4 id="galleries-queryparameters">Query strings</h4>
+                    <h4 id="info-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -365,12 +379,12 @@ async with aiohttp.ClientSession() as cs:
                             <tr>
                                 <th scope="row">images</th>
                                 <th scope="row">Yes</th>
-                                <th scope="row">string</th>
-                                <th scope="row">The image(s) that you want informations from.</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">The image(s) that you want information from.</th>
                             </tr>
                         </thead>
                     </table>
-                    <p class="fs-6">If you want to provide an array just separate your values by <strong>,</strong></p>
+                    <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                 </div>
             </div>
         </div>
