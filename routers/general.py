@@ -19,7 +19,7 @@ blueprint = Blueprint("general", __name__, template_folder="static/html")
 
 @blueprint.route("/")
 async def home_():
-    apioffline = False
+    api_offline = False
     try:
         im = await current_app.waifuclient.random(selected_tags=["waifu"], gif=False, is_nsfw=False)
         random_file = (await current_app.waifuclient.random(
