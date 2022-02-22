@@ -17,8 +17,7 @@ async def all_api_(typ, title=None):
     full = request.args.get('full', None)
     is_nsfw = request.args.get('is_nsfw', type=bool)
     selected_tags = request.args.getlist('selected_tags')
-    order_by = request.args('FAVOURITES', None)
-    if order_by =
+    order_by = request.args.get('order_by', None)
     if full:
         try:
             user = await current_app.discord.fetch_user()
