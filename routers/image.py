@@ -140,8 +140,8 @@ async def recent_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Images.is_nsfw,Tags.name,Tags.id,Tags.description
-FROM (SELECT file,extension,id as image_id,uploaded_at
+SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Q.is_nsfw,Tags.name,Tags.id,Tags.description,Tags.is_public
+FROM (SELECT file,extension,id as image_id,uploaded_at,is_nsfw
     FROM Images
     WHERE not Images.under_review
     GROUP BY Images.file
@@ -179,7 +179,7 @@ async def report_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Images.is_nsfw,Tags.name,Tags.id,Tags.description
+SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Images.is_nsfw,Tags.name,Tags.id,Tags.description,Tags.is_public
 FROM Images
 JOIN Reported_images ON Reported_images.image=Images.file
 JOIN LinkedTags ON LinkedTags.image=Images.file
@@ -218,7 +218,7 @@ async def review_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Images.is_nsfw, Tags.name,Tags.id,Tags.description
+SELECT DISTINCT Images.file,Images.extension,Images.id AS image_id,Images.uploaded_at,Images.is_nsfw, Tags.name,Tags.id,Tags.description,Tags.is_public
 FROM Images
 JOIN LinkedTags ON LinkedTags.image=Images.file
 JOIN Tags ON Tags.id=LinkedTags.tag_id
