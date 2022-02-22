@@ -40,7 +40,18 @@ async def all_api_(title=None):
         raise e
     except AttributeError:
         return quart.abort(404)
-    category_name = selected_tags[0] if len(selected_tags) == 1 else 'Top' if order_by == 'FAVOURITES' else 'NSFW' if is_nsfw else 'Random'
+
+    if full:
+        category_name = 'Random'
+    elif order_by == 'FAVOURITES':
+        category_name = 'Top'
+    elif is_nsfw:
+        category_name = 'NSFW'
+    elif len(selected_tags) == 1:
+        category_name = selected_tags[0]
+    else:
+        category_name = 'Random'
+
     tags = []
     is_nsfw = False
     for im in files:
