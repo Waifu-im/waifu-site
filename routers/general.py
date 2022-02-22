@@ -25,7 +25,7 @@ async def home_():
         random_file = (await current_app.waifuclient.random(
             selected_tags=["waifu"],
             is_nsfw=False,
-            order_by="FAVOURITE",
+            order_by="FAVOURITES",
         )).split("/")[-1]
     except waifuim.exceptions.APIException as e:
         im = "https://cdn.waifu.im/aa48cd9dc6b64367.jpg"
