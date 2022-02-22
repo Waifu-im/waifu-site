@@ -15,7 +15,6 @@ blueprint = Blueprint("image", __name__, template_folder="static/html")
 @blueprint.route("/random/")
 async def all_api_(title=None):
     full = request.args.get('full', None)
-    is_nsfw = request.args.get('is_nsfw', type=bool)
     selected_tags = request.args.getlist('selected_tags')
     order_by = request.args.get('order_by', None)
     if full:
@@ -26,7 +25,7 @@ async def all_api_(title=None):
             full = None
     try:
         files = (await current_app.waifuclient.random(
-            is_nsfw=is_nsfw,
+            is_nsfw=request.args.get('is_nsfw'),
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
             full=full,
@@ -40,18 +39,6 @@ async def all_api_(title=None):
         raise e
     except AttributeError:
         return quart.abort(404)
-
-    if full:
-        category_name = 'Random'
-    elif order_by == 'FAVOURITES':
-        category_name = 'Top'
-    elif is_nsfw:
-        category_name = 'NSFW'
-    elif len(selected_tags) == 1:
-        category_name = selected_tags[0]
-    else:
-        category_name = 'Random'
-
     tags = []
     is_nsfw = False
     for im in files:
@@ -60,6 +47,16 @@ async def all_api_(title=None):
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
+    if full:
+        category_name = 'Full'
+    elif order_by == 'FAVOURITES':
+        category_name = 'Top'
+    elif is_nsfw:
+        category_name = 'NSFW'
+    elif len(selected_tags) == 1:
+        category_name = selected_tags[0]
+    else:
+        category_name = 'Random'
     if category_name == 'Random' or category_name == 'Top':
         return await render_template(
             "image.html",
