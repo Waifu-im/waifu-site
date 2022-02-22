@@ -25,7 +25,7 @@ async def all_api_(typ, title=None):
         except:
             full = None
     try:
-        files = await current_app.waifuclient.random(
+        files = (await current_app.waifuclient.random(
             is_nsfw=is_nsfw,
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
@@ -33,7 +33,7 @@ async def all_api_(typ, title=None):
             order_by=order_by,
             many=None if full else True,
 
-        )
+        ))["images"]
     except waifuim.APIException as e:
         if e.status == 404 or e.status == 422:
             quart.abort(404)
@@ -41,13 +41,15 @@ async def all_api_(typ, title=None):
     except AttributeError:
         return quart.abort(404)
     category_name = selected_tags[0] if len(selected_tags) == 1 else 'Top' if order_by == 'FAVOURITES' else 'NSFW' if is_nsfw else 'Random'
-
+    tags = []
+    is_nsfw = False
+    for im in files:
+        if im["is_nsfw"]:
+            is_nsfw = True
+        tags.extend(
+            [t for t in im["tags"] if t not in tags]
+        )
     if category_name == 'Random' or category_name == 'Top':
-        tags = []
-        for im in files:
-            tags.extend(
-                [t for t in im["tags"] if t not in tags]
-            )
         return await render_template(
             "image.html",
             files=files,
@@ -92,7 +94,10 @@ async def fav_():
             )
         raise e
     tags = []
+    is_nsfw = False
     for im in files:
+        if im['is_nsfw']:
+            is_nsfw = True
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
@@ -100,7 +105,7 @@ async def fav_():
         "image.html",
         files=files,
         start=None,
-        is_nsfw=bool(listensfw),
+        is_nsfw=is_nsfw,
         tags=tags,
         title=None,
         href_url=quart.url_for("general.preview_"),
@@ -113,7 +118,10 @@ async def top_():
         "images"
     ]
     tags = []
+    is_nsfw = False
     for im in files:
+        if im['is_nsfw']:
+            is_nsfw = True
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
@@ -121,7 +129,7 @@ async def top_():
         "image.html",
         files=files,
         start=None,
-        is_nsfw=bool(listensfw),
+        is_nsfw=is_nsfw,
         tags=tags,
         title="Top",
         href_url=quart.url_for("general.preview_"),
@@ -147,7 +155,10 @@ ORDER BY Q.uploaded_at DESC"""
         )
     )
     tags = []
+    is_nsfw = False
     for im in files:
+        if im['is_nsfw']:
+            is_nsfw = True
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
@@ -155,7 +166,7 @@ ORDER BY Q.uploaded_at DESC"""
         "image.html",
         files=files,
         start=None,
-        is_nsfw=bool(listensfw),
+        is_nsfw=is_nsfw,
         tags=tags,
         title="Recent",
         href_url=quart.url_for("general.preview_"),
@@ -178,7 +189,10 @@ ORDER BY uploaded_at DESC"""
         )
     )
     tags = []
+    is_nsfw = False
     for im in files:
+        if im['is_nsfw']:
+            is_nsfw = True
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
@@ -191,7 +205,7 @@ ORDER BY uploaded_at DESC"""
         "image.html",
         files=files,
         start=None,
-        is_nsfw=bool(listensfw),
+        is_nsfw=is_nsfw,
         tags=tags,
         title="Report",
         href_url=quart.url_for("general.manage_"),
@@ -214,7 +228,10 @@ ORDER BY uploaded_at DESC"""
         )
     )
     tags = []
+    is_nsfw = False
     for im in files:
+        if im['is_nsfw']:
+            is_nsfw = True
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
@@ -227,7 +244,7 @@ ORDER BY uploaded_at DESC"""
         "image.html",
         files=files,
         start=None,
-        is_nsfw=files[0]["is_nsfw"],
+        is_nsfw=is_nsfw,
         tags=tags,
         title="Review",
         href_url=quart.url_for("general.manage_"),
