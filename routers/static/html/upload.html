@@ -106,7 +106,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                                 <div class="col-9 sm-12 justify-content-start">
                                     <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags">
                                     {% for tag in tags %}
-                                       <option value="tag['id']">tag['name']</option>
+                                       <option value="{{tag['id']}}">{{tag['name']}}</option>
                                     {% endfor %}
                                     </select>
                                 </div>

@@ -164,9 +164,9 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                                 <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags">
                                     {% for tag in tags %}
                                         {% if tag['id'] in existed%}
-                                            <option value="tag['id']" selected="">tag['name']</option>
+                                            <option value="{{tag['id']}}" selected="">{{tag['name']}}</option>
                                         {% else %}
-                                            <option value="tag['id']">tag['name']</option>
+                                            <option value="{{tag['id']}}">{{tag['name']}}</option>
                                         {% endif %}
                                     {% endfor %}
                                 </select>
