@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns="http://www.w3.org/1999/html">
 
 <head>
     <meta charset="UTF-8">
@@ -104,10 +104,11 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                         <div class="card-body">
                             <div class="row" style="margin-bottom: 1rem;">
                                 <div class="col-9 sm-12 justify-content-start">
-                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags"></select>
+                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags">
                                     {% for tag in tags %}
                                        <option value="tag['id']">tag['name']</option>
                                     {% endfor %}
+                                    </select>
                                 </div>
                                 <div class="col-3 sm-12 justify-content-start">
                                     <div class="form-check">
