@@ -218,25 +218,41 @@ It doesnt really need to be handled, since if you correctly requested the route 
                     <pre><code class="language-python">
 import aiohttp
 
-# Please do change the User-Agent, it's useful for identification purpose.
+# In this example aiohttp is used.
+# This needs to be used in an async function.
+# This is simply for demonstrative purposes, you can use
+# any library for this.
 
-# In this endpoint you do not need a token.
+# The only supported headers are User-Agent and Authorization
+# Please change the user-agent as it's useful for identification purposes.
+# This endpoint does not require a token but some others do.
 
-headers= {'User-Agent':f'aiohttp/{aiohttp.__version__}; YourAppName'}
+
+HEADERS = {'User-Agent': f'aiohttp/{aiohttp.__version__}; YourAppName'}
 
 # Here let's say you want to exclude some images, disable gifs and request only safe pictures
-url="https://api.waifu.im/sfw/waifu/?excluded_files=3867126be8e260b5.jpeg&excluded_files=ca52928d43b30d6a&gif=false&excluded_tags=maid&excluded_tags=oppai&is_nsfw=false"
+# The url is written in multiple lines for readability purposes, but it is equal to:
+# https://api.waifu.im/sfw/waifu/?excluded_files=3867126be8e260b5.jpeg&excluded_files=ca52928d43b30d6a&gif=false&excluded_tags=maid&excluded_tags=oppai&is_nsfw=false
 
-# Do not open a new session everytime like here, save it
-async with aiohttp.ClientSession() as cs:
-	async with cs.get(url,headers=headers) as rep:
-		api= await rep.json()
-		if rep.status in {200, 201}:
-			url=api['images'][0]['url']
-			#Do whatever you want with the image url.
-		else:
-			error=api['message']
-			#Do whatever you want with the error description.
+url = "https://api.waifu.im/random/?excluded_files=3867126be8e260b5.jpeg" \
+      "&excluded_files=ca52928d43b30d6a" \
+      "&gif=false" \
+      "&excluded_tags=maid" \
+      "&excluded_tags=oppai" \
+      "&is_nsfw=false"
+
+
+# Usually you would create a session and access it when needed.
+session = aiohttp.ClientSession()
+
+async with session.get(url, headers=HEADERS) as resp:
+    api = await resp.json()
+    if resp.status in {200, 201}:
+        url = api['images'][0]['url']
+    # Do whatever you want with the image url.
+    else:
+        error = api['message']
+    # Do whatever you want with the error description.
       </code></pre>
                 </div>
                 <div class="container-fluid borderthin">
