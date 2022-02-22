@@ -83,7 +83,7 @@ async def fav_():
         else:
             quart.abort(403)
     try:
-        files = await current_app.waifuclient.fav(user_id=user_id)
+        files = (await current_app.waifuclient.fav(user_id=user_id))["images"]
     except waifuim.exceptions.APIException as e:
         if e.status == 404:
             return quart.abort(
