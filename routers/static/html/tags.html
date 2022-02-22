@@ -33,7 +33,7 @@
                     <div class="card-header border-0" style="font-size: 1.5rem;">Tags</div>
                     <div class="card-body">
                         <div class="accordion accordion-flush" id="accordionExample">
-                            {%for typ in types %}
+                            {% for typ,items in tags.items() if items%}
                             <div class="accordion-item">
                                 <h2 class="accordion-header" id="heading{{typ}}">
                                     <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{typ}}" aria-expanded="false" aria-controls="collapse{{typ}}">
@@ -42,7 +42,7 @@
                                 </h2>
                                 <div id="collapse{{typ}}" class="accordion-collapse collapse" aria-labelledby="heading{{typ}}" data-bs-parent="#accordionExample">
                                     <div class="accordion-body">
-                                        {% for tag in tags[typ] %}
+                                        {% for tag in items %}
                                         <a tabindex="0" class="btn btn-outline-light tagsbtn" href='/?selected_tags={{tag.name}}/' role="button" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="top" data-bs-content="{{tag.description}}">{{tag.name}}</a>
                                         {% endfor %}
                                     </div>

@@ -59,7 +59,7 @@
                     <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags!</p>
                     <p class="fs-6">Little tips, the default tag for all images is <strong><i>waifu</i></strong>, you can find a list of tags at https://api.waifu.im/tags?full=on (full give more information about each tag).</p>
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                        {% for typ in types %}
+                        {% for typ,items in tags.items() if items%}
                         <li class="nav-item" role="presentation">
                             <button class="nav-link {{'active' if loop.index <2 else '' }} blckbg" id="pills-{{typ}}-tab" data-bs-toggle="pill" data-bs-target="#pills-{{typ}}" type="button" role="tab" aria-selected="{{'true' if loop.index <2 else 'false' }}" aria-controls="pills-{{typ}}">{{typ.upper()}}</button>
                         </li>
@@ -67,10 +67,10 @@
                         </li>
                     </ul>
                     <div class="tab-content" id="pills-tabContent">
-                        {% for typ in types %}
+                        {% for typ,items in tags.items() if items%}
                         <div class="tab-pane fade {{'show active' if loop.index <2 else ''}} " id="pills-{{typ}}" role="tabpanel" aria-labelledby="pills-home-tab">
                             <div class="list-group">
-                                {% for tag in tags[typ] %}
+                                {% for tag in items %}
                                 <a href="https://api.waifu.im/random/?selected_tags={{tag}}" target="_blank" class="list-group-item list-group-item-action blckbg lstnohover">{{tag}}</a>
                                 {% endfor %}
                             </div>

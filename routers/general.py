@@ -53,12 +53,9 @@ async def home_():
 @blueprint.route("/tags/")
 async def tags_():
     rt = await current_app.waifuclient.endpoints(full=True)
-    public = rt["public"]
-    private = rt["private"]
-    tags = public + private
     return await render_template(
         "tags.html",
-        tags={"public": public, "private": private, "all": tags}, types=["public", "private"]
+        tags=rt
     )
 
 
@@ -75,13 +72,10 @@ async def upload_():
 
 @blueprint.route("/docs/")
 async def docs_():
-    rt = await current_app.waifuclient.endpoints(full=True)
-    public = rt["public"]
-    private = rt["private"]
-    tags = public + private
+    rt = await current_app.waifuclient.endpoints()
     return await render_template(
         "documentation.html",
-        tags={"public": public, "private": private, "all": tags}, types=["public", "private"]
+        tags=rt,
     )
 
 
