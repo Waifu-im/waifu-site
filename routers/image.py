@@ -140,7 +140,7 @@ async def recent_():
     files = db_to_json(
         await current_app.pool.fetch(
             """
-SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Images.is_nsfwTags.name,Tags.id,Tags.description
+SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Images.is_nsfw,Tags.name,Tags.id,Tags.description
 FROM (SELECT file,extension,id as image_id,uploaded_at
     FROM Images
     WHERE not Images.under_review
