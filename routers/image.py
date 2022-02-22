@@ -47,17 +47,20 @@ async def all_api_(title=None):
         tags.extend(
             [t for t in im["tags"] if t not in tags]
         )
+    image_template = False
     if full:
         category_name = 'Full'
+        image_template = True
     elif order_by == 'FAVOURITES':
         category_name = 'Top'
+        image_template = True
     elif is_nsfw:
         category_name = 'NSFW'
     elif len(selected_tags) == 1:
         category_name = selected_tags[0]
     else:
         category_name = 'Random'
-    if category_name == 'Random' or category_name == 'Top':
+    if image_template:
         return await render_template(
             "image.html",
             files=files,
