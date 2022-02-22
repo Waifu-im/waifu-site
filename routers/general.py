@@ -21,16 +21,16 @@ blueprint = Blueprint("general", __name__, template_folder="static/html")
 async def home_():
     apioffline = False
     try:
-        im = await current_app.waifuclient.sfw(selected_tags=["waifu"], gif=False, is_nsfw=False)
-        randomfile = (await current_app.waifuclient.sfw(
+        im = await current_app.waifuclient.random(selected_tags=["waifu"], gif=False, is_nsfw=False)
+        random_file = (await current_app.waifuclient.random(
             selected_tags=["waifu"],
             is_nsfw=False,
             order_by="FAVOURITE",
         )).split("/")[-1]
     except waifuim.exceptions.APIException as e:
         im = "https://cdn.waifu.im/aa48cd9dc6b64367.jpg"
-        randomfile = "aa48cd9dc6b64367.jpg"
-        apioffline = True if e.status == 503 else None
+        random_file = "aa48cd9dc6b64367.jpg"
+        api_offline = True if e.status == 503 else None
     async with current_app.pool.acquire() as conn:
         nb_images = (
             await conn.fetchrow(
@@ -45,8 +45,8 @@ async def home_():
         nb_tags=nb_tags,
         nb_request=nb_request,
         nb_images=nb_images,
-        randomfile=randomfile,
-        apioffline=apioffline,
+        randomfile=random_file,
+        apioffline=api_offline,
     )
 
 
