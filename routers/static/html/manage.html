@@ -160,7 +160,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                                 <span class="input-group-text">Report Description</span>
                                 <input type="text" class="form-control" id="report_description" placeholder="Contain inaproprate content" maxlength="200" name="report_description" value="{{report_description if report_description else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                             </div>
-                            <div class="col-9 sm-12 justify-content-start">
+                            <div class="justify-content-start">
                                 <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags">
                                     {% for tag in tags %}
                                         {% if tag['id'] in existed%}
