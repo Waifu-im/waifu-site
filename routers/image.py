@@ -57,7 +57,7 @@ async def all_api_(title=None):
     elif order_by == 'FAVOURITES':
         category_name = 'Top'
         image_template = True
-    elif is_nsfw:
+    elif is_nsfw and request.args.get("is_nsfw"):
         category_name = 'NSFW'
     elif len(selected_tags) == 1:
         category_name = selected_tags[0]
