@@ -254,7 +254,7 @@ async def manage_():
         source = None
     return await render_template(
         "manage.html",
-        tags=t["public"] + t["private"],
+        tags=t["tags"],
         existed=existed,
         link="https://cdn.waifu.im/" + image,
         image=image,
