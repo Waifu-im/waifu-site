@@ -14,6 +14,9 @@ blueprint = Blueprint("image", __name__, template_folder="static/html")
 
 @blueprint.route("/random/")
 async def all_api_(title=None):
+    href_url = quart.url_for("general.preview_")
+    if request.args.get('manage_href'):
+        href_url = quart.url_for("general.manage_")
     full = request.args.get('full', None)
     selected_tags = request.args.getlist('selected_tags')
     order_by = request.args.get('order_by', None)
@@ -68,7 +71,7 @@ async def all_api_(title=None):
             is_nsfw=is_nsfw,
             tags=tags,
             title=category_name,
-            href_url=quart.url_for("general.preview_"),
+            href_url=href_url,
         )
     return await render_template(
         "all_api.html",
@@ -76,8 +79,9 @@ async def all_api_(title=None):
         files=[im['url'] for im in files],
         category=category_name,
         title=title,
-        href_url=quart.url_for("general.preview_"),
+        href_url=href_url,
     )
+
 
 @blueprint.route("/fav/")
 @requires_authorization
