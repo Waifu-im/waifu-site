@@ -161,7 +161,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                                 <input type="text" class="form-control" id="report_description" placeholder="Contain inaproprate content" maxlength="200" name="report_description" value="{{report_description if report_description else ''}}"aria-label="Small" aria-describedby="inputGroup-sizing-sm">
                             </div>
                             <div class="col-9 sm-12 justify-content-start">
-                                <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags" style="z-index: 10">
+                                <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags" style="z-index: 10" data-live-search="true" data-window-padding="[64, 0, 0, 0]">
                                     {% for tag in tags %}
                                         {% if tag['id'] in existed%}
                                             <option value="{{tag['id']}}" selected="">{{tag['name']}}</option>
