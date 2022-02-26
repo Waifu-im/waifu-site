@@ -126,30 +126,6 @@ async def fav_():
     )
 
 
-@blueprint.route("/top/")
-async def top_():
-    files = (await current_app.waifuclient.random(top=True, many=True, raw=True))[
-        "images"
-    ]
-    tags = []
-    is_nsfw = False
-    for im in files:
-        if im['is_nsfw']:
-            is_nsfw = True
-        tags.extend(
-            [t for t in im["tags"] if t not in tags]
-        )
-    return await render_template(
-        "image.html",
-        files=files,
-        start=None,
-        is_nsfw=is_nsfw,
-        tags=tags,
-        title="Top",
-        href_url=quart.url_for("general.preview_"),
-    )
-
-
 @blueprint.route("/recent/")
 async def recent_():
     files = db_to_json(
