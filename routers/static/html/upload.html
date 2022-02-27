@@ -104,7 +104,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                         <div class="card-body">
                             <div class="row" style="margin-bottom: 1rem;">
                                 <div class="col-9 sm-12 justify-content-start">
-                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" required multiple name="tags">
+                                    <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple required name="tags" data-live-search="true" data-window-padding="[64, 0, 0, 0]">
                                     {% for tag in tags %}
                                        <option value="{{tag['id']}}">{{tag['name']}}</option>
                                     {% endfor %}

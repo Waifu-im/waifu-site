@@ -37,7 +37,7 @@ def allowed_file(filename):
 def check_res(content, is_gif):
     with ImagePIL.open(io.BytesIO(content)) as img:
         wid, hgt = img.size
-    if wid > 7500 or hgt > 7500:
+    if wid > 8000 or hgt > 8000:
         raise TooHighResolution
     elif (wid > 2000 or hgt > 2000) and is_gif:
         raise TooHighResolution
