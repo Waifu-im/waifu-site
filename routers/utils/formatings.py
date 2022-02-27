@@ -14,8 +14,8 @@ def db_to_json(images, tag_mod=False):
                     Tags(
                         im.pop("id"),
                         im.pop("name"),
-                        im.pop("is_public"),
                         im.pop("description"),
+                        im.pop("tag_is_nsfw"),
                     ),
                     im,
                 )
@@ -37,8 +37,8 @@ def db_to_json(images, tag_mod=False):
             tag = Tags(
                 image.pop("id"),
                 image.pop("name"),
-                image.pop("is_public"),
                 image.pop("description"),
+                image.pop("tag_is_nsfw"),
             )
             imagemapping.append((Image(**image), tag))
         imagemapping = MultiDict(imagemapping)
