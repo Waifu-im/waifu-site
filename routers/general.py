@@ -65,7 +65,7 @@ async def upload_():
     return await render_template(
         "upload.html",
         form_upload=quart.url_for("forms.form_upload"),
-        tags=rt["tags"],
+        tags=rt["versatile"]+rt["nsfw"],
     )
 
 
@@ -254,7 +254,7 @@ async def manage_():
         source = None
     return await render_template(
         "manage.html",
-        tags=t["tags"],
+        tags=t["versatile"]+t["nsfw"],
         existed=existed,
         link="https://cdn.waifu.im/" + image,
         image=image,
