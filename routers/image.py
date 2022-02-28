@@ -128,22 +128,7 @@ async def fav_():
 
 @blueprint.route("/recent/")
 async def recent_():
-    files = db_to_json(
-        await current_app.pool.fetch(
-            """
-SELECT DISTINCT Q.file,Q.extension,Q.image_id,Q.uploaded_at,Q.is_nsfw,Tags.name,Tags.id,Tags.description,Tags.is_nsfw as tag_is_nsfw
-FROM (SELECT file,extension,id as image_id,uploaded_at,is_nsfw
-    FROM Images
-    WHERE not Images.under_review
-    GROUP BY Images.file
-    ORDER BY uploaded_at DESC
-    LIMIT 60
-    ) AS Q
-JOIN LinkedTags ON LinkedTags.image=Q.file
-JOIN Tags ON Tags.id=LinkedTags.tag_id
-ORDER BY Q.uploaded_at DESC"""
-        )
-    )
+    files = await current_app.waifuclient.random(is_nsfw='null', order_by="UPLOADED_AT")
     tags = []
     is_nsfw = False
     for im in files:
