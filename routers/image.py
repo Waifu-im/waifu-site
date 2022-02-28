@@ -128,7 +128,8 @@ async def fav_():
 
 @blueprint.route("/recent/")
 async def recent_():
-    files = (await current_app.waifuclient.random(is_nsfw='null', order_by="UPLOADED_AT"))["images"]
+    files = await current_app.waifuclient.random(is_nsfw='null', order_by='UPLOADED_AT', raw=True, many=True)
+    files = files["images"]
     tags = []
     is_nsfw = False
     for im in files:
