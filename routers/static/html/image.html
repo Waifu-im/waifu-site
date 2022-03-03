@@ -63,13 +63,20 @@
 		go_to_check_page(0)
 		$("[data-bs-toggle='popover']").popover('hide')
 	}
-
+    function abort_download(items)
+    {
+        for (const item of items)
+        {
+            item.src=""
+        }
+    }
 	function change_page(page)
 	{
 		current_page=page
 		pages = Math.ceil(current_images.length / items_per_page)
 		var start = (current_page) * items_per_page
 		var end=start+items_per_page
+        abort_download(document.getElementsByClassName("gallery-item"))
 		change(current_images.slice(start,end))
 
 	}
@@ -86,7 +93,7 @@
 
 		item=document.createElement('div');
 		item.className="col-md-2 grid-item";
-		item.innerHTML = `<a href="{{href_url}}?image=${image['file']+image['extension']}"><img class="img-fluid"  alt="..." src=${image['url']}></a>`;
+		item.innerHTML = `<a href="{{href_url}}?image=${image['file']+image['extension']}"><img class="img-fluid gallery-item"  alt="..." src=${image['url']}></a>`;
 		elem.appendChild(item);
 		masonry.addItems(item);
 		masonry.layout();
