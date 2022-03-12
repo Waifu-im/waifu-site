@@ -143,7 +143,7 @@ async def inject_global_infos():
     </div>
     <div class="offcanvas-body">
         <div class="d-grid gap-2">
-            <a type="button" href="/random/?is_nsfw=on" style="color: #fff" class="btn btn-lg {'current' if current_path == '/nsfw/ero/' else 'heffect'} text-start shadow-none"><span class="bi-exclamation-lg"></span> NSFW</a>
+            <a type="button" href="/random/?is_nsfw=true" style="color: #fff" class="btn btn-lg {'current' if current_path == '/nsfw/ero/' else 'heffect'} text-start shadow-none"><span class="bi-exclamation-lg"></span> NSFW</a>
             <a type="button" href="/fav/" style="color: #fff" class="btn btn-lg {'current' if current_path == '/fav/' else 'heffect'} text-start shadow-none"><span class="bi-heart"></span> Favorite</a>
             <a type="button" href="/random/?order_by=FAVOURITES&is_nsfw=null" style="color: #fff" class="btn btn-lg {'current' if current_path == '/top/' else 'heffect'} text-start shadow-none"><span class="bi-arrow-up-circle"></span> Top</a>
             <a type="button" href="/recent/" style="color: #fff" class="btn btn-lg {'current' if current_path == '/recent/' else 'heffect'} text-start shadow-none"><span class="bi-clock-history"></span> Recent Uploads</a>
