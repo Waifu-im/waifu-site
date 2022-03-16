@@ -41,7 +41,7 @@ async def home_():
         nb_tags = (await conn.fetchrow("SELECT COUNT(*) FROM Tags"))[0]
     return await render_template(
         "home.html",
-        image=im,
+        image=str(im),
         nb_tags=nb_tags,
         nb_request=nb_request,
         nb_images=nb_images,

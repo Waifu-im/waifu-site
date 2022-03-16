@@ -27,15 +27,14 @@ async def all_api_(title=None):
         except:
             full = None
     try:
-        files = (await current_app.waifuclient.random(
+        files = await current_app.waifuclient.random(
             is_nsfw=request.args.get('is_nsfw'),
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
             full=full,
             order_by=order_by,
             many=None if full else True,
-            raw=True,
-        ))['images']
+        )
     except waifuim.APIException as e:
         if e.status == 404 or e.status == 422:
             quart.abort(404)
@@ -44,7 +43,8 @@ async def all_api_(title=None):
         return quart.abort(404)
     tags = []
     is_nsfw = False
-    for im in files:
+    for im in files.__dict__:
+        im["tags"] = im["tags"].__dict__
         if im["is_nsfw"]:
             is_nsfw = True
         tags.extend(
@@ -76,7 +76,7 @@ async def all_api_(title=None):
     return await render_template(
         "all_api.html",
         is_nsfw=is_nsfw,
-        files=[im['url'] for im in files],
+        files=[im.url for im in files],
         category=category_name,
         title=title,
         href_url=href_url,
@@ -132,7 +132,8 @@ async def recent_():
     files = files["images"]
     tags = []
     is_nsfw = False
-    for im in files:
+    for im in files.__dict__:
+        im["tags"] = im["tags"].__dict__
         if im['is_nsfw']:
             is_nsfw = True
         tags.extend(
