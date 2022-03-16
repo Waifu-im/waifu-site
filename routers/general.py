@@ -22,8 +22,7 @@ async def home_():
     api_offline = False
     try:
         im = await current_app.waifuclient.random(selected_tags=["waifu"], gif=False, is_nsfw=False)
-        random_file = (await current_app.waifuclient.random(
-            selected_tags=["waifu"],
+        random_file = str(await current_app.waifuclient.random(
             is_nsfw=False,
             order_by="FAVOURITES",
         )).split("/")[-1]

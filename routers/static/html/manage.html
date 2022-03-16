@@ -163,7 +163,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             <div class="col-9 sm-12 justify-content-start">
                                 <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple name="tags" data-live-search="true" data-window-padding="[64, 0, 0, 0]">
                                     {% for tag in tags %}
-                                        {% if tag['id'] in existed%}
+                                        {% if tag['tag_id'] in existed%}
                                             <option value="{{tag['id']}}" selected="">{{tag['name']}}</option>
                                         {% else %}
                                             <option value="{{tag['id']}}">{{tag['name']}}</option>
