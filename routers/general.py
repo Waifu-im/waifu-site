@@ -221,7 +221,7 @@ async def manage_():
         return quart.abort(404)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
-            "SELECT Tags.id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
+            "SELECT Tags.id as tag_id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
             image_name,
         )
         if not image_info:
@@ -244,7 +244,7 @@ async def manage_():
 
         t = await current_app.waifuclient.endpoints(full=True)
     try:
-        existed = [int(tag["id"]) for tag in image_info]
+        existed = [int(tag["tag_id"]) for tag in image_info]
     except TypeError:
         existed = []
     if image_info:
