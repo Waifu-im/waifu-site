@@ -22,7 +22,7 @@ async def home_():
     api_offline = False
     try:
         im = await current_app.waifuclient.random(selected_tags=["waifu"], gif=False, is_nsfw=False)
-        random_file = str(await current_app.waifuclient.random(
+        random_file = (await current_app.waifuclient.random(
             selected_tags=["waifu"],
             is_nsfw=False,
             order_by="FAVOURITES",
@@ -41,7 +41,7 @@ async def home_():
         nb_tags = (await conn.fetchrow("SELECT COUNT(*) FROM Tags"))[0]
     return await render_template(
         "home.html",
-        image=str(im),
+        image=im,
         nb_tags=nb_tags,
         nb_request=nb_request,
         nb_images=nb_images,
