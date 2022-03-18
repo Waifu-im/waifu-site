@@ -104,7 +104,7 @@ async def editfav_():
     if not image:
         return quart.abort(400)
     user = await fetch_user_safe()
-    await current_app.waifuclient.fav_toggle(user_id=user.id, image=image)
+    await current_app.waifuclient.fav_toggle(image, user_id=user.id)
     return quart.redirect(quart.url_for("general.preview_") + f"?image={image}")
 
 
@@ -120,9 +120,9 @@ async def delete_image():
     async with current_app.pool.acquire() as conn:
         await conn.execute("DELETE FROM Images WHERE file=$1", image_name)
     async with current_app.boto3session.client(
-        "s3",
-        region_name=current_app.config["s3zone"],
-        endpoint_url=current_app.config["s3endpoint"],
+            "s3",
+            region_name=current_app.config["s3zone"],
+            endpoint_url=current_app.config["s3endpoint"],
     ) as s3:
         await s3.delete_object(Bucket=current_app.config["s3bucket"], Key=image)
     return quart.redirect(f"https://waifu.im/list/")
@@ -172,9 +172,9 @@ async def clean_images():
             raw_db_image_list = await conn.fetch("SELECT file, extension FROM Images")
             db_image_list = [im[0] + im[1] for im in raw_db_image_list]
             async with current_app.boto3session.resource(
-                "s3",
-                region_name=current_app.config["s3zone"],
-                endpoint_url=current_app.config["s3endpoint"],
+                    "s3",
+                    region_name=current_app.config["s3zone"],
+                    endpoint_url=current_app.config["s3endpoint"],
             ) as s3:
                 bucket = await s3.Bucket(current_app.config["s3bucket"])
                 s3_image_list = [file.key async for file in bucket.objects.all()]
@@ -183,9 +183,9 @@ async def clean_images():
                 if it not in db_image_list:
                     try:
                         async with current_app.boto3session.client(
-                            "s3",
-                            region_name=current_app.config["s3zone"],
-                            endpoint_url=current_app.config["s3endpoint"],
+                                "s3",
+                                region_name=current_app.config["s3zone"],
+                                endpoint_url=current_app.config["s3endpoint"],
                         ) as s3:
                             await s3.delete_object(
                                 Bucket=current_app.config["s3bucket"], Key=it
