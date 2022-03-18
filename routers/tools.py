@@ -104,7 +104,7 @@ async def editfav_():
     if not image:
         return quart.abort(400)
     user = await fetch_user_safe()
-    await current_app.waifuclient.fav(user_id=user.id, toggle=image)
+    await current_app.waifuclient.fav_toggle(user_id=user.id, image=image)
     return quart.redirect(quart.url_for("general.preview_") + f"?image={image}")
 
 
