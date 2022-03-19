@@ -63,9 +63,7 @@
                 <div class="container-fluid borderthin">
                     <h3 id="tags">Tags</h3>
                     <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags!</p>
-                    <p class="fs-5">There is versatile tags that can describe both safe and lewd images and specially nsfw tags that only describe lewd images.
-                        You can use <kbd>is_nsfw</kbd> query string to precise the type of content you want the API to returns, it is false by default and requesting at least one nsfw tag in <kbd>selected_tags</kbd> will always make the API returns adult content regardless of its value.
-                    If you need more time to familiarise with it, you can still use the <a href="https://api.waifu.im/docs" class="link-light" target="_blank">interactive docs</a> and also take a look at the available <a href="#random-image-query-strings" class="link-light">query strings</a>.</p>
+                    <p class="fs-5">There is versatile tags that can describe both safe and lewd images and specially nsfw tags that only describe lewd images.</p>
                     <p class="fs-6">Little tips, the default tag is <strong><i>waifu</i></strong>, you can find a list of available tags <a class="link-light" href="https://api.waifu.im/tags/?full=on">here</a> or bellow.</p>
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                         {% for typ,items in tags.items() if items%}
@@ -138,24 +136,24 @@ It doesnt really need to be handled, since if you correctly requested the route 
                     <p class="fs-5">Here is an example response that you could get.</p>
                     <pre><code class="language-json">
 {
-  "code": 200,
   "images": [
     {
       "file": "5f7e656343cb7be1",
       "extension": ".jpg",
       "image_id": 3284,
+      "favourites": 12,
       "dominant_color": "#cac2c6",
       "source": "https://www.pixiv.net/en/artworks/88563141",
-      "like": 7,
       "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
       "is_nsfw": false,
       "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
+      "preview_url": "https://waifu.im/preview/?image=5f7e656343cb7be1.jpg",
       "tags": [
         {
           "tag_id": 12,
           "name": "waifu",
-          "description": "Any kind of sfw content. A female anime/manga character.",
-          "is_nsfw": false,
+          "description": "A female anime/manga character.",
+          "is_nsfw": false
         }
       ]
     }
@@ -187,7 +185,7 @@ It doesnt really need to be handled, since if you correctly requested the route 
                                 <th scope="row">is_nsfw</th>
                                 <th scope="row">No</th>
                                 <th scope="row">Strict Boolean or String</th>
-                                <th scope="row">Force nsfw files or exclude them, only works if the tags selected aren't specially nsfw. You can provide 'null' to make it be undefined. (Default to False)</th>
+                                <th scope="row">Force or exclude lewd files, only works if the tags selected_tags aren't specially nsfw (see difference above). You can provide 'null' to make it be random. (Default to False)</th>
                             </tr>
                             <tr>
                                 <th scope="row">gif</th>
@@ -284,35 +282,31 @@ async with session.get(url, headers=HEADERS) as resp:
                     </table>
                     <p class="fs-6">You will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>, see the <a class="link-light" href="#galleries-example">example</a>.</p>
                     <h4 id="galleries-response">Response</h4>
-                    <p class="fs-5">The structure is the same as for the previous route except for some new keys.
                     <pre><code class="language-json">
 {
-  "code": 200,
   "images": [
     {
       "file": "5f7e656343cb7be1",
       "extension": ".jpg",
       "image_id": 3284,
+      "favourites": 12,
       "dominant_color": "#cac2c6",
       "source": "https://www.pixiv.net/en/artworks/88563141",
-      "like": 7,
       "uploaded_at": "2021-11-02T11:16:19.048684+00:00",
       "is_nsfw": false,
       "url": "https://cdn.waifu.im/5f7e656343cb7be1.jpg",
+      "preview_url": "https://waifu.im/preview/?image=5f7e656343cb7be1.jpg",
       "tags": [
         {
           "tag_id": 12,
           "name": "waifu",
-          "description": "Any kind of sfw content. A female anime/manga character.",
-          "is_nsfw": false,
+          "description": "A female anime/manga character.",
+          "is_nsfw": false
         }
       ]
-    },
-    etc...
+    }
   ]
-  "inserted":["list of valid images passed as insert parameter (or toggle, depending if it has been added or removed)."],
-  "deleted":["same, please not that if you provided an image that do not exist, you will get a 400 status code and all the operations will be cancelled."]
-} 
+}
                 </code></pre>
                     <h4 id="galleries-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
@@ -322,24 +316,6 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <th scope="col"><span class="text-success">Required</span></th>
                                 <th scope="col"><span class="text-success">Type</span></th>
                                 <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">toggle</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">Add images if not in the gallery else remove.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">insert</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">add images to your gallery</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">delete</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">remove images from your gallery</th>
                             </tr>
                             <tr>
                                 <th scope="row">user_id</th>
@@ -380,6 +356,57 @@ async with aiohttp.ClientSession() as cs:
 			</code></pre>
                 </div>
                 <div class="container-fluid borderthin">
+                    <h3 id="edit-galleries">Edit Galleries</h3>
+                    <p class="fs-5">Previously you saw how to consult your gallery, now let's see how you can edit it.</p>
+                    <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user gallery if it already was in, otherwise it will be added to it.</p>
+                <div class="container-fluid borderthin">
+                    <h3 id="info">Get Images Information</h3>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">PATH</span></th>
+                                <th scope="col"><span class="text-success">Request type</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/fav/insert/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/fav/delete/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">/fav/toggle/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">As previously, you will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>.</p>
+                    <h4 id="info-response">Response</h4>
+                    <p class="fs-5">For insert and delete route, the API will return a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204" class="link-light" target="_blank">204</a> status code. Let's see the structure for the toggle route.</p>
+                    <pre><code class="language-json">
+{
+  "state": "DELETED" or "INSERTED" depending on the action done
+}
+                </code></pre>
+                    <h4 id="edit-galleries-query-strings">Query strings</h4>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">Name</span></th>
+                                <th scope="col"><span class="text-success">Required</span></th>
+                                <th scope="col"><span class="text-success">Type</span></th>
+                                <th scope="col"><span class="text-success">Behaviour</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">image</th>
+                                <th scope="row">Yes</th>
+                                <th scope="row">String</th>
+                                <th scope="row">The image that you want to add, remove or toggle from the user gallery.</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <div class="container-fluid borderthin">
                     <h3 id="info">Get Images Information</h3>
                     <table class="table borderless cardupload">
                         <thead>
