@@ -354,31 +354,29 @@ async with aiohttp.ClientSession() as cs:
 			error = api["message"]
 			#do whatever you want with the error message.
 			</code></pre>
-                </div>
-                <div class="container-fluid borderthin">
-                    <h3 id="edit-galleries">Edit Galleries</h3>
-                    <p class="fs-5">Previously you saw how to consult your gallery, now let's see how you can edit it.</p>
-                    <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user gallery if it already was in, otherwise it will be added to it.</p>
-                <div class="container-fluid borderthin">
-                    <h3 id="info">Get Images Information</h3>
-                    <table class="table borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">PATH</span></th>
-                                <th scope="col"><span class="text-success">Request type</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">/fav/insert/</th>
-                                <th scope="row">GET</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">/fav/delete/</th>
-                                <th scope="row">GET</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">/fav/toggle/</th>
-                                <th scope="row">GET</th>
-                            </tr>
+            </div>
+            <div class="container-fluid borderthin">
+                <h3 id="edit-galleries">Edit Galleries</h3>
+                <p class="fs-5">Previously you saw how to consult your gallery, now let's see how you can edit it.</p>
+                <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user gallery if it already was in, otherwise it will be added to it.</p>
+                <table class="table borderless cardupload">
+                    <thead>
+                        <tr>
+                            <th scope="col"><span class="text-success">PATH</span></th>
+                            <th scope="col"><span class="text-success">Request type</span></th>
+                        </tr>
+                        <tr>
+                            <th scope="row">/fav/insert/</th>
+                            <th scope="row">GET</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">/fav/delete/</th>
+                            <th scope="row">GET</th>
+                        </tr>
+                        <tr>
+                            <th scope="row">/fav/toggle/</th>
+                            <th scope="row">GET</th>
+                        </tr>
                         </thead>
                     </table>
                     <p class="fs-6">As previously, you will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>.</p>
@@ -406,6 +404,7 @@ async with aiohttp.ClientSession() as cs:
                             </tr>
                         </thead>
                     </table>
+                    </div>
                     <div class="container-fluid borderthin">
                     <h3 id="info">Get Images Information</h3>
                     <table class="table borderless cardupload">
