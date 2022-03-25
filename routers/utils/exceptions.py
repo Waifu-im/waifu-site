@@ -8,3 +8,7 @@ class Unauthorized(HttpException):
 
 class TooHighResolution(Exception):
     pass
+
+
+class TooLowResolution(Exception):
+    pass

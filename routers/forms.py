@@ -8,6 +8,7 @@ from routers.utils import (
     permissions_check,
     fetch_user_safe,
     TooHighResolution,
+    TooLowResolution,
     get_user_info,
 )
 from quart import Blueprint, render_template, request, current_app
@@ -34,14 +35,14 @@ def allowed_file(filename):
         return ext
 
 
-def check_res(content, is_gif):
+def get_res(content, is_gif):
     with ImagePIL.open(io.BytesIO(content)) as img:
         wid, hgt = img.size
-    if wid > 8000 or hgt > 8000:
+    if ((wid > 2000 or hgt > 2000) and is_gif) or (wid > 8000 or hgt > 8000):
         raise TooHighResolution
-    elif (wid > 2000 or hgt > 2000) and is_gif:
-        raise TooHighResolution
-    return (wid >= 800 and hgt >= 1000) or (wid >= 400 and hgt >= 200 and is_gif)
+    elif (wid < 400 and hgt < 200) or ((wid < 800 or hgt < 1000) and not is_gif):
+        raise TooLowResolution
+    return wid, hgt
 
 
 def get_dominant(fileobj):
@@ -50,7 +51,7 @@ def get_dominant(fileobj):
 
 
 async def insert_db(
-    fileobj, filename_no_ext, filename, extension, source, is_nsfw, tags, loop, user=None
+    fileobj, filename_no_ext, filename, extension, source, is_nsfw, width, height, tags, loop, user=None
 ):
     dominant_color = await loop.run_in_executor(None, get_dominant, fileobj)
     fileobj.seek(0)
@@ -66,7 +67,7 @@ async def insert_db(
                 )
 
                 await conn.execute(
-                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,uploader,is_nsfw) VALUES($1,$2,$3,$4,$5,$6,$7)",
+                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,uploader,is_nsfw,width,height) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9)",
                     filename_no_ext,
                     extension,
                     str(dominant_color),
@@ -74,16 +75,20 @@ async def insert_db(
                     ur,
                     user.id,
                     is_nsfw,
+                    width,
+                    height
                 )
             else:
                 await conn.execute(
-                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,is_nsfw) VALUES($1,$2,$3,$4,$5,$6)",
+                    "INSERT INTO Images (file,extension,dominant_color,source,under_review,is_nsfw,width,height) VALUES($1,$2,$3,$4,$5,$6,$7,$8)",
                     filename_no_ext,
                     extension,
                     str(dominant_color),
                     source,
                     True,
                     is_nsfw,
+                    width,
+                    height,
                 )
             for d in tags:
                 await conn.execute(
@@ -138,15 +143,16 @@ async def form_upload():
     if not source or len(source) < 4:
         source = None
     try:
-        rtres = await loop.run_in_executor(
-            None, check_res, content, True if extension == ".gif" else False
+        width, height = await loop.run_in_executor(
+            None, get_res, content, True if extension == ".gif" else False
         )
     except TooHighResolution:
         return dict(message="Sorry, Your image has a too high resolution."), 400
-    if not rtres:
+    except TooLowResolution:
         return (
             dict(
-                message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>.'
+                message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
+                        'href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>. '
             ),
             400,
         )
@@ -170,7 +176,7 @@ async def form_upload():
             )
         else:
             await insert_db(
-                file, filename_no_ext, filename, extension, source, is_nsfw, tags, loop
+                file, filename_no_ext, filename, extension, source, is_nsfw, width, height, tags, loop
             )
     except asyncpg.exceptions.UniqueViolationError:
         return (
@@ -204,6 +210,7 @@ async def forms_manage():
     tags = forms.getlist("tags[]")
     source = forms.get("source")
     loop = asyncio.get_event_loop()
+    width = height = None
     if not source or len(source) < 4:
         source = None
     if file:
@@ -219,12 +226,17 @@ async def forms_manage():
 
         filename_no_ext = xxhash.xxh3_64_hexdigest(content)
         filename = filename_no_ext + extension
-        if not await loop.run_in_executor(
-            None, check_res, content, True if extension == ".gif" else False
-        ):
+        try:
+            width, height = await loop.run_in_executor(
+                None, get_res, content, True if extension == ".gif" else False
+            )
+        except TooHighResolution:
+            return dict(message="Sorry, Your image has a too high resolution."), 400
+        except TooLowResolution:
             return (
                 dict(
-                    message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>.',
+                    message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
+                            'href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>. '
                 ),
                 400,
             )
@@ -235,7 +247,10 @@ async def forms_manage():
         async with conn.transaction():
             temp_filename = filename_no_ext if file else image_no_ext
             await conn.execute(
-                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6,is_nsfw=$7 WHERE file=$8",
+                "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),"
+                "dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6,is_nsfw=$7,"
+                "width=COALESCE($8,width), height=COALESCE($9,height)"
+                "WHERE file=$10",
                 source if source else None,
                 filename_no_ext,
                 extension,
@@ -243,6 +258,8 @@ async def forms_manage():
                 is_under_review,
                 is_hidden,
                 is_nsfw,
+                width,
+                height,
                 image_no_ext,
             )
             await conn.execute("DELETE FROM LinkedTags WHERE image=$1", temp_filename)
