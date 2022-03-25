@@ -170,6 +170,8 @@ async def form_upload():
                 extension,
                 source,
                 is_nsfw,
+                width,
+                height,
                 tags,
                 loop,
                 user=user,
