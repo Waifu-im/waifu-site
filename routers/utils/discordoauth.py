@@ -17,7 +17,7 @@ async def get_user_info(user_id, jsondata=False):
     )
     if resp.status == 404:
         if jsondata:
-            response = jsonify(dict(message="Please provide a valid user_id"))
+            response = jsonify(dict(detail="Please provide a valid user_id"))
             response.status_code = 400
             abort(response)
         abort(400, description="Please provide a valid user_id")
@@ -25,7 +25,7 @@ async def get_user_info(user_id, jsondata=False):
     if resp.status != 200:
         if jsondata:
             response = jsonify(
-                dict(message="Sorry, something went wrong with the ipc request.")
+                dict(detail="Sorry, something went wrong with the ipc request.")
             )
             response.status_code = 500
             abort(response)

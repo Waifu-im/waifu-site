@@ -244,7 +244,7 @@ async def handle_exception(error):
 async def handle_api_exception(error):
     return await handle_exception(
         InternalServerError(
-            description=f"""Sorry an API error hapened, here it is : {error.message}"""
+            description=f"""Sorry an API error hapened, here it is : {error.detail}"""
         )
     )
 

@@ -124,7 +124,7 @@ async def form_upload():
     if not (file and tags):
         return (
             dict(
-                message="Sorry, the server did not received all the data it needed. Please retry."
+                detail="Sorry, the server did not received all the data it needed. Please retry."
             ),
             400,
         )
@@ -132,7 +132,7 @@ async def form_upload():
     if not extension:
         return (
             dict(
-                message="Sorry your file extension isn't allowed Please retry with another file."
+                detail="Sorry your file extension isn't allowed Please retry with another file."
             ),
             400,
         )
@@ -147,11 +147,11 @@ async def form_upload():
             None, get_res, content, True if extension == ".gif" else False
         )
     except TooHighResolution:
-        return dict(message="Sorry, Your image has a too high resolution."), 400
+        return dict(detail="Sorry, Your image has a too high resolution."), 400
     except TooLowResolution:
         return (
             dict(
-                message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
+                detail='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
                         'href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>. '
             ),
             400,
@@ -183,11 +183,11 @@ async def form_upload():
     except asyncpg.exceptions.UniqueViolationError:
         return (
             dict(
-                message=f'Sorry this picture already exist, you can find it <a href="{image_preview}">here</a>.'
+                detail=f'Sorry this picture already exist, you can find it <a href="{image_preview}">here</a>.'
             ),
             409,
         )
-    return dict(message=image_preview)
+    return dict(detail=image_preview)
 
 
 @blueprint.route("/manage/", methods=["POST"])
@@ -220,7 +220,7 @@ async def forms_manage():
         if not extension:
             return (
                 dict(
-                    message="Sorry your file extension isn't allowed Please retry with another file.",
+                    detail="Sorry your file extension isn't allowed Please retry with another file.",
                 ),
                 400,
             )
@@ -233,11 +233,11 @@ async def forms_manage():
                 None, get_res, content, True if extension == ".gif" else False
             )
         except TooHighResolution:
-            return dict(message="Sorry, Your image has a too high resolution."), 400
+            return dict(detail="Sorry, Your image has a too high resolution."), 400
         except TooLowResolution:
             return (
                 dict(
-                    message='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
+                    detail='Sorry, Your image has a too low resolution, Please consider using images enlarger such as <a '
                             'href="http://waifu2x.udp.jp/index.fr.html">waifu2x</a>. '
                 ),
                 400,
@@ -312,6 +312,6 @@ async def forms_manage():
                         },
                     )
     return dict(
-        message=quart.url_for("general.manage_")
+        detail=quart.url_for("general.manage_")
         + f"?image={filename if file else image}"
     )

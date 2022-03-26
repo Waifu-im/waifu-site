@@ -64,13 +64,13 @@ function completeHandler(event)
     document.getElementById("submitbutton").value="Submit";
     if (event.target.status==200){
         let jrs=JSON.parse(event.target.responseText);
-        window.location.href=jrs["message"];
+        window.location.href=jrs["detail"];
     }
     else if (event.target.status==400 || event.target.status==409)
     {
         let jrs=JSON.parse(event.target.responseText);
         document.getElementById("errort").style.display='unset'
-        document.getElementById("errort").innerHTML = jrs["message"];
+        document.getElementById("errort").innerHTML = jrs["detail"];
     }
     else
     {

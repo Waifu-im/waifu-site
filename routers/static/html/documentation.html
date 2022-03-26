@@ -95,7 +95,7 @@ Its recommended to handle them.
 
 {
   "code": Status code,
-  "message": "Description"
+  "detail": "Description"
 }
 
 This json structure is the one for a 422 status code.
@@ -263,7 +263,7 @@ async with session.get(url, headers=HEADERS) as resp:
         url = api['images'][0]['url']
     # Do whatever you want with the image url.
     else:
-        error = api['message']
+        error = api['detail']
     # Do whatever you want with the error description.
       </code></pre>
                 </div>
@@ -355,8 +355,8 @@ async with aiohttp.ClientSession() as cs:
 			# Do whatever you want with the waifu tag pictures.
 	
 		else:
-			error = api["message"]
-			#do whatever you want with the error message.
+			error = api["detail"]
+			#do whatever you want with the error detail.
 			</code></pre>
             </div>
             <div class="container-fluid borderthin">
