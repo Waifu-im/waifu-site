@@ -95,12 +95,12 @@ Its recommended to handle them.
 
 {
   "code": Status code,
-  "message": "Description"
+  "detail": "Description / Details"
 }
 
-This json structure is the one for a 422 status code.
-It means you provided an invalid argument or that you forgot to provide an argument that the server needed.
-It doesnt really need to be handled, since if you correctly requested the route with the good type of parameters, or just use the wrapper, you will never face it.
+The bellow json structure is the one for a 422 status code.
+It means the provided arguments couldn't be validated (type issue etc).
+This is just about the parameter validation so you will never face this error if you provided the arguments correctly.
 
 {
   "detail": [
