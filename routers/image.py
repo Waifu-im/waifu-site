@@ -34,6 +34,7 @@ async def all_api_(title=None):
             full=full,
             order_by=order_by,
             many=None if full else True,
+            gif=request.args.get('gif'),
             raw=True,
         ))['images']
     except waifuim.APIException as e:
