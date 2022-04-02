@@ -13,7 +13,7 @@ async def fetch_user_safe():
 async def get_user_info(user_id, jsondata=False):
     """not really related to oauth"""
     resp = await current_app.session.get(
-        f"http://127.0.0.1:8033/userinfos/?id={user_id}"
+        f"http://127.0.0.1:8033/userinfo/?id={user_id}"
     )
     if resp.status == 404:
         if jsondata:
