@@ -242,10 +242,7 @@ HEADERS = {'User-Agent': f'aiohttp/{aiohttp.__version__}; YourAppName'}
 # Here let's say you want to exclude some images, disable gifs and request only safe pictures
 # The url is written in multiple lines for readability purposes, but it is equal to:
 # https://api.waifu.im/random/?excluded_files=3867126be8e260b5.jpeg&excluded_files=ca52928d43b30d6a&gif=false&excluded_tags=maid&excluded_tags=oppai&is_nsfw=false
-# You can also provide params with aiohttp kwarg
-# in this case, be careful to not provide a dict and a list of tags for the "selected_tags" key, because aiohttp will not provide them the way the API is expecting them to be.
-# instead provide something like this :
-# params = [("selected_tags","tag1"),("selected_tags","tag2")]
+# You can also provide params as a dict or a list of tuple with the 'params' kwarg
 url = "https://api.waifu.im/random/?excluded_files=3867126be8e260b5.jpeg" \
       "&excluded_files=ca52928d43b30d6a" \
       "&gif=false" \
