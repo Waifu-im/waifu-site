@@ -20,6 +20,7 @@ async def all_api_(title=None):
     full = request.args.get('full', None)
     selected_tags = request.args.getlist('selected_tags')
     order_by = request.args.get('order_by', None)
+    orientation = request.args.get('orientation', None)
     if full:
         try:
             user = await current_app.discord.fetch_user()
@@ -33,6 +34,7 @@ async def all_api_(title=None):
             excluded_tags=request.args.getlist('excluded_tags'),
             full=full,
             order_by=order_by,
+            orientation=orientation,
             many=None if full else True,
             gif=request.args.get('gif'),
             raw=True,
