@@ -330,6 +330,54 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <th scope="row">Integer</th>
                                 <th scope="row">The user id from which you want to consult the gallery (only for trusted apps)</th>
                             </tr>
+                            <tr>
+                                <th scope="row">selected_tags</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">Force the API to return images with, at least all the provided tags</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">excluded_tags</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">Force the API to return images without any of the provided tags</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">is_nsfw</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Strict Boolean or String</th>
+                                <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to False.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">gif</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Boolean</th>
+                                <th scope="row">Force or prevent the API to return .gif files.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">order_by</th>
+                                <th scope="row">No</th>
+                                <th scope="row">String</th>
+                                <th scope="row">You can choose to order the image by one of the following : FAVOURITES, UPLOADED_AT</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">orientation</th>
+                                <th scope="row">No</th>
+                                <th scope="row">String</th>
+                                <th scope="row">You can choose the orientation of your image using one of the following : LANDSCAPE, PORTRAIT</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">many</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Boolean</th>
+                                <th scope="row">Return an array of 30 files if True.</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">excluded_files</th>
+                                <th scope="row">No</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
+                            </tr>
                         </thead>
                     </table>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
@@ -349,8 +397,8 @@ def has_waifu_tag(image):
 
 # Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
-    # In this example we insert and remove some images for more information look at the query strings description
-	async with cs.get(f"https://api.waifu.im/fav/?delete=7acebd66b6670ba3.jpg&insert=55b1a881726f783b.png&insert=c1384aaf68b8cbf5",headers=headers) as rep:
+    # In this example we get all the picture with a landscape orientation in the user gallery
+	async with cs.get(f"https://api.waifu.im/fav/?orientation=LANDSCAPE",headers=headers) as rep:
 		api = await rep.json()
 		if rep.status in {200, 201}:
 			# The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
@@ -374,20 +422,20 @@ async with aiohttp.ClientSession() as cs:
                         </tr>
                         <tr>
                             <th scope="row">/fav/insert/</th>
-                            <th scope="row">GET</th>
+                            <th scope="row">POST</th>
                         </tr>
                         <tr>
                             <th scope="row">/fav/delete/</th>
-                            <th scope="row">GET</th>
+                            <th scope="row">DELETE</th>
                         </tr>
                         <tr>
                             <th scope="row">/fav/toggle/</th>
-                            <th scope="row">GET</th>
+                            <th scope="row">POST</th>
                         </tr>
                         </thead>
                     </table>
                     <p class="fs-6">As previously, you will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>.</p>
-                    <h4 id="info-response">Response</h4>
+                    <h4 id="edit-galleries-response">Response</h4>
                     <p class="fs-5">For insert and delete route, the API will return a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204" class="link-light" target="_blank">204</a> status code. Let's see the structure for the toggle route.</p>
                     <pre><code class="language-json">
 {
