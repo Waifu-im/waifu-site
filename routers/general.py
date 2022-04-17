@@ -146,7 +146,7 @@ async def preview_(file: str):
     args = tuple(args)
     rt = await current_app.pool.fetch(
         "SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Images.is_nsfw,"
-        "Tags.name, FavImages.user_id"
+        "Tags.name, FavImages.user_id "
         "FROM Images "
         "LEFT JOIN LinkedTags ON LinkedTags.image = Images.file "
         "JOIN Tags ON Tags.id = LinkedTags.tag_id "
