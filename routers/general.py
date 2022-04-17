@@ -220,7 +220,7 @@ async def manage_(file):
         "manage.html",
         tags=t["versatile"] + t["nsfw"],
         existed=existed,
-        link="https://cdn.waifu.im/" + filename,
+        link="https://cdn.waifu.im/" + image_info[0]["file"] + image_info[0]["extension"],
         file=file,
         filename=filename,
         source=source,
