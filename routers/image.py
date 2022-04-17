@@ -14,9 +14,9 @@ blueprint = Blueprint("image", __name__, template_folder="static/html")
 
 @blueprint.route("/random/")
 async def all_api_(title=None):
-    href_url = quart.url_for("general.preview_", file='')
+    href_url = quart.url_for("general.preview_", file='').rstrip('/')
     if request.args.get('manage_href'):
-        href_url = quart.url_for("general.manage_", file='')
+        href_url = quart.url_for("general.manage_", file='').rstrip('/')
     full = request.args.get('full', None)
     selected_tags = request.args.getlist('selected_tags')
     order_by = request.args.get('order_by', None)
@@ -125,7 +125,7 @@ async def fav_():
         is_nsfw=is_nsfw,
         tags=tags,
         title=None,
-        href_url=quart.url_for("general.preview_", file=''),
+        href_url=quart.url_for("general.preview_", file='').rstrip('/'),
     )
 
 
@@ -148,7 +148,7 @@ async def recent_():
         is_nsfw=is_nsfw,
         tags=tags,
         title="Recent",
-        href_url=quart.url_for("general.preview_", file=''),
+        href_url=quart.url_for("general.preview_", file='').rstrip('/'),
     )
 
 
@@ -187,7 +187,7 @@ ORDER BY uploaded_at DESC"""
         is_nsfw=is_nsfw,
         tags=tags,
         title="Report",
-        href_url=quart.url_for("general.manage_", file=''),
+        href_url=quart.url_for("general.manage_", file='').rstrip('/'),
     )
 
 
@@ -226,5 +226,5 @@ ORDER BY uploaded_at DESC"""
         is_nsfw=is_nsfw,
         tags=tags,
         title="Review",
-        href_url=quart.url_for("general.manage_", file=''),
+        href_url=quart.url_for("general.manage_", file='').rstrip('/'),
     )
