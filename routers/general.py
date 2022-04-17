@@ -157,7 +157,7 @@ async def preview_(file: str):
     if not rt:
         quart.abort(404)
     if rt[0]['file'] != filename:
-        return quart.redirect(quart.url_for("general.preview_") + rt[0]['file'])
+        return quart.redirect(quart.url_for("general.preview_", file=rt[0]['file']))
     if auth:
         fav = bool(rt[0]["user_id"])
     tags = {t['name'] for t in rt}
@@ -167,7 +167,7 @@ async def preview_(file: str):
         "preview.html",
         source=rt[0]['source'],
         file=file,
-        filename=rt[0]['file']+rt[0]['extension'],
+        filename=rt[0]['file'] + rt[0]['extension'],
         dominant_color=rt[0]["dominant_color"],
         fav=fav,
         is_nsfw=rt[0]['is_nsfw'],
@@ -204,7 +204,7 @@ async def manage_(file):
         file_db = image_info[0]["file"]
         if file_db != file_parts:
             return quart.redirect(
-                quart.url_for("general.manage_") + file_db
+                quart.url_for("general.manage_", file=file_db)
             )
 
         t = await current_app.waifuclient.endpoints(full=True)

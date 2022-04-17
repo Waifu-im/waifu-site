@@ -156,7 +156,7 @@ async def form_upload():
             ),
             400,
         )
-    image_preview = quart.url_for('general.preview_') + file
+    image_preview = quart.url_for('general.preview_',file=file)
     try:
         if await current_app.discord.authorized:
             try:
@@ -310,4 +310,4 @@ async def forms_manage():
                             "ACL": "public-read",
                         },
                     )
-    return dict(detail=quart.url_for("general.manage_") + temp_file)
+    return dict(detail=quart.url_for("general.manage_", file=temp_file))
