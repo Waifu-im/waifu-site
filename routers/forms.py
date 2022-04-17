@@ -195,14 +195,14 @@ async def form_upload():
 @permissions_check("manage_images")
 async def forms_manage():
     user = await fetch_user_safe()
-    filename_no_ext = None
+    temp_file = None
     dominant_color = None
     extension = None
     forms = await request.form
-    files = await request.files
-    file = files.get("file")
-    image = forms.get("image")
-    image_no_ext = os.path.splitext(image)[0]
+    files_bytes = await request.files
+    file_bytes = files_bytes.get("file")
+    filename = forms.get("image")
+    file = os.path.splitext(filename)[0]
     is_under_review = forms.get("is_under_review") == "true"
     is_nsfw = forms.get("is_nsfw") == "true"
     is_hidden = forms.get("is_hidden") == "true"
@@ -215,8 +215,8 @@ async def forms_manage():
     width = height = None
     if not source or len(source) < 4:
         source = None
-    if file:
-        extension = allowed_file(file.filename)
+    if file_bytes:
+        extension = allowed_file(file_bytes.filename)
         if not extension:
             return (
                 dict(
@@ -224,10 +224,9 @@ async def forms_manage():
                 ),
                 400,
             )
-        content = file.read()
-
-        filename_no_ext = xxhash.xxh3_64_hexdigest(content)
-        filename = filename_no_ext + extension
+        content = file_bytes.read()
+        temp_file = xxhash.xxh3_64_hexdigest(content)
+        temp_filename = temp_file + extension
         try:
             width, height = await loop.run_in_executor(
                 None, get_res, content, True if extension == ".gif" else False
@@ -242,19 +241,19 @@ async def forms_manage():
                 ),
                 400,
             )
-        dominant_color = await loop.run_in_executor(None, get_dominant, file)
-        file.seek(0)
+        dominant_color = await loop.run_in_executor(None, get_dominant, file_bytes)
+        file_bytes.seek(0)
 
     async with current_app.pool.acquire() as conn:
         async with conn.transaction():
-            temp_filename = filename_no_ext if file else image_no_ext
+            temp_file = temp_file if file_bytes else file
             await conn.execute(
                 "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),"
                 "dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6,is_nsfw=$7,"
                 "width=COALESCE($8,width), height=COALESCE($9,height)"
                 "WHERE file=$10",
                 source if source else None,
-                filename_no_ext,
+                temp_file,
                 extension,
                 dominant_color,
                 is_under_review,
@@ -262,13 +261,13 @@ async def forms_manage():
                 is_nsfw,
                 width,
                 height,
-                image_no_ext,
+                file,
             )
-            await conn.execute("DELETE FROM LinkedTags WHERE image=$1", temp_filename)
+            await conn.execute("DELETE FROM LinkedTags WHERE image=$1", temp_file)
             for d in tags:
                 await conn.execute(
                     "INSERT INTO LinkedTags (image,tag_id) VALUES($1,$2)",
-                    temp_filename,
+                    temp_file,
                     int(d),
                 )
             if is_reported:
@@ -284,13 +283,13 @@ async def forms_manage():
                 )
                 await conn.execute(
                     "INSERT INTO Reported_images (image,author_id,description) VALUES($1,$2,$3) ON CONFLICT(image) DO UPDATE SET author_id=$2,description=$3",
-                    temp_filename,
+                    temp_file,
                     report_user_id,
                     report_description,
                 )
             else:
                 await conn.execute(
-                    "DELETE FROM Reported_images WHERE image=$1", temp_filename
+                    "DELETE FROM Reported_images WHERE image=$1", temp_file
                 )
 
             async with current_app.boto3session.client(
@@ -298,20 +297,17 @@ async def forms_manage():
                 region_name=current_app.config["s3zone"],
                 endpoint_url=current_app.config["s3endpoint"],
             ) as s3:
-                if file:
+                if file_bytes:
                     await s3.delete_object(
-                        Bucket=current_app.config["s3bucket"], Key=image
+                        Bucket=current_app.config["s3bucket"], Key=filename
                     )
                     await s3.upload_fileobj(
-                        file,
+                        file_bytes,
                         current_app.config["s3bucket"],
-                        filename,
+                        temp_filename,
                         ExtraArgs={
                             "ContentType": f'image/{extension.replace(".","")}',
                             "ACL": "public-read",
                         },
                     )
-    return dict(
-        detail=quart.url_for("general.manage_")
-        + f"?image={filename if file else image}"
-    )
+    return dict(detail=quart.url_for("general.manage_") + temp_file)

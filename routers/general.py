@@ -64,7 +64,7 @@ async def upload_():
     return await render_template(
         "upload.html",
         form_upload=quart.url_for("forms.form_upload"),
-        tags=rt["versatile"]+rt["nsfw"],
+        tags=rt["versatile"] + rt["nsfw"],
     )
 
 
@@ -129,85 +129,51 @@ async def dashboard_():
     )
 
 
-@blueprint.route("/preview/")
-async def preview_():
-    is_nsfw = False
-    in_fav = False
-    inprocess = False
-    source = None
-    tag_names = []
-    existed = session.get("upload_existed")
+@blueprint.route("/preview/<string:file>/")
+async def preview_(file: str):
+    file_parts = os.path.splitext(file.lower())
+    file = file_parts[0]
+    filename = ''.join(file_parts)
     auth = await current_app.discord.authorized
-    image = request.args.get("image")
-    if not image:
-        quart.abort(404)
-    image = image.lower()
-    image_name = os.path.splitext(image)[0]
+    args = [file]
+    fav = False
     if auth:
         try:
             user = await current_app.discord.fetch_user()
-            args = (image_name, user.id)
+            args.append(user.id)
         except:
             auth = False
-            args = (image_name,)
-    else:
-        args = (image_name,)
-    async with current_app.pool.acquire() as conn:
-        rt = await conn.fetch(
-            f"""SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Images.is_nsfw,Tags.name, FavImages.user_id FROM Images
-                        LEFT JOIN LinkedTags ON LinkedTags.image = Images.file
-                        JOIN Tags ON Tags.id = LinkedTags.tag_id
-                        LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}
-                        WHERE Images.file = $1""",
-            *args,
-        )
-        if not rt:
-            quart.abort(404)
-        else:
-            imf = rt[0].get("file") + rt[0].get("extension")
-            dominant_color = rt[0].get("dominant_color")
-            if imf != image:
-                return quart.redirect(
-                    quart.url_for("general.preview_") + f"?image={imf}"
-                )
-            if auth:
-                in_fav = True if rt[0]["user_id"] else False
-            for tag in rt:
-                if tag["name"] not in tag_names:
-                    tag_names.append(tag["name"])
-                if tag["is_nsfw"]:
-                    is_nsfw = True
-            if existed == image_name:
-                del session["upload_existed"]
-                existed = True
-            else:
-                existed = False
-            fav_button_description = (
-                "Remove the image from your Favorites"
-                if in_fav
-                else "Add the image to your Favorites"
-            )
-            if source := rt[0].get("source"):
-                description = (
-                        f"is_nsfw : {str(is_nsfw).lower()}\n\nSource : {source}\n\n" + "Tags : " + ", ".join(tag_names)
-                )
-            else:
-                description = ", ".join(tag_names)
+    args = tuple(args)
+    rt = await current_app.pool.fetch(
+        "SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Images.is_nsfw,"
+        "Tags.name, FavImages.user_id"
+        "FROM Images"
+        "LEFT JOIN LinkedTags ON LinkedTags.image = Images.file"
+        "JOIN Tags ON Tags.id = LinkedTags.tag_id"
+        f"LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}"
+        "WHERE Images.file = $1",
+        *args,
+    )
+    if not rt:
+        quart.abort(404)
+    if rt[0]['file'] != filename:
+        return quart.redirect(quart.url_for("general.preview_") + rt[0]['file'])
+    if auth:
+        fav = bool(rt[0]["user_id"])
+    tags = {t['name'] for t in rt}
+    fav_button_text = 'Remove the image from your Favourites' if fav else 'Add the image to your Favourites'
+    description = '\n'.join([t for t in (rt[0]['source'], ', '.join(tags)) if t])
     return await render_template(
         "preview.html",
-        source=source,
-        image_name=image_name,
-        image=image,
-        dominant_color=dominant_color,
-        in_fav=in_fav,
-        inprocess=inprocess,
-        is_nsfw=is_nsfw,
+        source=rt[0]['source'],
+        file=file,
+        filename=rt[0]['file']+rt[0]['extension'],
+        dominant_color=rt[0]["dominant_color"],
+        fav=fav,
+        is_nsfw=rt[0]['is_nsfw'],
         description=description,
-        existed=existed,
-        fav_button_description=fav_button_description
-        if auth
-        else "Login to add the image in your Favorite",
-        method="toggle" if in_fav else "insert",
+        fav_button_description=fav_button_text if auth else "Login to add the image in your Favorite",
+        method="toggle" if fav else "insert",
     )
 
 
@@ -253,7 +219,7 @@ async def manage_():
         source = None
     return await render_template(
         "manage.html",
-        tags=t["versatile"]+t["nsfw"],
+        tags=t["versatile"] + t["nsfw"],
         existed=existed,
         link="https://cdn.waifu.im/" + image,
         image=image,

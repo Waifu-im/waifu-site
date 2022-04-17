@@ -105,7 +105,7 @@ async def editfav_():
         return quart.abort(400)
     user = await fetch_user_safe()
     await current_app.waifuclient.fav_toggle(image, user_id=user.id)
-    return quart.redirect(quart.url_for("general.preview_") + f"?image={image}")
+    return quart.redirect(quart.url_for("general.preview_") + os.path.splitext(image)[0])
 
 
 @blueprint.route("/delete_image/")

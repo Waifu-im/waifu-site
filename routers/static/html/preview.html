@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Preview</title>
-    {{format_metadatas(nsfw=is_nsfw,description=description,color=dominant_color,title=image_name,preview='https://cdn.waifu.im/'+image)|safe}}
+    {{format_metadatas(nsfw=is_nsfw,description=description,color=dominant_color,title='[nsfw]'+file if is_nsfw else file,preview='https://cdn.waifu.im/'+filename)|safe}}
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="{{site_url}}static/css/custom.css">
-    {% if inprocess %}
-    <meta http-equiv="refresh" content="30" />{% endif %}
+    <link rel="stylesheet" href="/static/css/custom.css">
     <script>
         var cookiestring={{NSFW_COOKIE|tojson}}+'=True;path=/'
 	</script>
@@ -27,16 +25,16 @@
                 <a class="navbar-brand mx-auto" href="">
                     {{sitename}}
                 </a>
-                <a type="button" href="/manage/?image={{image}}" style="margin-right: 8px;" class="btn btn-info">Manage</a>
+                <a type="button" href="/manage/{{file}}" style="margin-right: 8px;" class="btn btn-info">Manage</a>
                 <span class="d-inline-block" tabindex="0" data-bs-toggle="popover" data-bs-trigger="hover" data-bs-placement="left" data-bs-content="{{fav_button_description}}">
-                    <a tabindex="0" class="btn {{'' if not inprocess else 'disabled'}}" href="/toggle-image/?image={{image}}" id="favbutton">{% if in_fav %}<span class="bi-heart-fill" style="font-size: 2rem;color:red;"></span>{% else %}<span class="bi-heart" style="font-size: 2rem;color:red;"></span>{% endif %}</a>
+                    <a tabindex="0" class="btn" href="/toggle-image/?image={{filename}}" id="favbutton">{% if fav %}<span class="bi-heart-fill" style="font-size: 2rem;color:red;"></span>{% else %}<span class="bi-heart" style="font-size: 2rem;color:red;"></span>{% endif %}</a>
                 </span>
             </div>
         </nav>
     </div>
     <div class="approval" style="visibility: hidden;">
         <div class="container-fluid" id="containerimage">
-            <img src="https://cdn.waifu.im/{{image}}" style="max-height: 100vh;max-width: 100vw;" class="img-fluid mx-auto d-block">
+            <img src="https://cdn.waifu.im/{{filename}}" style="max-height: 100vh;max-width: 100vw;" class="img-fluid mx-auto d-block">
         </div>
     </div>
     <div class="modal centered" style="width: 98vw;max-width: 500px;" id="Ageverif" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="AgeverifLabel">
@@ -62,8 +60,7 @@
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 <script>
-var image = {{ image | tojson }}
-var already_existed = {{ existed | tojson }}
+var file = {{ file | tojson }}
 var is_nsfw = {{ is_nsfw | tojson }}
 var has_cookie = {{ has_cookie | tojson }}
 if (has_cookie || !is_nsfw) {
@@ -79,5 +76,4 @@ var popoverList = popoverTriggerList.map(function(popoverTriggerEl) {
     return new bootstrap.Popover(popoverTriggerEl)
 })
 
-if (already_existed) { alert("Ara? looks like someone already uploaded this image, therefore you have been redirected to it") }
 </script>
