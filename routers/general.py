@@ -162,7 +162,8 @@ async def preview_(file: str):
         fav = bool(rt[0]["user_id"])
     tags = {t['name'] for t in rt}
     fav_button_text = 'Remove the image from your Favourites' if fav else 'Add the image to your Favourites'
-    description = '\n'.join([t for t in (rt[0]['source'], ', '.join(tags)) if t])
+    description = '\n'.join(
+        [k.capitalize() + ' : ' + v for k, v in dict(source=rt[0]['source'], tags=', '.join(tags)).items()])
     return await render_template(
         "preview.html",
         source=rt[0]['source'],
