@@ -45,7 +45,7 @@
 	    	<a href="/docs/"type="button" class="btn btn-lg btn-info zoom rainbow-1 shadow-none" style="margin: 5px"><span class="bi-book-half"></span> Documentation</a>
 		</div>
 		<div class="col-sm-12 col-md-4 zoom">
-			<a href="{{site_url}}preview/?image={{image.split('/')[-1]}}"><img class="img-fluid" style="border-radius: 5px;margin-bottom: 0.5rem" src="{{image}}"></a>
+			<a href="{{site_url}}preview/{{file.split('/')[-1]}}"><img class="img-fluid" style="border-radius: 5px;margin-bottom: 0.5rem" src="{{file}}"></a>
 			{% if apioffline%}
 			<div class="text-center fs-6"><i class="bi bi-dash-circle text-danger"></i> The API is currently offline</div>
 			{% elif apioffline is none %}
@@ -70,7 +70,7 @@
             <h4 class="text-break text-white section-heading count" data-target="{{nb_request}}">0</h4>
             <p class="text-break text-muted">Requests</p>
         </div>
-        <div class="col-md-4 text-center"><a href="{{site_url}}preview/?image={{randomfile}}" class="link-light"><span class="fa-stack fa-4x zoom" style=";margin-bottom: 0.5rem;" ><i class="fa fa-circle fa-stack-2x text-info"></i><i class="far fa-stack-1x fa-images"></i></span></a>
+        <div class="col-md-4 text-center"><a href="{{site_url}}preview/{{random_file}}" class="link-light"><span class="fa-stack fa-4x zoom" style=";margin-bottom: 0.5rem;" ><i class="fa fa-circle fa-stack-2x text-info"></i><i class="far fa-stack-1x fa-images"></i></span></a>
             <h4 class="text-break text-white section-heading count" data-target="{{nb_images}}">0</h4>
             <p class="text-break text-muted">Images</p>
         </div>

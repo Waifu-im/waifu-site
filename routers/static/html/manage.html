@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="{{site_url}}static/css/custom.css">
     <script>
-        var formurl={{form_manage |tojson}}
-        var image={{image |tojson}}
+    var formurl={{form_manage |tojson}}
+    var file={{file |tojson}}
     var ajax=null
     function resetall(){document.getElementById('errort').style.display = 'none';document.getElementById('loading').style.display = 'none';document.getElementById('uploadprogressbar').style.display = 'none';}
     function uploadFile() {
@@ -20,13 +20,13 @@
     ajax = new XMLHttpRequest();
     ajax.open("POST", formurl);
     document.getElementById("submitbutton").className="btn btn-danger btn-sm";document.getElementById("submitbutton").value="Abort"
-    let file =  document.getElementById("file").files[0];
+    let file_bytes =  document.getElementById("file").files[0];
     let selecttag =  document.getElementById("sele")
     let selectedValues = Array.from(selecttag.selectedOptions).map(option => option.value)
     let sourceval=document.getElementById('source_id').value
     var formdata = new FormData();
-    formdata.append("file", file);
-    formdata.append("image", image);
+    formdata.append("file", file_bytes);
+    formdata.append("image", file);
     formdata.append("is_hidden",document.getElementById("is_hidden").checked)
     formdata.append("is_under_review",document.getElementById("is_under_review").checked)
     formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
@@ -104,7 +104,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#verifmodal">Delete</button></li>
                             <li><button type="button" class="dropdown-item" style="margin-right: 8px;" data-bs-toggle="modal" data-bs-target="#edittagsmodal">Edit Information</button></li>
                             <li><a href="\list\" type="button" style="margin-right: 8px;" class="dropdown-item">Hentai List</a></li>
-                            <li><a role="button" class="dropdown-item" tabindex="0" data-bs-toggle="popover" data-bs-content="Remove the hentai tag and add the ecchi one to {{image}}" data-bs-trigger="hover" data-bs-placement="left" href="/rmv/?image={{image}}" id="removebutton">Remove Hentai Tag</a></li>
+                            <li><a role="button" class="dropdown-item" tabindex="0" data-bs-toggle="popover" data-bs-content="Remove the hentai tag and add the ecchi one to {{file}}" data-bs-trigger="hover" data-bs-placement="left" href="/rmv/?image={{file}}" id="removebutton">Remove Hentai Tag</a></li>
                         </ul>
                     </div>
                 </div>
@@ -121,10 +121,10 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                     <h5 class="modal-title" style="margin: 0 auto;" id="verifmodalLabel">Are you sure of your choice ?</h5>
                 </div>
                 <div class="modal-body text-center">
-                    You are about to delete the file {{image}}, are you sure of your decision?
+                    You are about to delete the file {{file}}, are you sure of your decision?
                 </div>
                 <div class="modal-footer border-0 text-center" style="margin: 0 auto;">
-                    <a href="\delete_image\?image={{image}}" type="button" style="margin: 0 auto;" class="btn btn-danger">Yes</a>
+                    <a href="\delete_image\?image={{filename}}" type="button" style="margin: 0 auto;" class="btn btn-danger">Yes</a>
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
                 </div>
             </div>

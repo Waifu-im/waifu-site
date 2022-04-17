@@ -74,7 +74,7 @@ var masonry = new Masonry(elem, { "itemSelector": ".grid-item", "percentPosition
 for (const i of files) {
     item = document.createElement('div');
     item.className = "col-md-2 grid-item";
-    item.innerHTML = `<a href="{{href_url}}?image=${i.split('/').pop()}"><img class="img-fluid"  alt="..." src=${i}></a>`;
+    item.innerHTML = `<a href="{{href_url}}${i.split('/').pop()}"><img class="img-fluid"  alt="..." src=${i}></a>`;
     elem.appendChild(item);
     masonry.addItems(item);
     masonry.layout();

@@ -120,15 +120,15 @@ async def form_upload():
     source = forms.get("source")
     is_nsfw = forms.get("is_nsfw") == "true"
     files = await request.files
-    file = files.get("file")
-    if not (file and tags):
+    file_bytes = files.get("file")
+    if not (file_bytes and tags):
         return (
             dict(
                 detail="Sorry, the server did not received all the data it needed. Please retry."
             ),
             400,
         )
-    extension = allowed_file(file.filename)
+    extension = allowed_file(file_bytes.filename)
     if not extension:
         return (
             dict(
@@ -136,10 +136,10 @@ async def form_upload():
             ),
             400,
         )
-    content = file.read()
-    file.seek(0)
-    filename_no_ext = xxhash.xxh3_64_hexdigest(content)
-    filename = filename_no_ext + extension
+    content = file_bytes.read()
+    file_bytes.seek(0)
+    file = xxhash.xxh3_64_hexdigest(content)
+    filename = file + extension
     if not source or len(source) < 4:
         source = None
     try:
@@ -156,7 +156,7 @@ async def form_upload():
             ),
             400,
         )
-    image_preview = f"{quart.url_for('general.preview_')}?image={filename}"
+    image_preview = quart.url_for('general.preview_') + file
     try:
         if await current_app.discord.authorized:
             try:
@@ -164,8 +164,8 @@ async def form_upload():
             except:
                 user = None
             await insert_db(
+                file_bytes,
                 file,
-                filename_no_ext,
                 filename,
                 extension,
                 source,
@@ -178,7 +178,7 @@ async def form_upload():
             )
         else:
             await insert_db(
-                file, filename_no_ext, filename, extension, source, is_nsfw, width, height, tags, loop
+                file_bytes, file, filename, extension, source, is_nsfw, width, height, tags, loop
             )
     except asyncpg.exceptions.UniqueViolationError:
         return (

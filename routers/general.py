@@ -40,12 +40,12 @@ async def home_():
         nb_tags = (await conn.fetchrow("SELECT COUNT(*) FROM Tags"))[0]
     return await render_template(
         "home.html",
-        image=im,
+        file=im,
         nb_tags=nb_tags,
         nb_request=nb_request,
         nb_images=nb_images,
-        randomfile=random_file,
-        apioffline=api_offline,
+        random_file=random_file,
+        api_offline=api_offline,
     )
 
 
@@ -147,10 +147,10 @@ async def preview_(file: str):
     rt = await current_app.pool.fetch(
         "SELECT Images.file, Images.dominant_color,Images.extension, Images.source, Images.is_nsfw,"
         "Tags.name, FavImages.user_id"
-        "FROM Images"
-        "LEFT JOIN LinkedTags ON LinkedTags.image = Images.file"
-        "JOIN Tags ON Tags.id = LinkedTags.tag_id"
-        f"LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''}"
+        "FROM Images "
+        "LEFT JOIN LinkedTags ON LinkedTags.image = Images.file "
+        "JOIN Tags ON Tags.id = LinkedTags.tag_id "
+        f"LEFT JOIN FavImages ON FavImages.image = Images.file {'AND FavImages.user_id = $2' if auth else ''} "
         "WHERE Images.file = $1",
         *args,
     )
@@ -177,24 +177,23 @@ async def preview_(file: str):
     )
 
 
-@blueprint.route("/manage/")
+@blueprint.route("/manage/<string:file>/")
 @requires_authorization
 @permissions_check("manage_images")
-async def manage_():
-    image = request.args.get("image")
-    image_name = os.path.splitext(image)[0]
-    if not image:
-        return quart.abort(404)
+async def manage_(file):
+    file_parts = os.path.splitext(file.lower())
+    file = file_parts[0]
+    filename = ''.join(file_parts)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
             "SELECT Tags.id as tag_id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw FROM Images LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
-            image_name,
+            file,
         )
         if not image_info:
             return quart.abort(404)
         res = await conn.fetchrow(
             "SELECT author_id,description from Reported_images WHERE image=$1",
-            image_name,
+            file,
         )
         if res:
             report_user_id, report_description = res
@@ -202,10 +201,10 @@ async def manage_():
         else:
             report_user_id = None
             report_description = None
-        filename_db = image_info[0].get("file") + image_info[0].get("extension")
-        if filename_db != image:
+        file_db = image_info[0]["file"]
+        if file_db != file_parts:
             return quart.redirect(
-                quart.url_for("general.preview_") + f"?image={filename_db}"
+                quart.url_for("general.manage_") + file_db
             )
 
         t = await current_app.waifuclient.endpoints(full=True)
@@ -221,8 +220,9 @@ async def manage_():
         "manage.html",
         tags=t["versatile"] + t["nsfw"],
         existed=existed,
-        link="https://cdn.waifu.im/" + image,
-        image=image,
+        link="https://cdn.waifu.im/" + filename,
+        file=file,
+        filename=filename,
         source=source,
         form_manage=quart.url_for("forms.forms_manage"),
         report_user_id=report_user_id,
