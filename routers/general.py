@@ -202,7 +202,7 @@ async def manage_(file):
             report_user_id = None
             report_description = None
         file_db = image_info[0]["file"]
-        if file_db != file_parts:
+        if file_db != filename:
             return quart.redirect(
                 quart.url_for("general.manage_", file=file_db)
             )
