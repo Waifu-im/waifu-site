@@ -163,7 +163,7 @@ async def preview_(file: str):
     tags = {t['name'] for t in rt}
     fav_button_text = 'Remove the image from your Favourites' if fav else 'Add the image to your Favourites'
     description = '\n\n'.join(
-        [k.capitalize() + ' : ' + v for k, v in dict(source=rt[0]['source'], tags=', '.join(tags)).items()])
+        [k.capitalize() + ' : ' + v for k, v in dict(source=rt[0].get('source'), tags=', '.join(tags)).items() if v])
     return await render_template(
         "preview.html",
         source=rt[0]['source'],
@@ -196,27 +196,23 @@ async def manage_(file):
             "SELECT author_id,description from Reported_images WHERE image=$1",
             file,
         )
-        if res:
-            report_user_id, report_description = res
-            report_user_id = int(report_user_id)
-        else:
-            report_user_id = None
-            report_description = None
-        file_db = image_info[0]["file"]
-        if file_db != filename:
-            return quart.redirect(
-                quart.url_for("general.manage_", file=file_db)
-            )
+    file_db = image_info[0]["file"]
+    if file_db != filename:
+        return quart.redirect(
+            quart.url_for("general.manage_", file=file_db)
+        )
+    if res:
+        report_user_id, report_description = res
+        report_user_id = int(report_user_id)
+    else:
+        report_user_id = report_description = None
 
-        t = await current_app.waifuclient.endpoints(full=True)
+    t = await current_app.waifuclient.endpoints(full=True)
     try:
         existed = [int(tag["tag_id"]) for tag in image_info]
     except TypeError:
         existed = []
-    if image_info:
-        source = image_info[0]["source"]
-    else:
-        source = None
+    source = image_info[0].get("source")
     return await render_template(
         "manage.html",
         tags=t["versatile"] + t["nsfw"],
