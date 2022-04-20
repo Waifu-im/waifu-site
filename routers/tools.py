@@ -67,7 +67,7 @@ async def authorize_fav():
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     infos = current_app.auth_rule.dumps(data)
-    current_app.auth_rule.loads(infos)
+    print(infos)
     return Response(quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
