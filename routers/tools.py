@@ -68,9 +68,8 @@ async def authorize_fav():
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    print(data['temp_token'])
-    print(current_app.config["temp_auth_tokens"][user.id])
     infos = current_app.auth_rule.dumps(data)
+    print(current_app.config["temp_auth_secret_key"])
     return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
@@ -78,6 +77,7 @@ async def authorize_fav():
 async def authorization_callback():
     user = await fetch_user_safe()
     infos = None
+    print(current_app.config["temp_auth_secret_key"])
     infos = current_app.auth_rule.loads(str(request.args.get('infos')))
     if infos['temp_token'] != current_app.config["temp_auth_tokens"].get(user.id):
         quart.abort(403, description="Invalid temporary token.")
