@@ -214,14 +214,14 @@ async def redirect_unauthorized(error):
 
 @app.errorhandler(HTTPException)
 async def handle_exception(error):
-    customname = None
+    custom_name = None
     if error.code == 404:
         if (
             error.description == "The requested URL was not found on the server."
             "If you entered the URL manually please check your spelling and try again."
         ):
             error.description = ""
-            customname = "Are you lost ?"
+            custom_name = "Are you lost ?"
     return (
         await render_template(
             "errors/dynamic.html",
@@ -230,7 +230,7 @@ async def handle_exception(error):
             errorimage="/static/images/sorry.png"
             if error.code != 404
             else "/static/images/areyoulost.png",
-            customname=customname or error.name.capitalize(),
+            customname=custom_name or error.name.capitalize(),
             loged=await app.discord.authorized,
             code=error.code,
         ),
