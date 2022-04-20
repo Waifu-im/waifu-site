@@ -189,7 +189,7 @@ async def preview_(file: str):
 async def manage_(file):
     if not file:
         f = await current_app.waifu_client.random(is_nsfw='null')
-        return quart.redirect(quart.url_for("general.preview_", file=f.file))
+        return quart.redirect(quart.url_for("general.manage_", file=f.file))
     file_parts = os.path.splitext(file.lower())
     file = file_parts[0]
     filename = ''.join(file_parts)
