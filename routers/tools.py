@@ -54,7 +54,8 @@ async def logout():
 
 
 @blueprint.route("/authorization/fav/")
-async def authorize_fav():
+@blueprint.route("/authorization/fav/revoke/", defaults={'revoke': True})
+async def authorize_fav(revoke=False):
     user = await fetch_user_safe()
     user_id = request.args.get('user_id', type=int)
     if not user_id:
@@ -65,7 +66,8 @@ async def authorize_fav():
     data = dict(
         user_id=user_id,
         permissions=["manage_galleries"],
-        temp_token=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20))
+        temp_token=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
+        revoke=revoke
     )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
@@ -92,8 +94,12 @@ async def authorization_callback():
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
     data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
-    await current_app.pool.executemany(
-        "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
+    if infos['revoke']:
+        await current_app.pool.executemany(
+            "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", data)
+    else:
+        await current_app.pool.executemany(
+            "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
     if redirect_uri:
         try:
             return quart.redirect(redirect_uri)
