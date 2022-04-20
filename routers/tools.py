@@ -71,7 +71,7 @@ async def authorize_fav():
     print(data['temp_token'])
     print(current_app.config["temp_auth_tokens"][user.id])
     infos = current_app.auth_rule.dumps(data)
-    return Response(quart.url_for('tools.authorization_callback') + '?infos=' + infos)
+    return Response(current_app.config['site_url']+quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
 @blueprint.route("/authorization/callback/")
