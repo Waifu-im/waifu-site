@@ -61,7 +61,6 @@ async def authorize_fav():
         quart.abort(404, description="The target user id must be different from the current user id")
     data = dict(
         user_id=user_id,
-        temp_token=current_app.config["temp_auth_tokens"][user.id],
         permission=["manage_galleries"],
     )
     redirect_uri = request.args.get('redirect_uri')
