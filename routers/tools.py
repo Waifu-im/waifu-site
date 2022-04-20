@@ -75,7 +75,7 @@ async def authorize_fav(revoke=False):
         data.update(dict(redirect_uri=redirect_uri))
     infos = current_app.auth_rule.dumps(data)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?infos=' + infos)
+    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?state=' + infos)
 
 
 @blueprint.route("/authorization/callback/")
@@ -83,10 +83,10 @@ async def authorize_fav(revoke=False):
 async def authorization_callback():
     user = await fetch_user_safe()
     try:
-        infos = current_app.auth_rule.loads(str(request.args.get('infos')))
+        infos = current_app.auth_rule.loads(str(request.args.get('state')))
     except:
         return quart.abort(400,
-                           description="Either no information were provided or the information were not correctly "
+                           description="Either no state were provided or the state was not correctly "
                                        "encoded"
                            )
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
