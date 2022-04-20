@@ -1,6 +1,8 @@
 import os
 import urllib
 import quart
+from quart import Response
+from itsdangerous import URLSafeSerializer
 
 from routers.utils import Unauthorized, get_user_info
 from routers.utils import (
@@ -13,6 +15,7 @@ from routers.utils import (
 from quart import Blueprint, render_template, request, current_app, session
 
 blueprint = Blueprint("tools", __name__, template_folder="static/html")
+rule = URLSafeSerializer(current_app.config["temp_auth_secret_key"])
 
 
 @blueprint.route("/api/")
@@ -34,13 +37,14 @@ async def login():
 
 @blueprint.route("/callback/")
 async def callback():
+    data = None
     try:
         data = await current_app.discord.callback()
+        redirect_to = data.get("redirect", "/")
+        session.permanent = True
     except:
         current_app.discord.revoke()
-        raise Unauthorized(origin=urllib.parse.quote(request.url))
-    redirect_to = data.get("redirect", "/")
-    session.permanent = True
+        redirect_to = current_app.config["site_url"]
     return quart.redirect(redirect_to)
 
 
@@ -50,15 +54,57 @@ async def logout():
     return quart.redirect(quart.url_for("general.home_"))
 
 
+@blueprint.route("/authorization/fav/")
+async def authorize_fav():
+    user = await fetch_user_safe()
+    user_id = request.args.get('user_id', type=int)
+    if not user_id:
+        quart.abort(400)
+    if user_id == user.id:
+        quart.abort(404, description="The target user id must be different from the current user id")
+    data = dict(
+        user_id=user_id,
+        temp_token=current_app.config["temp_auth_tokens"][user.id],
+        permission=["manage_galleries"],
+    )
+    redirect_uri = request.args.get('redirect_uri')
+    if redirect_uri:
+        data.update(dict(redirect_uri=redirect_uri))
+    infos = rule.dumps(data)
+    return Response(quart.url_for('tools.authorization_callback') + '?infos=' + infos)
+
+
+@blueprint.route("/authorization/callback/")
+async def authorization_callback():
+    user = await fetch_user_safe()
+    infos = None
+    try:
+        infos = rule.load(request.args.get('infos'))
+    except:
+        quart.abort(400)
+    if infos['temp_token'] != current_app.config["temp_auth_tokens"][user.id]:
+        quart.abort(403, description="Invalid temporary token.")
+    redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
+    data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
+    await current_app.executemany(
+        "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
+    if redirect_uri:
+        try:
+            return quart.redirect(redirect_uri)
+        except:
+            pass
+    quart.redirect(current_app.config["site_url"])
+
+
 @blueprint.route("/reset-token/")
 @requires_authorization
 async def reset_():
-    su = request.args.get("user_id")
+    su = request.args.get("user_id", type=int)
     user = await fetch_user_safe()
     full_username = str(user)
     username = user.name
     user_id = user.id
-    if su and su != str(user_id):
+    if su and su != user_id:
         if not await has_permissions(user.id, "admin"):
             quart.abort(403)
 
@@ -80,10 +126,10 @@ async def reset_():
 @blueprint.route("/purge-gallery/")
 @requires_authorization
 async def purge_gallery_():
-    su = request.args.get("user_id")
+    su = request.args.get("user_id", type=int)
     user = await fetch_user_safe()
     user_id = user.id
-    if su and su != str(user_id):
+    if su and su != user_id:
         if not await has_permissions(user.id, "admin"):
             quart.abort(403)
         t = await get_user_info(su)
