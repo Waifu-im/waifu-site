@@ -48,7 +48,7 @@ app.config["site_description"] = (
 
 app.config["temp_auth_tokens"] = {}
 app.config["temp_auth_secret"] = TEMP_AUTH_SECRET
-app.auth_rule = URLSafeSerializer(app.config["temp_auth_secret_key"])
+app.auth_rule = URLSafeSerializer(app.config["temp_auth_secret"])
 app.config["site_url"] = "https://waifu.im/"
 app.config["sitename"] = "WAIFU.IM"
 app.config["bot_invite"] = "https://ayane.live/invite/"
