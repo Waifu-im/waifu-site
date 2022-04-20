@@ -77,7 +77,7 @@ async def authorization_callback():
     infos = None
     try:
         infos = current_app.auth_rule.loads(request.args.get('infos'))
-    except e:
+    except:
         quart.abort(400)
     if infos['temp_token'] != current_app.config["temp_auth_tokens"][user.id]:
         quart.abort(403, description="Invalid temporary token.")
