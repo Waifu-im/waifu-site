@@ -44,7 +44,8 @@ app.config["site_description"] = (
     "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
     "and multiple tags!"
 )
-app.config["temp_auth_tokens"] = defaultdict(lambda: secrets.token_urlsafe(64))
+
+app.config["temp_auth_tokens"] = {}
 app.config["temp_auth_secret_key"] = secrets.token_urlsafe(64)
 app.auth_rule = URLSafeSerializer(app.config["temp_auth_secret_key"])
 app.config["site_url"] = "https://waifu.im/"
