@@ -63,6 +63,7 @@ async def authorize_fav():
     data = dict(
         user_id=user_id,
         permission=["manage_galleries"],
+        temp_token=current_app.config["temp_auth_tokens"][user.id]
     )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
