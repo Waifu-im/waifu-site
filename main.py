@@ -28,7 +28,6 @@ from private.config import (
 )
 from routers.utils.exceptions import Unauthorized
 
-
 from routers.forms import blueprint as forms_blueprint
 from routers.general import blueprint as general_blueprint
 from routers.image import blueprint as image_blueprint
@@ -45,7 +44,7 @@ app.config["site_description"] = (
     "An easy to use API that allows you to get waifu pictures from an archive of over 4000 images "
     "and multiple tags!"
 )
-app.config["temp_auth_tokens"] = defaultdict(secrets.token_urlsafe(64))
+app.config["temp_auth_tokens"] = defaultdict(lambda: secrets.token_urlsafe(64))
 app.config["temp_auth_secret_key"] = secrets.token_urlsafe(64)
 app.auth_rule = URLSafeSerializer(current_app.config["temp_auth_secret_key"])
 app.config["site_url"] = "https://waifu.im/"
@@ -174,12 +173,12 @@ async def inject_global_infos():
 """
 
     def format_metadatas(
-        error=False,
-        nsfw=False,
-        preview=False,
-        color="#fec8fa",
-        description=app.config["site_description"],
-        title=app.config["sitename"].capitalize(),
+            error=False,
+            nsfw=False,
+            preview=False,
+            color="#fec8fa",
+            description=app.config["site_description"],
+            title=app.config["sitename"].capitalize(),
     ):
         image = app.config["site_url"] + "favicon.ico"
         metadatas = f"""
@@ -223,8 +222,8 @@ async def handle_exception(error):
     custom_name = None
     if error.code == 404:
         if (
-            error.description == "The requested URL was not found on the server."
-            "If you entered the URL manually please check your spelling and try again."
+                error.description == "The requested URL was not found on the server."
+                                     "If you entered the URL manually please check your spelling and try again."
         ):
             error.description = ""
             custom_name = "Are you lost ?"
