@@ -86,7 +86,7 @@ async def authorization_callback():
                                        "encoded"
                            )
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
-    if infos['temp_token'] != temp_auth_tokens.get(user.id):
+    if infos['temp_token'] != temp_auth_tokens.get(str(user.id)):
         quart.abort(403, description="Invalid temporary token.")
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens.pop(user.id, None)))
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
