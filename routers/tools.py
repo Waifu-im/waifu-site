@@ -2,7 +2,6 @@ import os
 import urllib
 import quart
 from quart import Response
-from itsdangerous import URLSafeSerializer
 
 from routers.utils import Unauthorized, get_user_info
 from routers.utils import (
@@ -15,8 +14,6 @@ from routers.utils import (
 from quart import Blueprint, render_template, request, current_app, session
 
 blueprint = Blueprint("tools", __name__, template_folder="static/html")
-rule = URLSafeSerializer(current_app.config["temp_auth_secret_key"])
-
 
 @blueprint.route("/api/")
 async def api_redirect():
