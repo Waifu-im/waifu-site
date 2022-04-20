@@ -90,7 +90,7 @@ async def authorization_callback():
             return quart.redirect(redirect_uri)
         except:
             pass
-    quart.redirect(current_app.config["site_url"])
+    return quart.redirect(current_app.config["site_url"])
 
 
 @blueprint.route("/reset-token/")
