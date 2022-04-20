@@ -55,6 +55,7 @@ async def logout():
 
 @blueprint.route("/authorization/fav/")
 @blueprint.route("/authorization/fav/revoke/", defaults={'revoke': True})
+@requires_authorization
 async def authorize_fav(revoke=False):
     user = await fetch_user_safe()
     user_id = request.args.get('user_id', type=int)
@@ -65,7 +66,7 @@ async def authorize_fav(revoke=False):
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     data = dict(
         user_id=user_id,
-        permissions=["manage_galleries"],
+        permissions=["manage_gallery"],
         temp_token=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
         revoke=revoke
     )
@@ -78,6 +79,7 @@ async def authorize_fav(revoke=False):
 
 
 @blueprint.route("/authorization/callback/")
+@requires_authorization
 async def authorization_callback():
     user = await fetch_user_safe()
     try:
@@ -168,7 +170,7 @@ async def editfav_():
 
 @blueprint.route("/delete_image/")
 @requires_authorization
-@permissions_check("delete_image")
+@permissions_check("manage_images")
 async def delete_image():
     image = request.args.get("image").lower()
     image_name = os.path.splitext(image)[0]
@@ -221,7 +223,7 @@ async def im():
 
 @blueprint.route("/clean/")
 @requires_authorization
-@permissions_check("clean_images")
+@permissions_check("manage_images")
 async def clean_images():
     async with current_app.pool.acquire() as conn:
         async with conn.transaction():

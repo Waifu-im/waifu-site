@@ -154,7 +154,7 @@ async def recent_():
 
 @blueprint.route("/report/")
 @requires_authorization
-@permissions_check("admin")
+@permissions_check("manage_images")
 async def report_():
     files = db_to_json(
         await current_app.pool.fetch(
@@ -193,7 +193,7 @@ ORDER BY uploaded_at DESC"""
 
 @blueprint.route("/review/")
 @requires_authorization
-@permissions_check("admin")
+@permissions_check("manage_images")
 async def review_():
     files = db_to_json(
         await current_app.pool.fetch(
