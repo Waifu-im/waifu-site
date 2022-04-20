@@ -97,7 +97,7 @@ async def fav_():
         su = None
     user_id = user.id
     if su and su != user_id:
-        if await has_permissions(user.id, "access_galleries"):
+        if await has_permissions(user.id, "view_gallery"):
             user_id = su
         else:
             quart.abort(403)
