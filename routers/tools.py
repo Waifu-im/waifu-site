@@ -75,10 +75,7 @@ async def authorize_fav():
 async def authorization_callback():
     user = await fetch_user_safe()
     infos = None
-    try:
-        infos = current_app.auth_rule.loads(request.args.get('infos'))
-    except:
-        quart.abort(400)
+    infos = current_app.auth_rule.loads(request.args.get('infos'))
     if infos['temp_token'] != current_app.config["temp_auth_tokens"][user.id]:
         quart.abort(403, description="Invalid temporary token.")
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
