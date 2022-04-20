@@ -63,24 +63,28 @@ async def authorize_fav():
     data = dict(
         user_id=user_id,
         permissions=["manage_galleries"],
-        temp_token=current_app.config["temp_auth_tokens"].setdefault(user.id, secrets.token_urlsafe(64))
+        temp_token=current_app.config["temp_auth_tokens"].setdefault(user.id, secrets.token_urlsafe(20))
     )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     infos = current_app.auth_rule.dumps(data)
-    print(current_app.config["temp_auth_secret_key"])
     return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
 @blueprint.route("/authorization/callback/")
 async def authorization_callback():
     user = await fetch_user_safe()
-    infos = None
-    print(current_app.config["temp_auth_secret_key"])
-    infos = current_app.auth_rule.loads(str(request.args.get('infos')))
+    try:
+        infos = current_app.auth_rule.loads(str(request.args.get('infos')))
+    except:
+        return quart.abort(400,
+                           description="Either no information were provided or the information were not correctly "
+                                       "encoded"
+                           )
     if infos['temp_token'] != current_app.config["temp_auth_tokens"].get(user.id):
         quart.abort(403, description="Invalid temporary token.")
+    current_app.config["temp_auth_tokens"].pop(user.id, None)
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
     data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
     await current_app.pool.executemany(

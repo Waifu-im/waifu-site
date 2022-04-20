@@ -25,6 +25,7 @@ from private.config import (
     S3_ENDPOINTS,
     S3_BUCKET,
     S3_ZONE,
+    TEMP_AUTH_SECRET
 )
 from routers.utils.exceptions import Unauthorized
 
@@ -46,7 +47,7 @@ app.config["site_description"] = (
 )
 
 app.config["temp_auth_tokens"] = {}
-app.config["temp_auth_secret_key"] = secrets.token_urlsafe(64)
+app.config["temp_auth_secret"] = TEMP_AUTH_SECRET
 app.auth_rule = URLSafeSerializer(app.config["temp_auth_secret_key"])
 app.config["site_url"] = "https://waifu.im/"
 app.config["sitename"] = "WAIFU.IM"
