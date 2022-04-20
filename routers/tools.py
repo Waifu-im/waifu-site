@@ -60,7 +60,7 @@ async def authorize_fav(revoke=False):
     user = await fetch_user_safe()
     user_id = request.args.get('user_id', type=int)
     if not user_id:
-        quart.abort(400)
+        quart.abort(400, description="The user_id is either missing or of an incorrect type")
     if user_id == user.id:
         quart.abort(400, description="The target user id must be different from the current user id")
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
