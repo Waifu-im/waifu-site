@@ -83,6 +83,7 @@ async def authorization_callback():
     print(infos['temp_token'])
     print(current_app.config["temp_auth_tokens"][user.id])
     print(user.id)
+    print(infos)
     if infos['temp_token'] != current_app.config["temp_auth_tokens"][user.id]:
         quart.abort(403, description="Invalid temporary token.")
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
