@@ -61,7 +61,7 @@ async def authorize_fav(revoke=False):
     if not user_id:
         quart.abort(400)
     if user_id == user.id:
-        quart.abort(404, description="The target user id must be different from the current user id")
+        quart.abort(400, description="The target user id must be different from the current user id")
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     data = dict(
         user_id=user_id,
