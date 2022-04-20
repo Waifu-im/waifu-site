@@ -69,6 +69,7 @@ async def authorize_fav():
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     print(data['temp_token'])
+    print(current_app.config["temp_auth_tokens"][user.id])
     infos = current_app.auth_rule.dumps(data)
     return Response(quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
