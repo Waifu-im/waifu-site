@@ -1,5 +1,6 @@
 import os
 import urllib
+import json
 import quart
 from quart import Response
 import secrets
@@ -60,15 +61,17 @@ async def authorize_fav():
         quart.abort(400)
     if user_id == user.id:
         quart.abort(404, description="The target user id must be different from the current user id")
+    temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     data = dict(
         user_id=user_id,
         permissions=["manage_galleries"],
-        temp_token=current_app.config["temp_auth_tokens"].setdefault(user.id, secrets.token_urlsafe(20))
+        temp_token=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20))
     )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     infos = current_app.auth_rule.dumps(data)
+    await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
@@ -82,9 +85,10 @@ async def authorization_callback():
                            description="Either no information were provided or the information were not correctly "
                                        "encoded"
                            )
-    if infos['temp_token'] != current_app.config["temp_auth_tokens"].get(user.id):
+    temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
+    if infos['temp_token'] != temp_auth_tokens.get(user.id):
         quart.abort(403, description="Invalid temporary token.")
-    current_app.config["temp_auth_tokens"].pop(user.id, None)
+    await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens.pop(user.id, None)))
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
     data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
     await current_app.pool.executemany(

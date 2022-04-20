@@ -3,6 +3,7 @@ import asyncpg
 import aioboto3
 import json
 import aiohttp
+import aioredis
 import os
 import datetime
 
@@ -100,11 +101,14 @@ async def create_session():
         appname=app.config["waifu_client_user_agent"],
         token=app.config["API_token"],
     )
+    app.redis = await aioredis.from_url("redis://localhost")
+    await app.redis.set('temp_auth_tokens', '{}')
     yield
     await app.waifu_client.close()
     await app.pool.close()
     await app.session.close()
     await app.boto3session.close()
+    await app.redis.close()
 
 
 @app.context_processor
