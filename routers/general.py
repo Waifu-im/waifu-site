@@ -129,7 +129,8 @@ async def dashboard_():
     )
 
 
-@blueprint.route("/preview/<string:file>/", defaults={'file': None})
+@blueprint.route("/preview/", defaults={'file': None})
+@blueprint.route("/preview/<string:file>/")
 async def preview_(file: str):
     if file is None:
         f = await current_app.waifu_client.random(is_nsfw='null')
@@ -160,7 +161,7 @@ async def preview_(file: str):
     if not rt:
         quart.abort(404)
     if rt[0]['file'] != filename:
-        return quart.redirect(quart.url_for("general.preview_",))
+        return quart.redirect(quart.url_for("general.preview_", ))
     if auth:
         fav = bool(rt[0]["user_id"])
     tags = {t['name'] for t in rt}
