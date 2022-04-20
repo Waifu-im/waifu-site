@@ -83,7 +83,7 @@ async def authorization_callback():
         quart.abort(403, description="Invalid temporary token.")
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
     data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
-    await current_app.executemany(
+    await current_app.pool.executemany(
         "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
     if redirect_uri:
         try:
