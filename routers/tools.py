@@ -102,12 +102,7 @@ async def authorization_callback():
     else:
         await current_app.pool.executemany(
             "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
-    if redirect_uri:
-        try:
-            return quart.redirect(redirect_uri)
-        except:
-            pass
-    return quart.redirect(current_app.config["site_url"])
+    return quart.redirect(redirect_uri if redirect_uri else current_app.config["site_url"])
 
 
 @blueprint.route("/reset-token/")
