@@ -129,10 +129,10 @@ async def dashboard_():
     )
 
 
-@blueprint.route("/preview/", defaults={'file': None})
+@blueprint.route("/preview/", defaults=dict(file=None))
 @blueprint.route("/preview/<string:file>/")
 async def preview_(file: str):
-    if file is None:
+    if not file:
         f = await current_app.waifu_client.random(is_nsfw='null')
         return quart.redirect(quart.url_for("general.preview_", file=f.file))
     file_parts = os.path.splitext(file.lower())
@@ -161,7 +161,7 @@ async def preview_(file: str):
     if not rt:
         quart.abort(404)
     if rt[0]['file'] != filename:
-        return quart.redirect(quart.url_for("general.preview_", ))
+        return quart.redirect(quart.url_for("general.preview_", file=rt[0]['file']))
     if auth:
         fav = bool(rt[0]["user_id"])
     tags = {t['name'] for t in rt}
@@ -182,10 +182,14 @@ async def preview_(file: str):
     )
 
 
+@blueprint.route("/manage/", defaults=dict(file=None))
 @blueprint.route("/manage/<string:file>/")
 @requires_authorization
 @permissions_check("manage_images")
 async def manage_(file):
+    if not file:
+        f = await current_app.waifu_client.random(is_nsfw='null')
+        return quart.redirect(quart.url_for("general.preview_", file=f.file))
     file_parts = os.path.splitext(file.lower())
     file = file_parts[0]
     filename = ''.join(file_parts)
