@@ -62,7 +62,7 @@ async def authorize_fav():
         quart.abort(404, description="The target user id must be different from the current user id")
     data = dict(
         user_id=user_id,
-        permission=["manage_galleries"],
+        permissions=["manage_galleries"],
         temp_token=current_app.config["temp_auth_tokens"].setdefault(user.id, secrets.token_urlsafe(64))
     )
     redirect_uri = request.args.get('redirect_uri')
@@ -78,12 +78,7 @@ async def authorize_fav():
 async def authorization_callback():
     user = await fetch_user_safe()
     infos = None
-    infos = current_app.auth_rule.loads_unsafe(str(request.args.get('infos')))
-    infos = infos[1]
-    print(infos['temp_token'])
-    print(current_app.config["temp_auth_tokens"][user.id])
-    print(user.id)
-    print(infos)
+    infos = current_app.auth_rule.loads(str(request.args.get('infos')))
     if infos['temp_token'] != current_app.config["temp_auth_tokens"].get(user.id):
         quart.abort(403, description="Invalid temporary token.")
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
