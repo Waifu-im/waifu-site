@@ -67,7 +67,7 @@ async def authorize_fav():
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    infos = rule.dumps(data)
+    infos = current_app.auth_rule.dumps(data)
     return Response(quart.url_for('tools.authorization_callback') + '?infos=' + infos)
 
 
@@ -76,7 +76,7 @@ async def authorization_callback():
     user = await fetch_user_safe()
     infos = None
     try:
-        infos = rule.load(request.args.get('infos'))
+        infos = current_app.auth_rule.load(request.args.get('infos'))
     except:
         quart.abort(400)
     if infos['temp_token'] != current_app.config["temp_auth_tokens"][user.id]:
