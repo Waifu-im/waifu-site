@@ -28,7 +28,7 @@ async def all_api_(title=None):
         except:
             full = None
     try:
-        files = (await current_app.waifuclient.random(
+        files = (await current_app.waifu_client.random(
             is_nsfw=request.args.get('is_nsfw'),
             selected_tags=selected_tags,
             excluded_tags=request.args.getlist('excluded_tags'),
@@ -102,7 +102,7 @@ async def fav_():
         else:
             quart.abort(403)
     try:
-        files = (await current_app.waifuclient.fav(user_id=user_id, raw=True))["images"]
+        files = (await current_app.waifu_client.fav(user_id=user_id, raw=True))["images"]
     except waifuim.exceptions.APIException as e:
         if e.status == 404:
             return quart.abort(
@@ -131,7 +131,7 @@ async def fav_():
 
 @blueprint.route("/recent/")
 async def recent_():
-    files = await current_app.waifuclient.random(is_nsfw='null', order_by='UPLOADED_AT', raw=True, many=True)
+    files = await current_app.waifu_client.random(is_nsfw='null', order_by='UPLOADED_AT', raw=True, many=True)
     files = files["images"]
     tags = []
     is_nsfw = False

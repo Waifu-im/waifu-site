@@ -21,8 +21,8 @@ blueprint = Blueprint("general", __name__, template_folder="static/html")
 async def home_():
     api_offline = False
     try:
-        im = str(await current_app.waifuclient.random(gif=False, is_nsfw=False))
-        random_file = str(await current_app.waifuclient.random(
+        im = str(await current_app.waifu_client.random(gif=False, is_nsfw=False))
+        random_file = str(await current_app.waifu_client.random(
             is_nsfw=False,
             order_by="FAVOURITES",
         )).split("/")[-1]
@@ -51,7 +51,7 @@ async def home_():
 
 @blueprint.route("/tags/")
 async def tags_():
-    rt = await current_app.waifuclient.endpoints(full=True)
+    rt = await current_app.waifu_client.endpoints(full=True)
     return await render_template(
         "tags.html",
         tags=rt
@@ -60,7 +60,7 @@ async def tags_():
 
 @blueprint.route("/upload/")
 async def upload_():
-    rt = await current_app.waifuclient.endpoints(full=True)
+    rt = await current_app.waifu_client.endpoints(full=True)
     return await render_template(
         "upload.html",
         form_upload=quart.url_for("forms.form_upload"),
@@ -70,7 +70,7 @@ async def upload_():
 
 @blueprint.route("/docs/")
 async def docs_():
-    rt = await current_app.waifuclient.endpoints()
+    rt = await current_app.waifu_client.endpoints()
     return await render_template(
         "documentation.html",
         tags=rt,
@@ -129,8 +129,11 @@ async def dashboard_():
     )
 
 
-@blueprint.route("/preview/<string:file>/")
+@blueprint.route("/preview/<string:file>/", defaults={'file': None})
 async def preview_(file: str):
+    if file is None:
+        f = await current_app.waifu_client.random(is_nsfw='null')
+        return quart.redirect(quart.url_for("general.preview_", file=f.file))
     file_parts = os.path.splitext(file.lower())
     file = file_parts[0]
     filename = ''.join(file_parts)
@@ -157,7 +160,7 @@ async def preview_(file: str):
     if not rt:
         quart.abort(404)
     if rt[0]['file'] != filename:
-        return quart.redirect(quart.url_for("general.preview_", file=rt[0]['file']))
+        return quart.redirect(quart.url_for("general.preview_",))
     if auth:
         fav = bool(rt[0]["user_id"])
     tags = {t['name'] for t in rt}
@@ -207,7 +210,7 @@ async def manage_(file):
     else:
         report_user_id = report_description = None
 
-    t = await current_app.waifuclient.endpoints(full=True)
+    t = await current_app.waifu_client.endpoints(full=True)
     try:
         existed = [int(tag["tag_id"]) for tag in image_info]
     except TypeError:

@@ -88,13 +88,13 @@ async def create_session():
         host=db_ip,
         database=db_name,
     )
-    app.waifuclient = current_app.waifuclient = waifuim.WaifuAioClient(
+    app.waifu_client = current_app.waifu_client = waifuim.WaifuAioClient(
         session=app.session,
         appname=app.config["waifu_client_user_agent"],
         token=app.config["API_token"],
     )
     yield
-    await app.waifuclient.close()
+    await app.waifu_client.close()
     await app.pool.close()
     await app.session.close()
     await app.boto3session.close()
