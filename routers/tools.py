@@ -91,12 +91,9 @@ async def authorization_callback():
                            )
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     if infos['temp_token'] != temp_auth_tokens.get(str(user.id)):
-        print("TEST")
         quart.abort(403, description="Invalid temporary token.")
     temp_auth_tokens.pop(str(user.id), None)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    print("after")
-    print(temp_auth_tokens)
     redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
     data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
     if infos['revoke']:
