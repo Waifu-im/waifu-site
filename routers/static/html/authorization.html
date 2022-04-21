@@ -49,7 +49,7 @@
 							{% else %}
 								<span class="bi-check-circle-fill text-success fs-5"></span>
 							{% endif %}
-						{{perm.get['description'].replace('_',' ').capitalize() if perm.get('description',None) else perm['name']}}</li>
+						{{perm.get['description'].replace('_',' ').capitalize() if perm['description'] else perm['name']}}</li>
 						{% endfor %}
 					</ul>
 					<hr class="text-center m-3">
