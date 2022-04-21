@@ -81,7 +81,7 @@ async def authorize_(revoke=False):
         data.update(dict(redirect_uri=redirect_uri))
     data = urllib.parse.urlencode(data, True)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + data)
+    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?' + data)
 
 
 @blueprint.route("/authorization/callback/")
