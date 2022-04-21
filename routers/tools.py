@@ -88,7 +88,8 @@ async def authorize_(revoke=False):
                                  user_name=user_info['name'],
                                  user_picture=user_info['avatar_url'],
                                  redirect_uri=redirect_uri or current_app.config['site_url'],
-                                 permissions=permissions
+                                 permissions=permissions,
+                                 authorization_url=quart.url_for('tools.authorization_callback') + '?' + data,
                                  )
 
 
