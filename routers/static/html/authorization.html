@@ -30,12 +30,13 @@
 					<hr class="text-center m-3">
 					<div class="card-body cardupload">
 						<h6 class="text-uppercase">This will allow them to :</h6>
-						<ul class="list-group list-group-flush">
-							{% for perm in permissions %}
-								<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
-							{% endfor %}
-						</ul>
 					</div>
+					<ul class="list-group list-group-flush">
+						{% for perm in permissions %}
+							<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
+						{% endfor %}
+					</ul>
+
 				</div>
             </div>
         </div>
