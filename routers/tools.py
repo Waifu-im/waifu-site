@@ -2,6 +2,7 @@ import os
 import urllib
 import json
 import quart
+import asyncpg
 from quart import Response
 import secrets
 from routers.utils import Unauthorized, get_user_info, verify_permissions
@@ -75,6 +76,8 @@ async def authorize_(revoke=False):
     if data['user_id'] == user.id:
         quart.abort(400, description="The target user id must be different from the current user id")
     permissions = await verify_permissions(data['permissions'])
+    if (await current_app.pool.fetchval("SELECT name from registered_user where id=$1", data['user_id'])) is None:
+        quart.abort(400, description="This user does not exist")
     user_info = await get_user_info(data['user_id'])
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
@@ -130,12 +133,16 @@ async def authorization_callback():
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     redirect_uri = urllib.parse.unquote(request.args['redirect_uri']) if request.args.get('redirect_uri') else None
     vals = [(data['user_id'], p['name'], user.id) for p in data['permissions']]
-    if data['revoke']:
-        await current_app.pool.executemany(
-            "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", vals)
-    else:
-        await current_app.pool.executemany(
-            "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", vals)
+    try:
+        if data['revoke']:
+            await current_app.pool.executemany(
+                "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", vals)
+        else:
+            await current_app.pool.executemany(
+                "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING",
+                vals)
+    except asyncpg.exceptions.ForeignKeyViolationError:
+        pass
     return quart.redirect(redirect_uri if redirect_uri else current_app.config["site_url"])
 
 
