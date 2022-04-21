@@ -5,7 +5,7 @@ ALLOWED_USER_PERMISSIONS = ["manage_gallery", "view_gallery"]
 
 
 async def verify_permissions(permissions):
-    permissions = [perm.lower for perm in permissions]
+    permissions = [perm.lower() for perm in permissions]
     for perm in permissions:
         if perm not in ALLOWED_USER_PERMISSIONS:
             return quart.abort(400, description=perm + " is not a valid user permissions")
