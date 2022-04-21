@@ -40,10 +40,20 @@
 							{% else %}
 								<span class="bi-check-circle-fill text-success fs-5"></span>
 							{% endif %}
-						{{perm.get('description',None) or perm['name']}}</li>
+						{{perm.get('description',None).replace('_',' ').capitalize() or perm['name']}}</li>
 						{% endfor %}
 					</ul>
 					<hr class="text-center m-3">
+					<ul class="list-group list-group-flush">
+						<li class="list-group-item cardupload text-info">
+						<span class="bi-link-45deg text-muted fs-6"></span>
+						Once this operation is finished you will be redirected to : {{redirect_uri}}
+						</li>
+					</ul>
+
+
+
+
 
 				</div>
             </div>
