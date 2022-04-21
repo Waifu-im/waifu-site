@@ -18,13 +18,13 @@
             <div class="container">
 				<div class="card cardupload text-center" style="width: 98vw;max-width: 500px;">
 					<div class="card-body">
-						<img src="{{user_picture}}" class="rounded-circle" style="width: 5rem; height: 5rem;">
-						<span class="bi-patch-check text-success"></span>
-						<img src="{{target_picture}}" class="rounded-circle" style="width: 5rem; height: 5rem;">
+						<img src="{{user_picture}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
+						<span class="bi-patch-check text-success fs-3"></span>
+						<img src="{{target_picture}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
 					</div>
 					<ul class="list-group list-group-flush">
 						{% for perm in permissions %}
-							<li class="list-group-item">{{perm.get('description',None) or perm['name']}}</li>
+							<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
 						{% endfor %}
 					</ul>
 					<div class="card-footer border-0">
