@@ -25,13 +25,25 @@
 						<img src="{{target_picture + '?size=1024'}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
 						<div style="margin-top: 2rem">
 							<p class="fs-5 m-1"><strong>{{user_name}}</strong></p>
-							<p class="fs-6 text-secondary m-1">want to access your {{target_full_name}} Waifu.im account.</p>
+							<p class="fs-6 text-secondary m-1">
+								{% if revoke %}}
+								will not be able
+								{% else %}
+								wants
+								{% endif %}
+								to access your {{target_full_name}} Waifu.im account.
+								{% if revoke%}
+								anymore
+								{% endif %}
+							</p>
 						</div>
 					</div>
 					<hr class="text-center m-3">
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item cardupload">
-							<h6 class="text-uppercase" style="font-family: 'Kanit', sans-serif;">This will allow them to :</h6>
+							<h6 class="text-uppercase" style="font-family: 'Kanit', sans-serif;">
+								This will {% if revoke %}remove{% else %}allow{% endif %} them {% if revoke %}the ability {% endif %}to :
+							</h6>
 						</li>
 						{% for perm in permissions %}
 							<li class="list-group-item cardupload fs-6">
