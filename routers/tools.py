@@ -113,7 +113,7 @@ async def authorization_callback():
 
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     verify_permissions(data['permissions'])
-    await get_user_info(data['user_id'], jsondata=True)
+    await get_user_info(data['user_id'])
     if data['state'] != temp_auth_tokens.get(str(user.id)):
         quart.abort(403, description="Invalid temporary token.")
     temp_auth_tokens.pop(str(user.id), None)
