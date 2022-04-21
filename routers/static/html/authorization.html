@@ -41,11 +41,11 @@
 								<span class="bi-check-circle-fill text-success fs-5"></span>
 							{% endif %}
 						{{perm.get('description',None).replace('_',' ').capitalize() or perm['name']}}</li>
-						{% endfor %}
+						{% endfor %}g
 					</ul>
 					<hr class="text-center m-3">
 					<ul class="list-group list-group-flush">
-						<li class="list-group-item cardupload text-warning">
+						<li class="list-group-item cardupload text-muted">
 							<p style="font-size: 0.8rem"><span class="bi-link-45deg text-muted fs-6"></span>Once this operation is finished you will be redirected to : {{redirect_uri}}</p>
 						</li>
 					</ul>
