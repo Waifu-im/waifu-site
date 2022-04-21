@@ -3,3 +3,4 @@ from .discordoauth import *
 from .exceptions import *
 from .formatings import *
 from .types import *
+from .verification import *

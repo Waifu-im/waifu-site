@@ -4,7 +4,7 @@ import json
 import quart
 from quart import Response
 import secrets
-from routers.utils import Unauthorized, get_user_info
+from routers.utils import Unauthorized, get_user_info, verify_permissions
 from routers.utils import (
     requires_authorization,
     has_permissions,
@@ -15,7 +15,6 @@ from routers.utils import (
 from quart import Blueprint, render_template, request, current_app, session
 
 blueprint = Blueprint("tools", __name__, template_folder="static/html")
-ALLOWED_USER_PERMISSIONS = ["manage_gallery", "view_gallery"]
 
 
 @blueprint.route("/api/")
@@ -71,12 +70,14 @@ async def authorize_fav(revoke=False):
         permissions=list(request.args.getlist('permissions')),
         revoke=revoke,
     )
-    missing = [k for k, v in data.items() if not v]
+    missing = [k for k, v in data.items() if v is not None]
     if missing:
         return quart.abort(
             400,
             description="One of the following parameters were missing or of the wrong type : " + ", ".join(missing)
         )
+    verify_permissions(data['permissions'])
+    await get_user_info(data['user_id'], jsondata=True)
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
@@ -101,10 +102,10 @@ async def authorization_callback():
             400,
             description="One of the following parameters were missing or of the wrong type : " + ", ".join(missing)
         )
-    for perm in data['permissions']:
-        if perm.lower() not in ALLOWED_USER_PERMISSIONS:
-            return quart.abort(400, description=perm + " is not a valid user permissions")
+
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
+    verify_permissions(data['permissions'])
+    await get_user_info(data['user_id'], jsondata=True)
     if data['state'] != temp_auth_tokens.get(str(user.id)):
         quart.abort(403, description="Invalid temporary token.")
     temp_auth_tokens.pop(str(user.id), None)
