@@ -50,8 +50,14 @@
 						</li>
 					</ul>
 					<div class="card-footer text-center" style="background-color: #464646">
-						<a type="button" class="btn btn-danger align-items-start" href="{{redirect_uri}}">Cancel</a>
-						<a type="button" class="btn btn-success align-items-end" href="{{authorization_url}}">Authorize</a>
+						<div class="row">
+							<div class="col-6 justify-content-start">
+								<a type="button" class="btn btn-danger" href="{{redirect_uri}}">Cancel</a>
+							</div>
+							<div class="col-6 justify-content-end">
+								<a type="button" class="btn btn-success" href="{{authorization_url}}">Authorize</a>
+							</div>
+						</div>
 					</div>
 				</div>
             </div>
