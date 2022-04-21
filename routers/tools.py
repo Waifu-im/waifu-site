@@ -129,7 +129,7 @@ async def authorization_callback():
     temp_auth_tokens.pop(str(user.id), None)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     redirect_uri = urllib.parse.unquote(request.args['redirect_uri']) if request.args.get('redirect_uri') else None
-    vals = [(data['user_id'], p, user.id) for p in data['permissions']]
+    vals = [(data['user_id'], p['name'], user.id) for p in data['permissions']]
     if data['revoke']:
         await current_app.pool.executemany(
             "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", vals)
