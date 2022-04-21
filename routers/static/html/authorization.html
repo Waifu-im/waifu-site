@@ -27,12 +27,17 @@
 						</div>
 					</div>
 					<hr class="text-center m-3">
-					<div class="card-body cardupload m-1">
-						<h6 class="text-uppercase">This will allow them to :</h6>
-					</div>
 					<ul class="list-group list-group-flush">
+						<li class="list-group-item cardupload">
+							<h6 class="text-uppercase">This will allow them to :</h6>
+						</li>
 						{% for perm in permissions %}
-							<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
+							{% if revoke}
+								<span class="bi-x-circle-fill text-danger fs-3 m-4"></span>
+							{% else %}
+								<span class="bi-check-circle-fill text-success fs-3 m-4"></span>
+							{% endif %}
+						<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
 						{% endfor %}
 					</ul>
 
