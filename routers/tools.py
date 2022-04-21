@@ -56,26 +56,23 @@ async def logout():
 @blueprint.route("/authorization/")
 @blueprint.route("/authorization/revoke/", defaults={'revoke': True})
 @requires_authorization
-async def authorize_fav(revoke=False):
+async def authorize_(revoke=False):
     user = await fetch_user_safe()
-    user_id = request.args.get('user_id', type=int)
-    if not user_id:
-        quart.abort(400, description="The user_id is either missing or of an incorrect type")
-    if user_id == user.id:
-        quart.abort(400, description="The target user id must be different from the current user id")
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     data = dict(
         state=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
-        user_id=request.args.get('user_id', int),
-        permissions=list(request.args.getlist('permissions')),
+        user_id=request.args.get('user_id', type=int),
+        permissions=request.args.getlist('permissions'),
         revoke=revoke,
     )
-    missing = [k for k, v in data.items() if v is not None]
+    missing = [k for k, v in data.items() if v is None]
     if missing:
         return quart.abort(
             400,
             description="One of the following parameters were missing or of the wrong type : " + ", ".join(missing)
         )
+    if data['user_id'] == user.id:
+        quart.abort(400, description="The target user id must be different from the current user id")
     verify_permissions(data['permissions'])
     await get_user_info(data['user_id'], jsondata=True)
     redirect_uri = request.args.get('redirect_uri')
