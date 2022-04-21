@@ -19,7 +19,7 @@
         <div class="position-absolute top-50 start-50 translate-middle">
             <div class="container">
 				<div class="card cardupload" style="width: 98vw;max-width: 500px;">
-					<div class="card-header cardupload text-center border-0" style="margin-top: 1rem">
+					<div class="card-body cardupload text-center" style="margin-top: 1rem">
 						<img src="{{user_picture}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
 						<span class="bi-patch-check text-success fs-3 m-4"></span>
 						<img src="{{target_picture + '?size=1024'}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
@@ -43,6 +43,7 @@
 						{{perm.get('description',None) or perm['name']}}</li>
 						{% endfor %}
 					</ul>
+					<hr class="text-center m-3">
 
 				</div>
             </div>
