@@ -59,10 +59,11 @@ async def logout():
 async def authorize_(revoke=False):
     user = await fetch_user_safe()
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
+    permissions = request.args.getlist('permissions')
     data = dict(
         state=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
         user_id=request.args.get('user_id', type=int),
-        permissions=request.args.getlist('permissions'),
+        permissions=permissions if permissions else None,
         revoke=revoke,
     )
     missing = [k for k, v in data.items() if v is None]
