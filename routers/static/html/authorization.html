@@ -1,0 +1,40 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>{{title}}</title>
+	{{format_metadatas()|safe}}
+
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+	<link rel="stylesheet" href="/static/css/custom.css">
+</head>
+<body>
+    <div class="container-fluid" id="container2">
+        <div class="position-absolute top-50 start-50 translate-middle">
+            <div class="container">
+				<div class="card cardupload text-center" style="width: 98vw;max-width: 500px;">
+					<div class="card-body">
+						<img src="{{user_picture}}" style="width: 1rem; height: 1rem;">
+						<span class="bi-patch-check text-success"></span>
+						<img src="{{target_picture}}" style="width: 1rem; height: 1rem;">
+					</div>
+					<ul class="list-group list-group-flush">
+						{% for perm in permissions %}
+							<li class="list-group-item">{{perm.get('description',None) or perm['name']}}</li>
+						{% endfor %}
+					</ul>
+					<div class="card-footer border-0">
+						<input type="submit" class="btn btn-success btn-sm" name="Submit" value="Submit" id="submitbutton" />
+					</div>
+				</div>
+            </div>
+        </div>
+    </div>
+</body>
+</div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>

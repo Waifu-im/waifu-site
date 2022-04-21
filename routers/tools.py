@@ -74,14 +74,21 @@ async def authorize_(revoke=False):
         )
     if data['user_id'] == user.id:
         quart.abort(400, description="The target user id must be different from the current user id")
-    verify_permissions(data['permissions'])
-    await get_user_info(data['user_id'])
+    permissions = await verify_permissions(data['permissions'])
+    user_info = await get_user_info(data['user_id'])
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     data = urllib.parse.urlencode(data, True)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?' + data)
+    return await render_template('authorization.html',
+                                 target_name=user.name,
+                                 target_picture=user.avatar_url or user.default_avatar_url,
+                                 user_name=user_info['name'],
+                                 user_picture=user_info['avatar_url'],
+                                 redirect_uri=redirect_uri or current_app.config['site_url'],
+                                 permissions=permissions
+                                 )
 
 
 @blueprint.route("/authorization/callback/")
@@ -112,7 +119,7 @@ async def authorization_callback():
         )
 
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
-    verify_permissions(data['permissions'])
+    data['permissions'] = await verify_permissions(data['permissions'])
     await get_user_info(data['user_id'])
     if data['state'] != temp_auth_tokens.get(str(user.id)):
         quart.abort(403, description="Invalid temporary token.")

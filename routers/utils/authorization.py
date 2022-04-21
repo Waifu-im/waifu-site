@@ -12,7 +12,7 @@ async def has_permissions(user_id, perm_name):
         """SELECT * FROM user_permissions
 JOIN permissions ON permissions.name=user_permissions.permission
 JOIN registered_user ON registered_user.id=user_permissions.user_id
-WHERE registered_user.id=$1 and (permissions.name=$2 or permissions.position > (SELECT position from permissions where name=$2) or permissions.name='admin')""",
+WHERE registered_user.id=$1 and (permissions.name=$2 or permissions.position > (SELECT position from permissions where name=$2) or permissions.name='admin') and target_id is NULL""",
         user_id,
         perm_name,
     )
