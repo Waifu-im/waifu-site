@@ -32,12 +32,13 @@
 							<h6 class="text-uppercase">This will allow them to :</h6>
 						</li>
 						{% for perm in permissions %}
+							<li class="list-group-item cardupload">
 							{% if revoke %}
-								<span class="bi-x-circle-fill text-danger fs-3 m-4"></span>
+								<span class="bi-x-circle-fill text-danger fs-3 m-4">
 							{% else %}
-								<span class="bi-check-circle-fill text-success fs-3 m-4"></span>
+								<span class="bi-check-circle-fill text-success fs-3 m-4">
 							{% endif %}
-						<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
+						{{perm.get('description',None) or perm['name']}}</span></li>
 						{% endfor %}
 					</ul>
 
