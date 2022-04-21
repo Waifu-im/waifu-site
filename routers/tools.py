@@ -15,7 +15,7 @@ from routers.utils import (
 from quart import Blueprint, render_template, request, current_app, session
 
 blueprint = Blueprint("tools", __name__, template_folder="static/html")
-
+ALLOWED_USER_PERMISSIONS = ["manage_gallery", "view_gallery"]
 
 @blueprint.route("/api/")
 async def api_redirect():
@@ -53,8 +53,8 @@ async def logout():
     return quart.redirect(quart.url_for("general.home_"))
 
 
-@blueprint.route("/authorization/fav/")
-@blueprint.route("/authorization/fav/revoke/", defaults={'revoke': True})
+@blueprint.route("/authorization/")
+@blueprint.route("/authorization/revoke/", defaults={'revoke': True})
 @requires_authorization
 async def authorize_fav(revoke=False):
     user = await fetch_user_safe()
@@ -67,41 +67,49 @@ async def authorize_fav(revoke=False):
     data = dict(
         user_id=user_id,
         permissions=["manage_gallery"],
-        temp_token=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
+        state=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
         revoke=revoke
     )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    infos = current_app.auth_rule.dumps(data)
+    data = urllib.urlencode(data)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + '?state=' + infos)
+    return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + data)
 
 
 @blueprint.route("/authorization/callback/")
 @requires_authorization
 async def authorization_callback():
     user = await fetch_user_safe()
-    try:
-        infos = current_app.auth_rule.loads(str(request.args.get('state')))
-    except:
-        return quart.abort(400,
-                           description="Either no state were provided or the state was not correctly "
-                                       "encoded"
-                           )
+    data = dict(
+        state=request.args.get('state'),
+        user_id=request.args.get('user_id', int),
+        permissions=request.args.getlist('permissions'),
+        revoke=request.args.get('revoke', bool)
+    )
+    missing = [k for k, v in data.items() if not v]
+    if missing:
+        return quart.abort(
+            400,
+            description="One of the following parameters were missing or of the wrong type : " + ", ".join(missing)
+        )
+    for perm in data['permissions']:
+        if perm.lower() not in ALLOWED_USER_PERMISSIONS:
+            return quart.abort(400, description=perm + " is not a valid user permissions")
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
-    if infos['temp_token'] != temp_auth_tokens.get(str(user.id)):
+    if data['state'] != temp_auth_tokens.get(str(user.id)):
         quart.abort(403, description="Invalid temporary token.")
     temp_auth_tokens.pop(str(user.id), None)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
-    redirect_uri = urllib.parse.unquote(infos['redirect_uri']) if infos.get('redirect_uri') else None
-    data = [(infos['user_id'], p, user.id) for p in infos['permissions']]
-    if infos['revoke']:
+    redirect_uri = urllib.parse.unquote(request.args['redirect_uri']) if request.args.get('redirect_uri') else None
+    vals = [(data['user_id'], p, user.id) for p in data['permissions']]
+    if data['revoke']:
         await current_app.pool.executemany(
-            "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", data)
+            "DELETE FROM user_permissions WHERE user_id=$1 and permission=$2 and target_id=$3", vals)
     else:
         await current_app.pool.executemany(
-            "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", data)
+            "INSERT INTO user_permissions(user_id,permission,target_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING", vals)
     return quart.redirect(redirect_uri if redirect_uri else current_app.config["site_url"])
 
 
