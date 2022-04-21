@@ -34,9 +34,9 @@
 						{% for perm in permissions %}
 							<li class="list-group-item cardupload">
 							{% if revoke %}
-								<span class="bi-x-circle-fill text-danger fs-3 m-4"></span>
+								<span class="bi-x-circle-fill text-danger"></span>
 							{% else %}
-								<span class="bi-check-circle-fill text-success fs-3 m-4"></span>
+								<span class="bi-check-circle-fill text-success"></span>
 							{% endif %}
 						{{perm.get('description',None) or perm['name']}}</li>
 						{% endfor %}
