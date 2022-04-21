@@ -75,7 +75,7 @@ async def authorize_(revoke=False):
     if data['user_id'] == user.id:
         quart.abort(400, description="The target user id must be different from the current user id")
     verify_permissions(data['permissions'])
-    await get_user_info(data['user_id'], jsondata=True)
+    await get_user_info(data['user_id'])
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
