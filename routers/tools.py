@@ -154,13 +154,13 @@ async def purge_gallery_():
 
 @blueprint.route("/toggle-image/")
 @requires_authorization
-async def editfav_():
+async def edit_favourites():
     image = request.args.get("image")
     if not image:
         return quart.abort(400)
     user = await fetch_user_safe()
     await current_app.waifu_client.fav_toggle(image, user_id=user.id)
-    return quart.redirect(quart.url_for("general.preview_", file=os.path.splitext(image)[0]))
+    return quart.redirect(quart.url_for("general.preview_chang", file=os.path.splitext(image)[0]))
 
 
 @blueprint.route("/delete_image/")
