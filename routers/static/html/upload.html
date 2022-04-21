@@ -100,8 +100,8 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
             <div class="container" id="containermid">
                 <form onsubmit="resetall();document.getElementById('uploadprogressbar').style.display='flex';uploadFile();return false;" method="post" enctype="multipart/form-data">
                     <div class="card cardupload text-center" style="width: 98vw;max-width: 500px;">
-                        <div class="card-header border-0" style="font-size: 1.5rem;">File Upload</div>
-                        <div class="card-body">
+                        <div class="card-header border-0 cardupload" style="font-size: 1.5rem;">File Upload</div>
+                        <div class="card-body cardupload">
                             <div class="row" style="margin-bottom: 1rem;">
                                 <div class="col-9 sm-12 justify-content-start">
                                     <select class="selectpicker form-control" id="sele" data-none-selected-text="Select your tags" multiple required name="tags" data-live-search="true" data-window-padding="[64, 0, 0, 0]">
@@ -131,7 +131,7 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             </div>
                             <p class="fs-6 text-danger" id="errort" style="display: none;"></p>
                         </div>
-                        <div class="card-footer border-0">
+                        <div class="card-footer border-0 cardupload">
                             <input type="submit" class="btn btn-success btn-sm" name="Submit" value="Submit" id="submitbutton" />
                         </div>
                     </div>
