@@ -73,7 +73,7 @@ async def authorize_fav(revoke=False):
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    data = urllib.urlencode(data)
+    data = urllib.parse.urlencode(data)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + data)
 
