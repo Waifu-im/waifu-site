@@ -88,13 +88,14 @@ async def authorize_(revoke=False):
 @requires_authorization
 async def authorization_callback():
     user = await fetch_user_safe()
+    permissions = request.args.getlist('permissions')
     data = dict(
         state=request.args.get('state'),
         user_id=request.args.get('user_id', int),
-        permissions=list(request.args.getlist('permissions')),
+        permissions=permissions if permissions else None,
         revoke=request.args.get('revoke', bool)
     )
-    missing = [k for k, v in data.items() if not v]
+    missing = [k for k, v in data.items() if v is None]
     if missing:
         return quart.abort(
             400,
