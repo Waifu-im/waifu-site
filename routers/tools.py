@@ -17,6 +17,7 @@ from quart import Blueprint, render_template, request, current_app, session
 blueprint = Blueprint("tools", __name__, template_folder="static/html")
 ALLOWED_USER_PERMISSIONS = ["manage_gallery", "view_gallery"]
 
+
 @blueprint.route("/api/")
 async def api_redirect():
     return quart.redirect("https://api.waifu.im")
@@ -65,15 +66,21 @@ async def authorize_fav(revoke=False):
         quart.abort(400, description="The target user id must be different from the current user id")
     temp_auth_tokens = json.loads(await current_app.redis.get('temp_auth_tokens'))
     data = dict(
-        user_id=user_id,
-        permissions=["manage_gallery"],
         state=temp_auth_tokens.setdefault(user.id, secrets.token_urlsafe(20)),
-        revoke=revoke
+        user_id=request.args.get('user_id', int),
+        permissions=list(request.args.getlist('permissions')),
+        revoke=revoke,
     )
+    missing = [k for k, v in data.items() if not v]
+    if missing:
+        return quart.abort(
+            400,
+            description="One of the following parameters were missing or of the wrong type : " + ", ".join(missing)
+        )
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    data = urllib.parse.urlencode(data,True)
+    data = urllib.parse.urlencode(data, True)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return Response(current_app.config['site_url'] + quart.url_for('tools.authorization_callback') + data)
 
