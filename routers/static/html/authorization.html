@@ -17,7 +17,7 @@
         <div class="position-absolute top-50 start-50 translate-middle">
             <div class="container">
 				<div class="card cardupload" style="width: 98vw;max-width: 500px;">
-					<div class="card-body text-center">
+					<div class="card-header text-center">
 						<img src="{{user_picture}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
 						<span class="bi-patch-check text-success fs-3 m-4"></span>
 						<img src="{{target_picture + '?size=1024'}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
@@ -27,14 +27,14 @@
 							<p class="fs-6 text-secondary m-1">want to access your {{target_full_name}} Waifu.im account.</p>
 						</div>
 					</div>
-					<h6 class="text-uppercase">This will allow them to :</h6>
-
-
-					<ul class="list-group list-group-flush">
-						{% for perm in permissions %}
-							<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
-						{% endfor %}
-					</ul>
+					<div class="card-body">
+						<h6 class="text-uppercase">This will allow them to :</h6>
+						<ul class="list-group list-group-flush">
+							{% for perm in permissions %}
+								<li class="list-group-item cardupload">{{perm.get('description',None) or perm['name']}}</li>
+							{% endfor %}
+						</ul>
+					</div>
 				</div>
             </div>
         </div>
