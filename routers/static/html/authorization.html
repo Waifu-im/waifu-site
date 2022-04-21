@@ -12,12 +12,12 @@
 
 	<link rel="stylesheet" href="/static/css/custom.css">
 </head>
-<body>
+<body style="font-family: Helvetica Neue; ">
     <div class="container-fluid" id="container2">
         <div class="position-absolute top-50 start-50 translate-middle">
             <div class="container">
 				<div class="card cardupload" style="width: 98vw;max-width: 500px;">
-					<div class="card-header text-center border-0" style="margin-top: 1rem">
+					<div class="card-header cardupload text-center border-0" style="margin-top: 1rem">
 						<img src="{{user_picture}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
 						<span class="bi-patch-check text-success fs-3 m-4"></span>
 						<img src="{{target_picture + '?size=1024'}}" class="rounded-circle" style="width: 6rem; height: 6rem;">
@@ -28,7 +28,7 @@
 						</div>
 					</div>
 					<hr class="text-center m-3">
-					<div class="card-body">
+					<div class="card-body cardupload">
 						<h6 class="text-uppercase">This will allow them to :</h6>
 						<ul class="list-group list-group-flush">
 							{% for perm in permissions %}
