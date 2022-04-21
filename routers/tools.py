@@ -85,7 +85,7 @@ async def authorization_callback():
     data = dict(
         state=request.args.get('state'),
         user_id=request.args.get('user_id', int),
-        permissions=request.args.getlist('permissions'),
+        permissions=list(request.args.getlist('permissions')),
         revoke=request.args.get('revoke', bool)
     )
     missing = [k for k, v in data.items() if not v]
