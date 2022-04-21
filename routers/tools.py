@@ -83,6 +83,7 @@ async def authorize_(revoke=False):
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return await render_template('authorization.html',
                                  target_name=user.name,
+                                 target_full_name=str(user),
                                  target_picture=user.avatar_url or user.default_avatar_url,
                                  user_name=user_info['name'],
                                  user_picture=user_info['avatar_url'],
