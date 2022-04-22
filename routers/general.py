@@ -1,6 +1,6 @@
 import os
 import waifuim
-
+from werkzeug.datastructures import MultiDict
 import quart
 from quart import Blueprint, render_template, request, current_app, session
 
@@ -117,6 +117,16 @@ async def dashboard_():
                 "SELECT COUNT(*) FROM FavImages WHERE user_id=$1", user_id
             )
         )[0]
+        result = await conn.fetch(
+            "SELECT * FROM user_permissions JOIN registered_user ON registered_user.id = user_permissions.user_id WHERE target_id=$1",
+            user_id)
+        users_dict = None
+        if result:
+            mapping_list = []
+            for r in result:
+                r = dict(r)
+                mapping_list.append((int(r.pop('user_id')), r))
+            trusted_users = MultiDict(mapping_list)
     token, user_secret = create_token(user_id, user_secret=user_secret)
     return await render_template(
         "dashboard.html",
@@ -126,6 +136,7 @@ async def dashboard_():
         user_id=str(user_id),
         is_admin=is_admin,
         last_24h_rq=last_24h_rq,
+        trusted_users=trusted_users,
     )
 
 

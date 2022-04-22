@@ -6,6 +6,7 @@ import aiohttp
 import aioredis
 import os
 import datetime
+import urllib
 
 import quart
 from quart import Quart, render_template, request, current_app
@@ -124,6 +125,9 @@ async def inject_global_infos():
             loged = False
             user = None
 
+    def encode_query_string(query):
+        return urllib.parse.urlencode(query)
+
     def format_sidebar(loged, user):
         returning = f"""
 <a type="button" href="/" style="color: #fff" class="btn btn-lg {'current' if current_path == '/' else 'heffect'} text-start shadow-none"><span class="bi-house"></span> Home</a>
@@ -214,6 +218,7 @@ async def inject_global_infos():
         current_url=current_url,
         current_path=current_path,
         user=user,
+        encode_query_string=encode_query_string,
     )
 
 

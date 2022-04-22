@@ -56,12 +56,30 @@
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Gallery</span></div>
                                 </div>
                                 <div class="col auto mr-2 justify-content-end text-end">
-                                    <a type="button" class="btn btn-sm btn-success" href="https://waifu.im/fav/?user_id={{user_id}}" style="margin-right:4px;">See it</a>
+                                    <a type="button" class="btn btn-sm btn-success" href="https://waifu.im/fav/?user_id={{user_id}}" style="margin-right:4px;">View it</a>
                                     <button class="btn btn-sm btn-outline-danger" onclick="PurgeGalleryFunction()">Purge Gallery</button>
                                 </div>
                             </div>
                             <div class="fs-5">
                                 <span id="token" class="text-white">{{count_images}} images.</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
+                        <div class="card-body text-dark">
+                            <div class="row">
+                                <div class="col-4 mr-2 justify-content-start">
+                                    <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">TRUSTED USERS</span></div>
+                                </div>
+                            </div>
+                            <div class="container">
+                                {% if users_dict %}
+                                    {% for u_id,u_info in users_mapping.items() %}
+                                        <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=[info['permission'] for info in users_mapping.getlist(u_id)]))}}" style="margin:4px;">u_info['name']</a>
+                                    {% endfor %}
+                                {% else %}
+                                No users have any access to your account for now
+                                {% endif %}
                             </div>
                         </div>
                     </div>
