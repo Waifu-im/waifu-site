@@ -95,6 +95,8 @@
 	for(const checkbox of document.getElementsByClassName('prompt-check')){
 		if(!checkbox.value==="false"){
 			checkbox.checked=true
+		}else{
+			change_background(checkbox)
 		}
 	}
 </script>
