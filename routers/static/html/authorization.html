@@ -56,9 +56,9 @@
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
-									<input id="checkbox-{{loop.index}}" value="false" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" bc="#dc3545" style="background-color: #dc3545"/>
+									<input id="checkbox-{{loop.index}}" value="false" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" bc="#dc3545" style="background-color: transparent"/>
 								{% else %}
-									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" bc ="#198754" style="background-color: #198754"/>
+									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" bc ="#198754" style="background-color: transparent"/>
 								{% endif %}
 								<label class="form-check-label" for="checkbox-{{loop.index}}">
 								{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}
@@ -95,8 +95,7 @@
 	for(const checkbox of document.getElementsByClassName('prompt-check')){
 		if(!checkbox.value==="false"){
 			checkbox.checked=true
-		}else{
-			change_background(checkbox)
 		}
+		change_background(checkbox)
 	}
 </script>
