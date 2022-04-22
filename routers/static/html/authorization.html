@@ -13,6 +13,16 @@
 	<link rel="stylesheet" href="/static/css/custom.css">
 	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600&display=swap" rel="stylesheet">
+	<script>
+		function change_background(checkbox){
+			if (checkbox.checked){
+			checkbox.style.backgroundColor = '#198754'
+			}
+			else {
+				checkbox.style.backgroundColor = 'transparent'
+			}
+		}
+	</script>
 </head>
 <body>
     <div class="container-fluid" id="container2">
@@ -46,9 +56,9 @@
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
-									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" type="checkbox" style="background-color: #dc3545" checked/>
+									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" style="background-color: #dc3545" checked/>
 								{% else %}
-									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" type="checkbox" style="background-color: #198754" checked/>
+									<input id="checkbox-{{loop.index}}" value="" class="form-check-input prompt-check border-secondary noshadow" onclick="change_background(this);" type="checkbox" style="background-color: #198754" checked/>
 								{% endif %}
 								<label class="form-check-label" for="checkbox-{{loop.index}}">
 								{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}
