@@ -46,11 +46,11 @@
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
-									<input class="form-check-input prompt-check border-secondary noshadow" checked="true" type="checkbox" style="background-color: #dc3545"/>
+									<input id="checkbox-{{loop.counter}}" class="form-check-input prompt-check border-secondary noshadow" type="checkbox" style="background-color: #dc3545" checked/>
 								{% else %}
-									<input class="form-check-input prompt-check border-secondary noshadow" checked="true" type="checkbox" style="background-color: #198754" />
+									<input id="checkbox-{{loop.counter}}" class="form-check-input prompt-check border-secondary noshadow" type="checkbox" style="background-color: #198754" checked/>
 								{% endif %}
-								<label class="form-check-label">
+								<label class="form-check-label" for="checkbox-{{loop.counter}}">
 								{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}
 								</label>
 								</div>
