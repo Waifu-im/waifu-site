@@ -49,7 +49,7 @@
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item cardupload">
 							<h6 class="text-uppercase" style="font-family: 'Kanit', sans-serif;">
-								This will {% if revoke %}remove{% else %}allow{% endif %} them {% if revoke %}the ability {% endif %}to :
+								please confirm that you want to {% if revoke %}remove{% else %}grant{% endif %} them the following permissions:
 							</h6>
 						</li>
 						{% for perm in permissions %}
