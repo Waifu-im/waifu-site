@@ -45,9 +45,9 @@
 						{% for perm in permissions %}
 							<li class="list-group-item cardupload fs-6">
 							{% if revoke %}
-								<span class="bi-x-circle-fill text-danger fs-5"></span>
+								<input type="checkbox" style="accent-color: #dc3545"/>
 							{% else %}
-								<span class="bi-check-circle-fill text-success fs-5"></span>
+								<input type="checkbox" style="accent-color: #198754" />
 							{% endif %}
 						{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}</li>
 						{% endfor %}
