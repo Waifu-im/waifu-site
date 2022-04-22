@@ -44,12 +44,17 @@
 						</li>
 						{% for perm in permissions %}
 							<li class="list-group-item cardupload fs-6">
-							{% if revoke %}
-								<input type="checkbox" style="accent-color: #dc3545"/>
-							{% else %}
-								<input type="checkbox" style="accent-color: #198754" />
-							{% endif %}
-						{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}</li>
+								<div class="form-check">
+								{% if revoke %}
+									<input class="form-check-input prompt-check" value="true" type="checkbox" style="accent-color: #dc3545"/>
+								{% else %}
+									<input class="form-check-input prompt-check" value="true" type="checkbox" style="accent-color: #198754" />
+								{% endif %}
+								<label class="form-check-label">
+								{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}
+								</label>
+								</div>
+							</li>
 						{% endfor %}
 					</ul>
 					<hr class="text-center m-3">
