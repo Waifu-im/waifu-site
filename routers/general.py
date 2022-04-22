@@ -120,7 +120,7 @@ async def dashboard_():
         result = await conn.fetch(
             "SELECT * FROM user_permissions JOIN registered_user ON registered_user.id = user_permissions.user_id WHERE target_id=$1",
             user_id)
-        users_dict = None
+        trusted_users = None
         if result:
             mapping_list = []
             for r in result:
