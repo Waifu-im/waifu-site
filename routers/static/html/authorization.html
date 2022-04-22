@@ -46,9 +46,9 @@
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
-									<input class="form-check-input prompt-check border-0" value="true" type="checkbox" style="background-color: #dc3545"/>
+									<input class="form-check-input prompt-check border-0 shadow-0" value="true" type="checkbox" style="background-color: #dc3545"/>
 								{% else %}
-									<input class="form-check-input prompt-check border-0" value="true" type="checkbox" style="background-color: #198754" />
+									<input class="form-check-input prompt-check border-0 shadow-0"  value="true" type="checkbox" style="background-color: #198754" />
 								{% endif %}
 								<label class="form-check-label">
 								{{perm['description'] or perm['name'].replace('_',' ').capitalize()}}
