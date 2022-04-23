@@ -31,7 +31,7 @@
 			dict_params['permissions'] = Array()
 			for (const checkbox of document.getElementsByClassName('prompt-check')){
 				if (checkbox.checked){
-					dict_params['permissions'].append(checkbox.value)
+					dict_params['permissions'].push(checkbox.value)
 				}
 			}
 			for (const [key,value] of dict_params){
