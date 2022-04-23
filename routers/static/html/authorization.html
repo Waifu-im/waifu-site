@@ -34,7 +34,7 @@
 					dict_params['permissions'].push(checkbox.value)
 				}
 			}
-			for (const [key,value] of dict_params){
+			for (const [key,value] of dict_params.entries()){
 				for (const item of value){
 					params_.append(key,item)
 				}
