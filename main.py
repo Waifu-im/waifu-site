@@ -126,7 +126,7 @@ async def inject_global_infos():
             user = None
 
     def encode_query_string(query):
-        return urllib.parse.urlencode(query)
+        return urllib.parse.urlencode(query, True)
 
     def format_sidebar(loged, user):
         returning = f"""
