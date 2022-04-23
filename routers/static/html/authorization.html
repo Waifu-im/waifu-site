@@ -14,7 +14,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600&display=swap" rel="stylesheet">
 	<script>
-		var authorization_url = {{authorization_url|tojson}}
+		var authorization_uri = {{authorization_uri|tojson}}
 		var revoke = {{revoke |tojson}}
 		function change_background(checkbox){
 			if (checkbox.checked){
@@ -40,8 +40,8 @@
 					params_.append(key,item)
 				}
 			}
-			url = new URL(authorization_url)
-			url.search = params_;
+			current_url.path = authorization_uri;
+			current_url.search = params_;
 			window.location.href = url.href;
 		}
 	</script>
