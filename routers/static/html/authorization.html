@@ -25,10 +25,10 @@
 			}
 		}
 		function goToCallback(){
-			let current_url = new URL(window.location.href);
+			let url = new URL(window.location.href);
 			let params_ = new URLSearchParams()
 			let dict_params = {}
-			Object.keys(current_url.searchParams).map(key=>{dict_params[key]=current_url.searchParams.getAll(key)})
+			Object.keys(url.searchParams).map(key=>{dict_params[key]=url.searchParams.getAll(key)})
 			dict_params['permissions'] = Array()
 			for (const checkbox of document.getElementsByClassName('prompt-check')){
 				if (checkbox.checked){
@@ -40,8 +40,8 @@
 					params_.append(key,item)
 				}
 			}
-			current_url.path = authorization_uri;
-			current_url.search = params_;
+			url.path = authorization_uri;
+			url.search = params_;
 			window.location.href = url.href;
 		}
 	</script>
