@@ -73,9 +73,9 @@
                                 </div>
                             </div>
                             <div class="container">
-                                {% if users_dict %}
-                                    {% for u_id, u_info in users_mapping.items() %}
-                                        <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=[info['permission'] for info in users_mapping.getlist(u_id)]))}}" style="margin:4px;">{{u_info['name']}}</a>
+                                {% if trusted_users %}
+                                    {% for u_id, u_info in trusted_users.items() %}
+                                        <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">{{u_info['name']}}</a>
                                     {% endfor %}
                                 {% else %}
                                 No users have any access to your account for now

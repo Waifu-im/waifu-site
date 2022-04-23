@@ -126,7 +126,12 @@ async def dashboard_():
             for r in result:
                 r = dict(r)
                 mapping_list.append((int(r.pop('user_id')), r))
-            trusted_users = MultiDict(mapping_list)
+            multi_dict = MultiDict(mapping_list)
+            trusted_users = {}
+            for u_id, info in multi_dict.items():
+                del info['permission']
+                info['permissions'] = [i['permissions'] for i in multi_dict.getlist(u_id)]
+                trusted_users.update({u_id: info})
     token, user_secret = create_token(user_id, user_secret=user_secret)
     return await render_template(
         "dashboard.html",
