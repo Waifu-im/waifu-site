@@ -73,7 +73,6 @@
                                 </div>
                             </div>
                             {% if trusted_users %}
-                                <div class="container">
                                     {% for u_id, u_info in trusted_users.items() %}
                                         <div class="col-2 m-1">
                                             <a type="button" class="btn btn-sm btn-outline-light" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">
@@ -81,7 +80,6 @@
                                             </a>
                                         </div>
                                     {% endfor %}
-                                </div>
                             {% else %}
                             <div class="fs-5">
                                 No users have any access to your account for now
