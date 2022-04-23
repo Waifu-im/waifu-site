@@ -35,11 +35,11 @@
                     <p class="fs-5">Hi <strong>{{username}}</strong>, welcome to your dashboard !</p>
                     <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-4 mr-2 justify-content-start">
-                                    <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Token</span></div>
+                            <div class="row mb-1">
+                                <div class="col-4 justify-content-start">
+                                    <div class="text-uppercase text-primary text-xs"><span style="color: #ED4C67;font-size: 12px;">Token</span></div>
                                 </div>
-                                <div class="col auto mr-2 justify-content-end text-end">
+                                <div class="col auto justify-content-end text-end">
                                     <button id="copytoken" class="btn btn-sm btn-success btn-clipboard" data-clipboard-text="{{token}}" onclick="this.innerHTML='Copied!';" style="margin-right:4px;">Copy</button>
                                     <button class="btn btn-sm btn-outline-danger" onclick="RegenFunction()">Regen</button>
                                 </div>
@@ -51,12 +51,12 @@
                     </div>
                     <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-4 mr-2 justify-content-start">
-                                    <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Gallery</span></div>
+                            <div class="row mb-1">
+                                <div class="col-4 justify-content-start">
+                                    <div class="text-uppercase text-primary text-xs"><span style="color: #ED4C67;font-size: 12px;">Gallery</span></div>
                                 </div>
-                                <div class="col auto mr-2 justify-content-end text-end">
-                                    <a type="button" class="btn btn-sm btn-success" href="https://waifu.im/fav/?user_id={{user_id}}" style="margin-right:4px;">View it</a>
+                                <div class="col auto justify-content-end text-end">
+                                    <a type="button" class="btn btn-sm btn-success" href="https://waifu.im/fav/?user_id={{user_id}}" style="margin-right:4px;margin-bottom: 4px">View it</a>
                                     <button class="btn btn-sm btn-outline-danger" onclick="PurgeGalleryFunction()">Purge Gallery</button>
                                 </div>
                             </div>
@@ -67,15 +67,15 @@
                     </div>
                     <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-4 mr-2 justify-content-start">
+                            <div class="row mb-1">
+                                <div class="col-4 justify-content-start">
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">TRUSTED USERS</span></div>
                                 </div>
                             </div>
                             {% if trusted_users %}
-                                <div class="row">
+                                <div class="row mb-1">
                                     {% for u_id, u_info in trusted_users.items() %}
-                                        <div class="col-2 m-1">
+                                        <div class="col-2 ms-1 me-1">
                                             <a type="button" class="btn btn-sm btn-outline-light" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions'],redirect_uri='/dashboard/'))}}" style="margin:4px;">
                                                 {{u_info['name']}}
                                             </a>
