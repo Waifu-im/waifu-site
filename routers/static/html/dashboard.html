@@ -79,7 +79,7 @@
                                             <a type="button" class="btn btn-sm btn-outline-warning" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">
                                                 {{u_info['name']}}
                                                 <span class="position-absolute top-0 start-100 translate-middle p-2 bg-danger border border-light rounded-circle">
-                                                <span>{{len(u_info['permissions'])}}</span>
+                                                <span>{{u_info['permissions']|lenght}}</span>
                                                 </span>
                                             </a>
                                         </div>
