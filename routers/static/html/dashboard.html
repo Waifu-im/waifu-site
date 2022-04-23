@@ -34,7 +34,7 @@
                     <h1 class="display-5" id="presentation">Dashboard</h1>
                     <p class="fs-5">Hi <strong>{{username}}</strong>, welcome to your dashboard !</p>
                     <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
-                        <div class="card-body text-dark">
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-4 mr-2 justify-content-start">
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Token</span></div>
@@ -45,12 +45,12 @@
                                 </div>
                             </div>
                             <div class="fs-5">
-                                <span id="token" class="text-white" onclick="TokenToggle()">Click To Display Your Token.</span>
+                                <span id="token" onclick="TokenToggle()">Click To Display Your Token.</span>
                             </div>
                         </div>
                     </div>
                     <div class="card cardupload border-0 mb-3" style="width: 100%;max-width: 750px;">
-                        <div class="card-body text-dark">
+                        <div class="card-body">
                             <div class="row">
                                 <div class="col-4 mr-2 justify-content-start">
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">Gallery</span></div>
@@ -61,7 +61,7 @@
                                 </div>
                             </div>
                             <div class="fs-5">
-                                <span id="token" class="text-white">{{count_images}} images.</span>
+                                <span id="count_images">{{count_images}} images.</span>
                             </div>
                         </div>
                     </div>
@@ -72,12 +72,11 @@
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">TRUSTED USERS</span></div>
                                 </div>
                             </div>
-
                             {% if trusted_users %}
-                                <div class="container">
-                                {% for u_id, u_info in trusted_users.items() %}
-                                    <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">{{u_info['name']}}</a>
-                                {% endfor %}
+                                <div class="row mr-2">
+                                    {% for u_id, u_info in trusted_users.items() %}
+                                        <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">{{u_info['name']}}</a>
+                                    {% endfor %}
                                 </div>
                             {% else %}
                             <div class="fs-5">
