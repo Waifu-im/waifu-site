@@ -9,7 +9,7 @@ import datetime
 import urllib
 
 import quart
-from quart import Quart, render_template, request, current_app
+from quart import Quart, render_template, request, current_app, jsonify
 from quart_discord import (
     DiscordOAuth2Session,
     exceptions,
@@ -230,6 +230,8 @@ async def redirect_unauthorized(error):
 
 @app.errorhandler(HTTPException)
 async def handle_exception(error):
+    if request.path.startswith('/tools/api/'):
+        return jsonify(detail=error.description)
     custom_name = None
     if error.code == 404:
         if (
