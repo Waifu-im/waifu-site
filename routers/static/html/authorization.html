@@ -14,6 +14,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600&display=swap" rel="stylesheet">
 	<script>
+		var redirect_uri = {{redirect_uri |tojson}}
 		var data = {{data|tojson}}
 		var authorization_uri = {{authorization_uri|tojson}}
 		function change_background(checkbox){
@@ -32,6 +33,9 @@
 				if (checkbox.checked){
 					data['permissions'].push(checkbox.value)
 				}
+			}
+			if (data['permissions'].length == 0){
+				return
 			}
 			for (const [key,value] of Object.entries(data)){
 				if (Array.isArray(value)){
