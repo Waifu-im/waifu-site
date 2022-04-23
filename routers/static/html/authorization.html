@@ -25,7 +25,7 @@
 		}
 		function goToCallback(){
 			let url = new URL(window.location.href);
-			let params_ = URLSearchParams()
+			let params_ = new URLSearchParams()
 			let dict_params = {}
 			Object.keys(url.searchParams).map(key=>{dict_params[key]=url.searchParams.getAll(key)})
 			dict_params['permissions'] = Array()
