@@ -82,17 +82,15 @@ async def authorize_(revoke=False):
     redirect_uri = request.args.get('redirect_uri')
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
-    data = urllib.parse.urlencode(data, True)
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return await render_template('authorization.html',
-                                 revoke=revoke,
+                                 data=data,
                                  target_name=user.name,
                                  target_full_name=str(user),
                                  target_picture=user.avatar_url or user.default_avatar_url,
                                  user_name=user_info['name'],
                                  user_picture=user_info['avatar_url'],
                                  redirect_uri=redirect_uri or current_app.config['site_url'],
-                                 permissions=permissions,
                                  authorization_uri=quart.url_for('tools.authorization_callback'),
                                  )
 

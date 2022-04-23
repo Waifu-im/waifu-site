@@ -14,8 +14,8 @@
 	<link href="https://fonts.googleapis.com/css2?family=Lato:wght@700&display=swap" rel="stylesheet">
 	<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600&display=swap" rel="stylesheet">
 	<script>
+		var data = {{data|tojson}}
 		var authorization_uri = {{authorization_uri|tojson}}
-		var revoke = {{revoke |tojson}}
 		function change_background(checkbox){
 			if (checkbox.checked){
 			checkbox.style.backgroundColor = checkbox.getAttribute('bc')
@@ -27,17 +27,20 @@
 		function goToCallback(){
 			let url = new URL(window.location.href);
 			let params_ = new URLSearchParams()
-			let dict_params = {}
-			Object.keys(url.searchParams).map(key=>{dict_params[key]=url.searchParams.getAll(key)})
-			dict_params['permissions'] = Array()
+			data['permissions'] = Array()
 			for (const checkbox of document.getElementsByClassName('prompt-check')){
 				if (checkbox.checked){
-					dict_params['permissions'].push(checkbox.value)
+					data['permissions'].push(checkbox.value)
 				}
 			}
-			for (const [key,value] of Object.entries(dict_params)){
-				for (const item of value){
-					params_.append(key,item)
+			for (const [key,value] of Object.entries(data)){
+				if (Array.isArray(value)){
+					for (const item of value){
+						params_.append(key,item)
+					}
+				}
+				else {
+					params_.append(key, value)
 				}
 			}
 			url.pathname = authorization_uri;
@@ -74,7 +77,7 @@
 								please choose the permissions that you want to {% if revoke %}remove{% else %}grant{% endif %} them:
 							</h6>
 						</li>
-						{% for perm in permissions %}
+						{% for perm in data['permissions'] %}
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
