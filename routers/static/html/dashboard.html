@@ -72,14 +72,18 @@
                                     <div class="text-uppercase text-primary text-xs mb-1"><span style="color: #ED4C67;font-size: 12px;">TRUSTED USERS</span></div>
                                 </div>
                             </div>
-                            <div class="row">
-                                {% if trusted_users %}
-                                    {% for u_id, u_info in trusted_users.items() %}
-                                        <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">{{u_info['name']}}</a>
-                                    {% endfor %}
-                                {% else %}
+
+                            {% if trusted_users %}
+                                <div class="container">
+                                {% for u_id, u_info in trusted_users.items() %}
+                                    <a type="button" class="btn btn-sm btn-outline-info" href="https://waifu.im/authorization/revoke/?{{encode_query_string(dict(user_id=u_id,permissions=u_info['permissions']))}}" style="margin:4px;">{{u_info['name']}}</a>
+                                {% endfor %}
+                                </div>
+                            {% else %}
+                            <div class="fs-5">
                                 No users have any access to your account for now
-                                {% endif %}
+                            </div>
+                            {% endif %}
                             </div>
                         </div>
                     </div>
