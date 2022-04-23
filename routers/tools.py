@@ -84,6 +84,7 @@ async def authorize_(revoke=False):
         data.update(dict(redirect_uri=redirect_uri))
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
     return await render_template('authorization.html',
+                                 permissions=permissions,
                                  data=data,
                                  target_name=user.name,
                                  target_full_name=str(user),

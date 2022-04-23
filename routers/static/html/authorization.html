@@ -77,7 +77,7 @@
 								please choose the permissions that you want to {% if revoke %}remove{% else %}grant{% endif %} them:
 							</h6>
 						</li>
-						{% for perm in data['permissions'] %}
+						{% for perm in permissions %}
 							<li class="list-group-item cardupload fs-6">
 								<div class="form-check">
 								{% if revoke %}
