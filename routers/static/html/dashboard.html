@@ -40,7 +40,7 @@
                                     <div class="text-uppercase text-primary text-xs"><span style="color: #ED4C67;font-size: 12px;">Token</span></div>
                                 </div>
                                 <div class="col auto justify-content-end text-end">
-                                    <button id="copytoken" class="btn btn-sm btn-success btn-clipboard" data-clipboard-text="{{token}}" onclick="this.innerHTML='Copied!';" style="margin-right:4px;">Copy</button>
+                                    <button id="copytoken" class="btn btn-sm btn-success btn-clipboard" data-clipboard-text="{{token}}" onclick="this.innerHTML='Copied!';" style="margin-right:4px;margin-bottom:4px;">Copy</button>
                                     <button class="btn btn-sm btn-outline-danger" onclick="RegenFunction()">Regen</button>
                                 </div>
                             </div>
@@ -73,6 +73,7 @@
                                 </div>
                             </div>
                             {% if trusted_users %}
+                                <div class="container">
                                 <div class="row mb-2">
                                     {% for u_id, u_info in trusted_users.items() %}
                                         <div class="col-2 ms-1 me-1">
@@ -81,6 +82,7 @@
                                             </a>
                                         </div>
                                     {% endfor %}
+                                </div>
                                 </div>
                             {% else %}
                             <div class="fs-5">
