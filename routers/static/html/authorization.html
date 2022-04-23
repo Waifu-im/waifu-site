@@ -34,11 +34,13 @@
 					dict_params['permissions'].push(checkbox.value)
 				}
 			}
+			console.log(dict_params['permissions'])
 			for (const [key,value] of Object.entries(dict_params)){
 				for (const item of value){
 					params_.append(key,item)
 				}
 			}
+			console.log(url.search)
 			window.location.href = url.href;
 		}
 	</script>
