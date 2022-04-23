@@ -83,6 +83,7 @@ async def authorize_(revoke=False):
     if redirect_uri:
         data.update(dict(redirect_uri=redirect_uri))
     await current_app.redis.set('temp_auth_tokens', json.dumps(temp_auth_tokens))
+    data['user_id'] = str(data['user_id'])
     return await render_template('authorization.html',
                                  permissions=permissions,
                                  data=data,
