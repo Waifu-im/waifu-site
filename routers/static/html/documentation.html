@@ -168,21 +168,25 @@ This is just about the parameters validation so you will never face this error i
                                 <tr>
                                     <th scope="col"><span class="text-success">Name</span></th>
                                     <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Type</span></th>
                                     <th scope="col"><span class="text-success">Behaviour</span></th>
                                 </tr>
                                 <tr>
                                     <th scope="row">selected_tags</th>
                                     <th scope="row">No</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Force the API to return images with, at least all the provided tags</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">excluded_tags</th>
                                     <th scope="row">No</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Force the API to return images without any of the provided tags</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">is_nsfw</th>
                                     <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
                                     <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to False.</th>
                                 </tr>
                                 <tr>
@@ -218,7 +222,7 @@ This is just about the parameters validation so you will never face this error i
                                 <tr>
                                     <th scope="row">excluded_files</th>
                                     <th scope="row">No</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
                                 </tr>
                             </thead>
@@ -308,7 +312,7 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <tr>
                                     <th scope="row">permissions</th>
                                     <th scope="row">Yes</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">The permissions that will be asked for. Available permissions are 'view_favourites' and 'manage_favourites'</th>
                                 </tr>
                             </thead>
@@ -380,13 +384,13 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <tr>
                                     <th scope="row">selected_tags</th>
                                     <th scope="row">No</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Force the API to return images with, at least all the provided tags</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">excluded_tags</th>
                                     <th scope="row">No</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Force the API to return images without any of the provided tags</th>
                                 </tr>
                                 <tr>
@@ -422,7 +426,7 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <tr>
                                     <th scope="row">excluded_files</th>
                                     <th scope="row">No</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
                                 </tr>
                             </thead>
@@ -546,7 +550,7 @@ async with aiohttp.ClientSession() as cs:
                                 <tr>
                                     <th scope="row">images</th>
                                     <th scope="row">Yes</th>
-                                    <th scope="row">Array</th>
+                                    <th scope="row">String Array</th>
                                     <th scope="row">The image(s) that you want information from.</th>
                                 </tr>
                             </thead>
