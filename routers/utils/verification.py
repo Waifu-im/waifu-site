@@ -1,7 +1,7 @@
 import quart
 from quart import current_app
 
-ALLOWED_USER_PERMISSIONS = ["manage_gallery", "view_gallery"]
+ALLOWED_USER_PERMISSIONS = ["manage_favourites", "view_favourites"]
 
 
 async def verify_permissions(permissions):

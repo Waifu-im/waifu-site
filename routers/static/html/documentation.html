@@ -445,7 +445,7 @@ def has_waifu_tag(image):
 
 # Do not open a new session everytime like here, save it
 async with aiohttp.ClientSession() as cs:
-    # In this example we get all the picture with a landscape orientation in the user gallery
+    # In this example we get all the picture with a landscape orientation in the user favourites
 	async with cs.get(f"https://api.waifu.im/fav/?orientation=LANDSCAPE",headers=headers) as rep:
 		api = await rep.json()
 		if rep.status in {200, 201}:
@@ -504,7 +504,7 @@ async with aiohttp.ClientSession() as cs:
                                 <th scope="row">image</th>
                                 <th scope="row">Yes</th>
                                 <th scope="row">String</th>
-                                <th scope="row">The image that you want to add, remove or toggle from the user gallery.</th>
+                                <th scope="row">The image that you want to add, remove or toggle from the user favourites.</th>
                             </tr>
                         </thead>
                     </table>

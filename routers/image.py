@@ -97,7 +97,7 @@ async def fav_():
         su = None
     user_id = user.id
     if su and su != user_id:
-        if await has_permissions(user.id, "view_gallery"):
+        if await has_permissions(user.id, "view_favourites"):
             user_id = su
         else:
             quart.abort(403)
@@ -107,7 +107,7 @@ async def fav_():
         if e.status == 404:
             return quart.abort(
                 404,
-                description="Sorry your gallery is empty, you may want to add some by using the bot or click the red heart on the preview page!",
+                description="Sorry your favourites are empty, you may want to add some by using the bot or click the red heart on the preview page!",
             )
         raise e
     tags = []

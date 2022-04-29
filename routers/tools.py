@@ -173,9 +173,9 @@ async def reset_():
     return quart.redirect(quart.url_for("general.dashboard_") + f"?user_id={user_id}")
 
 
-@blueprint.route("/purge-gallery/")
+@blueprint.route("/purge-favourites/")
 @requires_authorization
-async def purge_gallery_():
+async def purge_favourites_():
     su = request.args.get("user_id", type=int)
     user = await fetch_user_safe()
     user_id = user.id
