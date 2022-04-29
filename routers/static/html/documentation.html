@@ -270,8 +270,57 @@ async with session.get(url, headers=HEADERS) as resp:
       </code></pre>
                 </div>
                 <div class="container-fluid borderthin">
-                    <h3 id="galleries">Galleries</h3>
-                    <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want through the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your gallery, here is how to do it.</p>
+                    <h3 id="favourites">Generate an Authorization Link</h3>
+                    <p class="fs-5">This part isn't directly related to the API and you will see that the base url is not the same, but it introduces the favourites pictures system and its permissions.
+                        Basically this will allow you to generate a link asking a user that may click on it permissions over his account (you also can do the opposite with revoke).
+                        This will be useful for people that which to allow a user to view and or edit his favourites using their application.
+                        They will be able to provide user_id query string in the /fav/ route (if the user provided granted them the permissions).
+                        If the user was not registered on the site he will have to login with discord first.
+                        If you allowed another user to access your account you can still manage his right afterwards in the <a href="/dashboard/" target="_blank" class="link-light">dashboard</a>.
+                    </p>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">URI</span></th>
+                                <th scope="col"><span class="text-success">Request type</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{site_url}}authorization</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                            <tr>
+                                <th scope="row">{{site_url}}authorization/revoke/</th>
+                                <th scope="row">GET</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <h4 id="favourites-query-strings">Query strings</h4>
+                    <table class="table borderless cardupload">
+                        <thead>
+                            <tr>
+                                <th scope="col"><span class="text-success">Name</span></th>
+                                <th scope="col"><span class="text-success">Required</span></th>
+                                <th scope="col"><span class="text-success">Type</span></th>
+                                <th scope="col"><span class="text-success">Behaviour</span></th>
+                            </tr>
+                            <tr>
+                                <th scope="row">user_id</th>
+                                <th scope="row">Yes</th>
+                                <th scope="row">Integer</th>
+                                <th scope="row">The user_id of the user that is asking and will receive the permissions (the user that is cliking on the link can't be the same as this value, you can't add permissions to yourself)</th>
+                            </tr>'
+                            <tr>
+                                <th scope="row">permissions</th>
+                                <th scope="row">Yes</th>
+                                <th scope="row">Array</th>
+                                <th scope="row">The permissions that will be asked for. Available permissions are 'view_favourites' and 'manage_favourites'</th>
+                            </tr>
+                        </thead>
+                    </table>
+                    <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
+                <div class="container-fluid borderthin">
+                    <h3 id="favourites">Favourites</h3>
+                    <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want through the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your favourites picture, here is how to do it.</p>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -284,8 +333,8 @@ async with session.get(url, headers=HEADERS) as resp:
                             </tr>
                         </thead>
                     </table>
-                    <p class="fs-6">You will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>, see the <a class="link-light" href="#galleries-example">example</a>.</p>
-                    <h4 id="galleries-response">Response</h4>
+                    <p class="fs-6">You will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>, see the <a class="link-light" href="#favourites-example">example</a>.</p>
+                    <h4 id="favourites-response">Response</h4>
                     <pre><code class="language-json">
 {
   "images": [
@@ -314,7 +363,7 @@ async with session.get(url, headers=HEADERS) as resp:
   ]
 }
                 </code></pre>
-                    <h4 id="galleries-query-strings">Query strings</h4>
+                    <h4 id="favourites-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
@@ -327,7 +376,7 @@ async with session.get(url, headers=HEADERS) as resp:
                                 <th scope="row">user_id</th>
                                 <th scope="row">No</th>
                                 <th scope="row">Integer</th>
-                                <th scope="row">The user id from which you want to consult the gallery (only for trusted apps)</th>
+                                <th scope="row">The user id from which you want to consult the favourites (only for trusted apps)</th>
                             </tr>
                             <tr>
                                 <th scope="row">selected_tags</th>
@@ -380,8 +429,8 @@ async with session.get(url, headers=HEADERS) as resp:
                         </thead>
                     </table>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
-                    <h4 id="galleries-example">Example</h4>
-                    <p class="fs-5">Here is a little example. Here let's say we want to get all the safe images with the <kbd>waifu</kbd> tag. and we also want to edit the gallery.</p>
+                    <h4 id="favourites-example">Example</h4>
+                    <p class="fs-5">Here is a little example. Here let's say we want to get all the safe images with the <kbd>waifu</kbd> tag programmatically (even thought we could use selected_tags query string). and we tell the api to returns only landscape pictures.</p>
                     <pre><code class="language-python">
 import aiohttp
 
@@ -403,6 +452,7 @@ async with aiohttp.ClientSession() as cs:
 			# The filter() function extracts elements from an iterable (list, tuple etc.) for which a function returns True
 			waifu = list(filter(has_waifu_tag,rep["images"]))
 			# Do whatever you want with the waifu tag pictures.
+            # As mentioned before we could just have add '&selected_tags=waifu'
 	
 		else:
 			error = api["detail"]
@@ -410,9 +460,9 @@ async with aiohttp.ClientSession() as cs:
 			</code></pre>
             </div>
             <div class="container-fluid borderthin">
-                <h3 id="edit-galleries">Edit Galleries</h3>
-                <p class="fs-5">Previously you saw how to consult your gallery, now let's see how you can edit it.</p>
-                <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user gallery if it already was in, otherwise it will be added to it.</p>
+                <h3 id="edit-favourites">Edit Favourites</h3>
+                <p class="fs-5">Previously you saw how to consult your favourites picture, now let's see how you can edit it.</p>
+                <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user favourites if it already was in, otherwise it will be added to it.</p>
                 <table class="table borderless cardupload">
                     <thead>
                         <tr>
@@ -434,14 +484,14 @@ async with aiohttp.ClientSession() as cs:
                         </thead>
                     </table>
                     <p class="fs-6">As previously, you will need to place your <a class="link-light" target="_blank" href="/dashboard/">token</a> in the <a class="link-light" target="_blank" href="https://developer.mozilla.org/en/docs/Web/HTTP/Headers/Authorization">Authorization header</a>.</p>
-                    <h4 id="edit-galleries-response">Response</h4>
+                    <h4 id="edit-favourites-response">Response</h4>
                     <p class="fs-5">For insert and delete route, the API will return a <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/204" class="link-light" target="_blank">204</a> status code. Let's see the structure for the toggle route.</p>
                     <pre><code class="language-json">
 {
   "state": "DELETED" or "INSERTED" depending on the action done
-}
+}g
                 </code></pre>
-                    <h4 id="edit-galleries-query-strings">Query strings</h4>
+                    <h4 id="edit-favourites-query-strings">Query strings</h4>
                     <table class="table borderless cardupload">
                         <thead>
                             <tr>
