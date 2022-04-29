@@ -29,7 +29,7 @@
     </div>
     <div class="container" style="padding-top: 64px;">
         <div class="row justify-content-center">
-            <div class="col-sm-12 col-md-6 justify-content-center">
+            <div class="col-sm-12 col-md-6">
                 <div class="container-fluid borderthin ">
                     <h1 class="display-5" id="presentation">API Documentation</h1>
                     <p class="fs-5">{{sitename}} is {{site_description.lower()}}</p>
@@ -118,7 +118,7 @@ This is just about the parameters validation so you will never face this error i
                 <div class="container-fluid borderthin">
                     <h3 id="random-image">Get Random Images</h3>
                     <p class="fs-5">You can either get completely random images or by tag.</p>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">PATH</span></th>
@@ -162,30 +162,26 @@ This is just about the parameters validation so you will never face this error i
 }
 				</code></pre>
                     <h4 id="random-image-query-strings">Query strings</h4>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">Name</span></th>
                                 <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Type</span></th>
                                 <th scope="col"><span class="text-success">Behaviour</span></th>
                             </tr>
                             <tr>
                                 <th scope="row">selected_tags</th>
                                 <th scope="row">No</th>
-                                <th scope="row">Array</th>
                                 <th scope="row">Force the API to return images with, at least all the provided tags</th>
                             </tr>
                             <tr>
                                 <th scope="row">excluded_tags</th>
                                 <th scope="row">No</th>
-                                <th scope="row">Array</th>
                                 <th scope="row">Force the API to return images without any of the provided tags</th>
                             </tr>
                             <tr>
                                 <th scope="row">is_nsfw</th>
                                 <th scope="row">No</th>
-                                <th scope="row">Strict Boolean or String</th>
                                 <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to False.</th>
                             </tr>
                             <tr>
@@ -275,7 +271,7 @@ async with session.get(url, headers=HEADERS) as resp:
                         This will allow you to generate a link asking a user that will click on it, permissions over his account (you also can do the opposite with revoke).
                     </p>
                     <p class="fs-6">This will be useful if you want to use the <strong><i>user_id</i></strong> query string when dealing with favourites.</p>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">URI</span></th>
@@ -292,7 +288,7 @@ async with session.get(url, headers=HEADERS) as resp:
                         </thead>
                     </table>
                     <h4 id="authorization-query-strings">Query strings</h4>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">Name</span></th>
@@ -319,7 +315,7 @@ async with session.get(url, headers=HEADERS) as resp:
                 <div class="container-fluid borderthin">
                     <h3 id="favourites">Favourites</h3>
                     <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want through the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your favourite pictures, here is how to do it.</p>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">PATH</span></th>
@@ -362,7 +358,7 @@ async with session.get(url, headers=HEADERS) as resp:
 }
                 </code></pre>
                     <h4 id="favourites-query-strings">Query strings</h4>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">Name</span></th>
@@ -461,7 +457,7 @@ async with aiohttp.ClientSession() as cs:
                 <h3 id="edit-favourites">Edit Favourites</h3>
                 <p class="fs-5">Previously you saw how to consult your favourite pictures, now let's see how you can edit it.</p>
                 <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user favourites if it already was in, otherwise it will be added to it.</p>
-                <table class="table borderless cardupload">
+                <table class="table table-sm table-borderless cardupload">
                     <thead>
                         <tr>
                             <th scope="col"><span class="text-success">PATH</span></th>
@@ -490,7 +486,7 @@ async with aiohttp.ClientSession() as cs:
 }
                 </code></pre>
                     <h4 id="edit-favourites-query-strings">Query strings</h4>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">Name</span></th>
@@ -515,7 +511,7 @@ async with aiohttp.ClientSession() as cs:
                     </div>
                     <div class="container-fluid borderthin">
                     <h3 id="info">Get Images Information</h3>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">PATH</span></th>
@@ -530,7 +526,7 @@ async with aiohttp.ClientSession() as cs:
                     <h4 id="info-response">Response</h4>
                     <p class="fs-5">The Json structure has been thought so that it will often be the same, therefore the structure is the same as the random images one.</p>
                     <h4 id="info-query-strings">Query strings</h4>
-                    <table class="table borderless cardupload">
+                    <table class="table table-sm table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">Name</span></th>
