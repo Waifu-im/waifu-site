@@ -30,7 +30,7 @@
     <div class="container" style="padding-top: 64px;">
         <div class="row justify-content-center">
             <div class="col-sm-12 col-md-6">
-                <div class="container-fluid borderthin ">
+                <div class="container-fluid border-thin ">
                     <h1 class="display-5" id="presentation">API Documentation</h1>
                     <p class="fs-5">{{sitename}} is {{site_description.lower()}}</p>
                     <div class="card bgblack mb-3" style="width: 100%;">
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="container-fluid borderthin">
+                <div class="container-fluid border-thin">
                     <h3 id="tags">Tags</h3>
                     <p class="fs-5">The image are classified with a tag system, it means that each image can have multiple tags!</p>
                     <p class="fs-5">There is versatile tags that can describe <strong>both</strong> safe and lewd images and specially nsfw tags that only describe lewd images.</p>
@@ -85,7 +85,7 @@
                         {% endfor %}
                     </div>
                 </div>
-                <div class="container-fluid borderthin">
+                <div class="container-fluid border-thin">
                     <h3 id="errors">Errors</h3>
                     <p class="fs-5">Here is the json structure for the api errors.</p>
                     <pre><code class="language-json">
@@ -115,7 +115,7 @@ This is just about the parameters validation so you will never face this error i
 }
       </code></pre>
                 </div>
-                <div class="container-fluid borderthin table-responsive">
+                <div class="container-fluid border-thin">
                     <h3 id="random-image">Get Random Images</h3>
                     <p class="fs-5">You can either get completely random images or by tag.</p>
                     <table class="table  table-borderless cardupload">
@@ -162,66 +162,68 @@ This is just about the parameters validation so you will never face this error i
 }
 				</code></pre>
                     <h4 id="random-image-query-strings">Query strings</h4>
-                    <table class="table  table-borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">Name</span></th>
-                                <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">selected_tags</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Force the API to return images with, at least all the provided tags</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">excluded_tags</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Force the API to return images without any of the provided tags</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">is_nsfw</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to False.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">gif</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Boolean</th>
-                                <th scope="row">Force or prevent the API to return .gif files.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">order_by</th>
-                                <th scope="row">No</th>
-                                <th scope="row">String</th>
-                                <th scope="row">You can choose to order the image by one of the following : FAVOURITES, UPLOADED_AT</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">orientation</th>
-                                <th scope="row">No</th>
-                                <th scope="row">String</th>
-                                <th scope="row">You can choose the orientation of your image using one of the following : LANDSCAPE, PORTRAIT</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">many</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Boolean</th>
-                                <th scope="row">Return an array of 30 files if True.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">full</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Boolean</th>
-                                <th scope="row">Returns the full result without any limit (admins only)</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">excluded_files</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table  table-borderless cardupload">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-success">Name</span></th>
+                                    <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Behaviour</span></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">selected_tags</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Force the API to return images with, at least all the provided tags</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">excluded_tags</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Force the API to return images without any of the provided tags</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">is_nsfw</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to False.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">gif</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
+                                    <th scope="row">Force or prevent the API to return .gif files.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">order_by</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">String</th>
+                                    <th scope="row">You can choose to order the image by one of the following : FAVOURITES, UPLOADED_AT</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">orientation</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">String</th>
+                                    <th scope="row">You can choose the orientation of your image using one of the following : LANDSCAPE, PORTRAIT</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">many</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
+                                    <th scope="row">Return an array of 30 files if True.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">full</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
+                                    <th scope="row">Returns the full result without any limit (admins only)</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">excluded_files</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                     <h4 id="random-image-example">Example</h4>
                     <p class="fs-5">Here is an python example with some <a class="link-light" href="https://en.wikipedia.org/wiki/Query_string">query strings.</a></p>
@@ -265,7 +267,7 @@ async with session.get(url, headers=HEADERS) as resp:
     # Do whatever you want with the error description.
       </code></pre>
                 </div>
-                <div class="container-fluid borderthin">
+                <div class="container-fluid border-thin">
                     <h3 id="authorization">Generate an Authorization Link</h3>
                     <p class="fs-5">This part isn't directly related to the API and the base url is not the same.
                         This will allow you to generate a link asking a user that will click on it, permissions over his account (you also can do the opposite with revoke).
@@ -288,34 +290,36 @@ async with session.get(url, headers=HEADERS) as resp:
                         </thead>
                     </table>
                     <h4 id="authorization-query-strings">Query strings</h4>
-                    <table class="table  table-borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">Name</span></th>
-                                <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Type</span></th>
-                                <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">user_id</th>
-                                <th scope="row">Yes</th>
-                                <th scope="row">Integer</th>
-                                <th scope="row">The user_id of the user that is asking and will receive the permissions (the user that is clicking on the link can't be the same as this value, you can't add permissions to yourself)</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">permissions</th>
-                                <th scope="row">Yes</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">The permissions that will be asked for. Available permissions are 'view_favourites' and 'manage_favourites'</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table  table-borderless cardupload">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-success">Name</span></th>
+                                    <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Type</span></th>
+                                    <th scope="col"><span class="text-success">Behaviour</span></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">user_id</th>
+                                    <th scope="row">Yes</th>
+                                    <th scope="row">Integer</th>
+                                    <th scope="row">The user_id of the user that is asking and will receive the permissions (the user that is clicking on the link can't be the same as this value, you can't add permissions to yourself)</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">permissions</th>
+                                    <th scope="row">Yes</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">The permissions that will be asked for. Available permissions are 'view_favourites' and 'manage_favourites'</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                 </div>
-                <div class="container-fluid borderthin">
+                <div class="container-fluid border-thin">
                     <h3 id="favourites">Favourites</h3>
                     <p class="fs-5">You can create a personal gallery composed of your favorite images, for you to be able to look them whenever you want through the website or the <a class="link-light" href="{{bot_invite}}">bot</a>, but you can also use the api to retrieve your favourite pictures, here is how to do it.</p>
-                    <table class="table  table-borderless cardupload">
+                    <table class="table table-borderless cardupload">
                         <thead>
                             <tr>
                                 <th scope="col"><span class="text-success">PATH</span></th>
@@ -358,70 +362,72 @@ async with session.get(url, headers=HEADERS) as resp:
 }
                 </code></pre>
                     <h4 id="favourites-query-strings">Query strings</h4>
-                    <table class="table  table-borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">Name</span></th>
-                                <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Type</span></th>
-                                <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">user_id</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Integer</th>
-                                <th scope="row">The user id from which you want to consult the favourites (only if the provided user granted you the permission).</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">selected_tags</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">Force the API to return images with, at least all the provided tags</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">excluded_tags</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">Force the API to return images without any of the provided tags</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">is_nsfw</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Strict Boolean or String</th>
-                                <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to 'null'.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">gif</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Boolean</th>
-                                <th scope="row">Force or prevent the API to return .gif files.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">order_by</th>
-                                <th scope="row">No</th>
-                                <th scope="row">String</th>
-                                <th scope="row">You can choose to order the image by one of the following : FAVOURITES, UPLOADED_AT</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">orientation</th>
-                                <th scope="row">No</th>
-                                <th scope="row">String</th>
-                                <th scope="row">You can choose the orientation of your image using one of the following : LANDSCAPE, PORTRAIT</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">many</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Boolean</th>
-                                <th scope="row">Return an array of 30 files if True.</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">excluded_files</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table table-borderless cardupload">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-success">Name</span></th>
+                                    <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Type</span></th>
+                                    <th scope="col"><span class="text-success">Behaviour</span></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">user_id</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Integer</th>
+                                    <th scope="row">The user id from which you want to consult the favourites (only if the provided user granted you the permission).</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">selected_tags</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">Force the API to return images with, at least all the provided tags</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">excluded_tags</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">Force the API to return images without any of the provided tags</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">is_nsfw</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Strict Boolean or String</th>
+                                    <th scope="row">Force or exclude lewd files, only works if the selected_tags aren't specially nsfw (see difference between versatile and nsfw tags above). You can provide 'null' to make it be random. Default to 'null'.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">gif</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
+                                    <th scope="row">Force or prevent the API to return .gif files.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">order_by</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">String</th>
+                                    <th scope="row">You can choose to order the image by one of the following : FAVOURITES, UPLOADED_AT</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">orientation</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">String</th>
+                                    <th scope="row">You can choose the orientation of your image using one of the following : LANDSCAPE, PORTRAIT</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">many</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Boolean</th>
+                                    <th scope="row">Return an array of 30 files if True.</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">excluded_files</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">Exclude the file(s). You can or not provide the file extension.</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                     <h4 id="favourites-example">Example</h4>
                     <p class="fs-5">Here is a little example. Here let's say we want to get all the safe images with the <kbd>waifu</kbd> tag programmatically (even thought we could use selected_tags query string). We also tell the api to returns only landscape pictures.</p>
@@ -453,7 +459,7 @@ async with aiohttp.ClientSession() as cs:
 			#do whatever you want with the error message.
 			</code></pre>
             </div>
-            <div class="container-fluid borderthin">
+            <div class="container-fluid border-thin">
                 <h3 id="edit-favourites">Edit Favourites</h3>
                 <p class="fs-5">Previously you saw how to consult your favourite pictures, now let's see how you can edit it.</p>
                 <p class="fs-5">You can delete a picture, insert it or toggle it, it means that the picture will be deleted from the user favourites if it already was in, otherwise it will be added to it.</p>
@@ -486,30 +492,32 @@ async with aiohttp.ClientSession() as cs:
 }
                 </code></pre>
                     <h4 id="edit-favourites-query-strings">Query strings</h4>
-                    <table class="table  table-borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">Name</span></th>
-                                <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Type</span></th>
-                                <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">user_id</th>
-                                <th scope="row">No</th>
-                                <th scope="row">Integer</th>
-                                <th scope="row">The user id from which you want to edit the favourites (only if the provided user granted you the permission).</th>
-                            </tr>
-                            <tr>
-                                <th scope="row">image</th>
-                                <th scope="row">Yes</th>
-                                <th scope="row">String</th>
-                                <th scope="row">The image that you want to add, remove or toggle from the user favourites.</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table  table-borderless cardupload">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-success">Name</span></th>
+                                    <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Type</span></th>
+                                    <th scope="col"><span class="text-success">Behaviour</span></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">user_id</th>
+                                    <th scope="row">No</th>
+                                    <th scope="row">Integer</th>
+                                    <th scope="row">The user id from which you want to edit the favourites (only if the provided user granted you the permission).</th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">image</th>
+                                    <th scope="row">Yes</th>
+                                    <th scope="row">String</th>
+                                    <th scope="row">The image that you want to add, remove or toggle from the user favourites.</th>
+                                </tr>
+                            </thead>
+                        </table>
                     </div>
-                    <div class="container-fluid borderthin">
+                    </div>
+                    <div class="container-fluid border-thin">
                     <h3 id="info">Get Images Information</h3>
                     <table class="table  table-borderless cardupload">
                         <thead>
@@ -526,22 +534,24 @@ async with aiohttp.ClientSession() as cs:
                     <h4 id="info-response">Response</h4>
                     <p class="fs-5">The Json structure has been thought so that it will often be the same, therefore the structure is the same as the random images one.</p>
                     <h4 id="info-query-strings">Query strings</h4>
-                    <table class="table  table-borderless cardupload">
-                        <thead>
-                            <tr>
-                                <th scope="col"><span class="text-success">Name</span></th>
-                                <th scope="col"><span class="text-success">Required</span></th>
-                                <th scope="col"><span class="text-success">Type</span></th>
-                                <th scope="col"><span class="text-success">Behaviour</span></th>
-                            </tr>
-                            <tr>
-                                <th scope="row">images</th>
-                                <th scope="row">Yes</th>
-                                <th scope="row">Array</th>
-                                <th scope="row">The image(s) that you want information from.</th>
-                            </tr>
-                        </thead>
-                    </table>
+                    <div class="table-responsive">
+                        <table class="table  table-borderless cardupload">
+                            <thead>
+                                <tr>
+                                    <th scope="col"><span class="text-success">Name</span></th>
+                                    <th scope="col"><span class="text-success">Required</span></th>
+                                    <th scope="col"><span class="text-success">Type</span></th>
+                                    <th scope="col"><span class="text-success">Behaviour</span></th>
+                                </tr>
+                                <tr>
+                                    <th scope="row">images</th>
+                                    <th scope="row">Yes</th>
+                                    <th scope="row">Array</th>
+                                    <th scope="row">The image(s) that you want information from.</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
                     <p class="fs-6">If you want to provide an array just provide the query string again, with a different value</p>
                 </div>
             </div>

@@ -82,7 +82,7 @@ body {
 .borderless tr, .borderless td, .borderless th {
     border: none !important;
    }
-.borderthin{border-bottom:1px solid rgba(118, 118, 118, .5);padding-bottom: 1.2rem;margin-bottom: 1.2rem;}
+.border-thin{border-bottom:1px solid rgba(118, 118, 118, .5);padding-bottom: 1.2rem;margin-bottom: 1.2rem;}
 
 .pagination > li > span,
 .pagination > li > span:focus,
