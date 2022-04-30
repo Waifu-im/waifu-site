@@ -149,8 +149,7 @@ async def dashboard_():
 @blueprint.route("/preview/<string:file>/")
 async def preview_(file: str):
     if not file:
-        f = await current_app.waifu_client.random(is_nsfw='null')
-        return quart.redirect(quart.url_for("general.preview_", file=f.file))
+        quart.abort(404)
     file_parts = os.path.splitext(file.lower())
     file = file_parts[0]
     filename = ''.join(file_parts)
@@ -204,8 +203,7 @@ async def preview_(file: str):
 @permissions_check("manage_images")
 async def manage_(file):
     if not file:
-        f = await current_app.waifu_client.random(is_nsfw='null')
-        return quart.redirect(quart.url_for("general.manage_", file=f.file))
+        quart.abort(404)
     file_parts = os.path.splitext(file.lower())
     file = file_parts[0]
     filename = ''.join(file_parts)
