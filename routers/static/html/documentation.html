@@ -307,7 +307,7 @@ async with session.get(url, headers=HEADERS) as resp:
                                     <th scope="row">user_id</th>
                                     <th scope="row">Yes</th>
                                     <th scope="row">Integer</th>
-                                    <th scope="row">The user_id of the user that is asking and will receive the permissions (the user that is clicking on the link can't be the same as this value, you can't add permissions to yourself)</th>
+                                    <th scope="row">The discord user_id of the user that will receive the permissions</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">permissions</th>
@@ -379,7 +379,7 @@ async with session.get(url, headers=HEADERS) as resp:
                                     <th scope="row">user_id</th>
                                     <th scope="row">No</th>
                                     <th scope="row">Integer</th>
-                                    <th scope="row">The user id from which you want to consult the favourites (only if the provided user granted you the permission).</th>
+                                    <th scope="row">The discord user id from which you want to consult the favourites (only if the provided user granted you the permission).</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">selected_tags</th>
@@ -509,7 +509,7 @@ async with aiohttp.ClientSession() as cs:
                                     <th scope="row">user_id</th>
                                     <th scope="row">No</th>
                                     <th scope="row">Integer</th>
-                                    <th scope="row">The user id from which you want to edit the favourites (only if the provided user granted you the permission).</th>
+                                    <th scope="row">The discord user id from which you want to edit the favourites (only if the provided user granted you the permission).</th>
                                 </tr>
                                 <tr>
                                     <th scope="row">image</th>

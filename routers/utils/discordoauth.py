@@ -17,10 +17,10 @@ async def get_user_info(user_id, jsondata=False):
     )
     if resp.status == 404:
         if jsondata:
-            response = jsonify(dict(detail="Please provide a valid user_id"))
+            response = jsonify(dict(detail="Please provide a valid discord user_id"))
             response.status_code = 400
             abort(response)
-        abort(400, description="Please provide a valid user_id")
+        abort(400, description="Please provide a valid discord user_id")
 
     if resp.status != 200:
         if jsondata:
