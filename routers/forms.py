@@ -16,7 +16,6 @@ from quart import Blueprint, render_template, request, current_app
 import io
 import os
 import xxhash
-import urllib
 
 from PIL import Image as ImagePIL
 from colorthief import ColorThief
