@@ -60,7 +60,7 @@ function completeHandler(event)
 		let jrs=JSON.parse(event.target.responseText);
 		window.location.href=jrs["detail"];
 	}
-	else if (event.target.status==400 || event.target.status==409)
+	else if (event.target.status==400 || event.target.status==409 || event.target.status==401)
 	{
 		let jrs=JSON.parse(event.target.responseText);
 		document.getElementById("errort").style.display='unset'
