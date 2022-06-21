@@ -60,7 +60,7 @@ function completeHandler(event)
 		let jrs=JSON.parse(event.target.responseText);
 		window.location.href=jrs["detail"];
 	}
-	else if (event.target.status in [400, 409, 401, 403])
+	else if ([400, 409, 401, 403].includes(event.target.status))
 	{
 		let jrs=JSON.parse(event.target.responseText);
 		document.getElementById("errort").style.display='unset'
