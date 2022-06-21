@@ -45,7 +45,8 @@ async def callback():
     except:
         current_app.discord.revoke()
         redirect_to = current_app.config["site_url"]
-    return quart.redirect(redirect_to)
+    close = request.args.get("close") == "true"
+    return "<script>window.close();</script>" if close else quart.redirect(redirect_to)
 
 
 @blueprint.route("/logout/")
