@@ -117,7 +117,7 @@ async def form_upload():
     if not await current_app.discord.authorized:
         return (
             dict(
-                detail='Sorry, you must first <a href="/login/" target="_blank">login</a> before uploading a file.'
+                detail=f'Sorry, you must first <a href="/login/?redirect={quart.url_for(urllib.parse.quote(request.url)}">login</a> before uploading a file.'
             ),
             401,
         )
