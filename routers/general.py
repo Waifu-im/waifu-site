@@ -209,7 +209,7 @@ async def manage_(file):
     filename = ''.join(file_parts)
     async with current_app.pool.acquire() as conn:
         image_info = await conn.fetch(
-            "SELECT Tags.id as tag_id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw, Images.uploaded_by, Registered_user.name FROM Images JOIN Regsitered_user ON Registered_user.id=Images.uploaded_by LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
+            "SELECT Tags.id as tag_id,Images.source,Images.file,Images.extension,Images.under_review,Images.hidden,Images.is_nsfw, Images.uploaded_by, Registered_user.name FROM Images JOIN Registered_user ON Registered_user.id=Images.uploaded_by LEFT JOIN LinkedTags ON LinkedTags.image=Images.file LEFT JOIN Tags ON Tags.id=LinkedTags.tag_id WHERE Images.file=$1",
             file,
         )
         if not image_info:
