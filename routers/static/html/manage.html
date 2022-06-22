@@ -32,6 +32,7 @@
     formdata.append("is_reported",document.getElementById("checkbox_is_reported").checked)
     formdata.append("is_nsfw",document.getElementById("is_nsfw").checked)
     formdata.append("report_user_id",document.getElementById("report_user_id").value)
+    formdata.append("uploader_id",document.getElementById("uploader_id").value)
     formdata.append("report_description",document.getElementById("report_description").value)
     for (const tag of selectedValues){formdata.append("tags[]", tag);}
     formdata.append("source",sourceval)
@@ -151,6 +152,13 @@ function abortHandler(event) {resetall();document.getElementById("errort").style
                             <div class="form-switch">
                                 <input id="checkbox_is_reported" class="form-check-input" type="checkbox" {% if report_user_id %} checked{% endif %}>
                                 <label class="form-check-label" for="checkbox_is_reported" id="label_report">Is Reported</label>
+                            </div>
+                           <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
+                                <span class="input-group-text">Uploaded by</span>
+                                <input type="text" class="form-control" id="uploader_id" placeholder="359371922203535258" name="uploader_id" value="{{uploader_id if uploader_id else ''}}" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+                                {% if uploader_id and uploader_name %}
+                                <span class="input-group-text">{{uploader_name}}</span>
+                                {% endif %}}
                             </div>
                             <div class="input-group input-group-sm" style="margin-bottom: 1rem;">
                                 <span class="input-group-text">Reported by</span>
