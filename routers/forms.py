@@ -114,6 +114,21 @@ async def insert_db(
 
 @blueprint.route("/upload/", methods=["POST"])
 async def form_upload():
+    if not await current_app.discord.authorized:
+        return (
+            dict(
+                detail=f'Sorry, you must first <a href="/login/" target="_blank">login</a> before uploading a file.'
+            ),
+            401,
+        )
+    blacklisted = await current_app.pool.fetchval("SELECT id FROM registered_user WHERE is_blacklisted")
+    if blacklisted is not None:
+        return (
+            dict(
+                detail='You have been blacklisted from using the discord bot and uploading new images.'
+            ),
+            403,
+        )
     loop = asyncio.get_event_loop()
     forms = await request.form
     tags = forms.getlist("tags[]")
