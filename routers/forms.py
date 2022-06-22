@@ -274,7 +274,7 @@ async def forms_manage():
             await conn.execute(
                 "UPDATE Images SET source=$1,file=COALESCE($2,file),extension=COALESCE($3,extension),"
                 "dominant_color=COALESCE($4,dominant_color),under_review=$5,hidden=$6,is_nsfw=$7,"
-                "width=COALESCE($8,width), height=COALESCE($9,height), uploaded_by=$10 "
+                "width=COALESCE($8,width), height=COALESCE($9,height), uploader=$10 "
                 "WHERE file=$11",
                 source if source else None,
                 temp_file,
