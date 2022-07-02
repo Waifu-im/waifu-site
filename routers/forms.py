@@ -122,14 +122,15 @@ async def form_upload():
             401,
         )
     user = await current_app.discord.fetch_user()
-    blacklisted = await current_app.pool.fetchval(
-        "SELECT id FROM registered_user WHERE is_blacklisted AND id=$1",
+    blacklisted = await current_app.pool.fetchrow(
+        "SELECT id,reason FROM registered_user WHERE is_blacklisted AND id=$1",
         user.id
     )
+    reason_descr = f' for the following reason : {blacklisted[1]}' if blacklisted[1] else '.'
     if blacklisted is not None:
         return (
             dict(
-                detail='You have been blacklisted from using the discord bot and uploading new images'
+                detail='You have been blacklisted from using the discord bot and uploading new images' + reason_descr
             ),
             403,
         )
