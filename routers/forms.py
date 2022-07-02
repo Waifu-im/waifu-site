@@ -121,11 +121,15 @@ async def form_upload():
             ),
             401,
         )
-    blacklisted = await current_app.pool.fetchval("SELECT id FROM registered_user WHERE is_blacklisted")
+    user = await current_app.discord.fetch_user()
+    blacklisted = await current_app.pool.fetchval(
+        "SELECT id FROM registered_user WHERE is_blacklisted AND id=$1",
+        user.id
+    )
     if blacklisted is not None:
         return (
             dict(
-                detail='You have been blacklisted from using the discord bot and uploading new images.'
+                detail='You have been blacklisted from using the discord bot and uploading new images'
             ),
             403,
         )
@@ -173,28 +177,19 @@ async def form_upload():
         )
     image_preview = quart.url_for('general.preview_',file=file)
     try:
-        if await current_app.discord.authorized:
-            try:
-                user = await current_app.discord.fetch_user()
-            except:
-                user = None
-            await insert_db(
-                file_bytes,
-                file,
-                filename,
-                extension,
-                source,
-                is_nsfw,
-                width,
-                height,
-                tags,
-                loop,
-                user=user,
-            )
-        else:
-            await insert_db(
-                file_bytes, file, filename, extension, source, is_nsfw, width, height, tags, loop
-            )
+        await insert_db(
+            file_bytes,
+            file,
+            filename,
+            extension,
+            source,
+            is_nsfw,
+            width,
+            height,
+            tags,
+            loop,
+            user=user,
+        )
     except asyncpg.exceptions.UniqueViolationError:
         return (
             dict(
