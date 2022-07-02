@@ -126,7 +126,7 @@ async def form_upload():
         "SELECT id,reason FROM registered_user WHERE is_blacklisted AND id=$1",
         user.id
     )
-    reason_descr = f' for the following reason : {blacklisted[1]}' if blacklisted and blacklisted[1] else '.'
+    reason_descr = f' for the following reason: {blacklisted[1]}' if blacklisted and blacklisted[1] else '.'
     if blacklisted is not None:
         return (
             dict(
