@@ -148,6 +148,8 @@ async def form_upload():
             ),
             400,
         )
+    tags = set(tags)
+    tags.add(12)
     extension = allowed_file(file_bytes.filename)
     if not extension:
         return (
