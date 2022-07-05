@@ -115,13 +115,19 @@ async def insert_db(
 @blueprint.route("/upload/", methods=["POST"])
 async def form_upload():
     if not await current_app.discord.authorized:
+        user = None
+    else:
+        try:
+            user = await current_app.discord.fetch_user()
+        except:
+            user = None
+    if not user:
         return (
             dict(
                 detail=f'Sorry, you must first <a href="/login/" target="_blank">login</a> before uploading a file.'
             ),
             401,
         )
-    user = await current_app.discord.fetch_user()
     blacklisted = await current_app.pool.fetchrow(
         "SELECT id,reason FROM registered_user WHERE is_blacklisted AND id=$1",
         user.id
