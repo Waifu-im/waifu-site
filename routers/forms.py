@@ -156,6 +156,7 @@ async def form_upload():
         )
     tags = set(tags)
     tags.add(12)
+    print(tags)
     extension = allowed_file(file_bytes.filename)
     if not extension:
         return (
@@ -199,8 +200,7 @@ async def form_upload():
             loop,
             user=user,
         )
-    except asyncpg.exceptions.UniqueViolationError as e:
-        print(e)
+    except asyncpg.exceptions.UniqueViolationError:
         return (
             dict(
                 detail=f'Sorry this picture already exist, you can find it <a href="{image_preview}">here</a>.'
