@@ -142,7 +142,7 @@ async def form_upload():
         )
     loop = asyncio.get_event_loop()
     forms = await request.form
-    tags = forms.getlist("tags[]")
+    tags = forms.getlist("tags[]", type=int)
     source = forms.get("source")
     is_nsfw = forms.get("is_nsfw") == "true"
     files = await request.files
@@ -156,7 +156,6 @@ async def form_upload():
         )
     tags = set(tags)
     tags.add(12)
-    print(tags)
     extension = allowed_file(file_bytes.filename)
     if not extension:
         return (
