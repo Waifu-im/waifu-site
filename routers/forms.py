@@ -199,7 +199,8 @@ async def form_upload():
             loop,
             user=user,
         )
-    except asyncpg.exceptions.UniqueViolationError:
+    except asyncpg.exceptions.UniqueViolationError as e:
+        print(e)
         return (
             dict(
                 detail=f'Sorry this picture already exist, you can find it <a href="{image_preview}">here</a>.'
